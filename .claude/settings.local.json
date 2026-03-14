@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /d/Games/quake-js -not -path */node_modules/* -not -path */dist/* -not -path */.git/*)",
+      "Bash(wc -l /d/Games/quake-js/src/**/*.js)",
+      "Bash(find /d/Games/quake-js -maxdepth 1 -type f -name *.js -o -name *.ts -o -name *.json)",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Windows-MCP__PowerShell",
+      "Bash(grep -o '[a-z0-9_]*\\\\s\\\\+[-0-9]\\\\+\\\\s\\\\+[-0-9]\\\\+\\\\s\\\\+[-0-9]\\\\+\\\\s\\\\+[0-9.]\\\\+\\\\s\\\\+[0-9.]\\\\+\\\\s*$' \"D:\\\\Games\\\\quake-js\\\\public\\\\maps\\\\test.map\")",
+      "Bash(sed 's/^[a-z0-9_]*\\\\s.*$/&/')",
+      "Bash(sed 's/.* //')"
+    ]
+  }
+}

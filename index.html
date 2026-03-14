@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Babylon TrenchFPS</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #10141a;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      #renderCanvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        touch-action: none;
+      }
+
+      .hud {
+        position: absolute;
+        inset: 0;
+        color: #e8edf2;
+        pointer-events: none;
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .hud-panel {
+        position: absolute;
+        padding: 12px 14px;
+        background: rgba(8, 12, 18, 0.4);
+        border: 1px solid rgba(232, 237, 242, 0.08);
+        border-radius: 12px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
+        min-width: 220px;
+      }
+
+      .hud-panel-left {
+        left: 16px;
+        bottom: 16px;
+      }
+
+      .hud-panel-right {
+        right: 16px;
+        top: 16px;
+        text-align: right;
+        min-width: 140px;
+      }
+
+      .hud-title {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: rgba(232, 237, 242, 0.55);
+        margin-bottom: 8px;
+      }
+
+      .hud-stat {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+
+      .hud-stat:last-child {
+        margin-bottom: 0;
+      }
+
+      .hud-label {
+        color: rgba(232, 237, 242, 0.9);
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-shadow: 0 0 6px rgba(0, 0, 0, 0.75);
+      }
+
+      .hud-value {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .hud-bar {
+        grid-column: 1 / -1;
+        position: relative;
+        width: 256px;
+        height: 64px;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        image-rendering: pixelated;
+      }
+
+      .hud-bar-fill {
+        position: absolute;
+        left: 18px;
+        top: 26px;
+        height: 16px;
+        width: calc(100% - 36px);
+        border-radius: 4px;
+        background: linear-gradient(90deg, #33d17a, #84f3a3);
+        transform-origin: left;
+        transform: scaleX(0);
+      }
+
+      .hud-bar-fill.armor {
+        background: linear-gradient(90deg, #4a9eff, #77b7ff);
+      }
+
+      .hud-bar.hp {
+        background-image: url("/ui/hud_hp_bar.png");
+      }
+
+      .hud-bar.armor {
+        background-image: url("/ui/hud_armor_bar.png");
+      }
+
+      .hud-ammo-panel {
+        position: absolute;
+        right: 16px;
+        bottom: 20px;
+        width: 256px;
+        height: 96px;
+        background-image: url("/ui/hud_ammo_panel.png?v=2");
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        image-rendering: pixelated;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        text-align: center;
+      }
+
+      .hud-ammo-label {
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(232, 237, 242, 0.9);
+        text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+        margin-top: -4px;
+      }
+
+      .hud-ammo-value {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: #f1f4f9;
+        text-shadow: 0 0 8px rgba(255, 80, 80, 0.4);
+        margin-top: -2px;
+      }
+
+      .hud-stat-inline {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 4px;
+      }
+
+      .hud-status {
+        position: absolute;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(232, 237, 242, 0.7);
+        background: rgba(8, 12, 18, 0.5);
+        border: 1px solid rgba(232, 237, 242, 0.08);
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 11px;
+        backdrop-filter: blur(8px);
+      }
+
+      .crosshair {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 32px;
+        height: 32px;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        opacity: 0.9;
+        background: url("/ui/hud_crosshair.png") center/contain no-repeat;
+        image-rendering: pixelated;
+      }
+
+      .crosshair.hit {
+        opacity: 1;
+        filter: drop-shadow(0 0 6px rgba(255, 80, 80, 0.8));
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="renderCanvas" aria-label="Babylon TrenchFPS render canvas"></canvas>
+      <div id="crosshair" class="crosshair" aria-hidden="true"></div>
+      <div id="hud" class="hud" aria-live="polite">
+        <div class="hud-panel hud-panel-left">
+          <div class="hud-title">Vitals</div>
+          <div class="hud-stat">
+            <span class="hud-label">HP</span>
+            <span class="hud-value" id="hud-health">100</span>
+            <div class="hud-bar hp"><div id="hud-health-bar" class="hud-bar-fill"></div></div>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-label">Armor</span>
+            <span class="hud-value" id="hud-armor">0</span>
+            <div class="hud-bar armor"><div id="hud-armor-bar" class="hud-bar-fill armor"></div></div>
+          </div>
+        </div>
+        <div class="hud-panel hud-panel-right">
+          <div class="hud-title">Combat</div>
+          <div class="hud-stat-inline"><span class="hud-label">Enemies</span><span id="hud-enemies">0</span></div>
+          <div class="hud-stat-inline"><span class="hud-label">Kills</span><span id="hud-kills">0</span></div>
+          <div class="hud-stat-inline"><span class="hud-label">Shots</span><span id="hud-shots">0</span></div>
+        </div>
+        <div class="hud-ammo-panel">
+          <div class="hud-ammo-label">Ammo</div>
+          <div class="hud-ammo-value" id="hud-ammo">∞</div>
+        </div>
+        <div id="hud-status" class="hud-status">Click to lock pointer</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+  </html>
