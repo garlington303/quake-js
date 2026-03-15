@@ -63,7 +63,7 @@ export function createHud() {
         healthValue.textContent = display;
         if (healthBar) {
           const pct = Math.max(0, Math.min(health, 100)) / 100;
-          healthBar.style.transform = `scaleX(${pct.toFixed(3)})`;
+          healthBar.style.clipPath = `inset(0 ${((1 - pct) * 100).toFixed(1)}% 0 0)`;
         }
       }
       if (armorValue) {
@@ -71,7 +71,7 @@ export function createHud() {
         armorValue.textContent = Math.round(armor).toString();
         if (armorBar) {
           const pct = Math.max(0, Math.min(armor, 200)) / 200;
-          armorBar.style.transform = `scaleX(${pct.toFixed(3)})`;
+          armorBar.style.clipPath = `inset(0 ${((1 - pct) * 100).toFixed(1)}% 0 0)`;
         }
       }
       if (ammoValue) {

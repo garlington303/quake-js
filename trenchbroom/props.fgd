@@ -1,12 +1,14 @@
-// props.fgd — Auto-generated prop entities
-// Source: public/pak-extracted/progs/custom
-// DO NOT EDIT BY HAND — regenerate with scripts/generate_prop_fgd.py
+// props.fgd — Curated prop entities
+// Edit by hand. To add props, add the name to the relevant list in
+// scripts/write_curated_fgd.py and re-run it.
 //
-// 489 models
+// 267 props total
+// ✅ ITEMS & WEAPONS section: preview OBJ + GLB = renders in-game + TrenchBroom preview
+// ⚠️  All other sections: MDL only — no in-game render until GLBs are generated
 
 
 // ============================================================
-// PROPS - AMMO
+// PROPS - ITEMS & WEAPONS
 // ============================================================
 
 @PointClass model("preview/ammo_box_1/ammo_box_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ammo_box_1 : "Ammo Box 1"
@@ -147,419 +149,6 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-
-// ============================================================
-// PROPS - CANS
-// ============================================================
-
-@PointClass model("preview/canned_food_mp_1/canned_food_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_canned_food_mp_1 : "Canned Food Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/canned_food_mp_2/canned_food_mp_2.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_canned_food_mp_2 : "Canned Food Mp 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/canned_food_mp_3/canned_food_mp_3.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_canned_food_mp_3 : "Canned Food Mp 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/canned_food_mp_4/canned_food_mp_4.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_canned_food_mp_4 : "Canned Food Mp 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/canned_food_mp_5_rusty/canned_food_mp_5_rusty.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_canned_food_mp_5_rusty : "Canned Food Mp 5 Rusty"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-
-// ============================================================
-// PROPS - CARS / VEHICLES
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/car_battery_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_car_battery_1 : "Car Battery 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cardboard_box_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cardboard_box_1 : "Cardboard Box 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cardboard_box_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cardboard_box_2 : "Cardboard Box 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cardboard_box_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cardboard_box_2_1 : "Cardboard Box 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/carpet_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_carpet_mp_1 : "Carpet Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-
-// ============================================================
-// PROPS - CHAIRS / FURNITURE
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_1 : "Chair Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_1_1 : "Chair Mp 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_1_2 : "Chair Mp 1 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_1_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_1_3 : "Chair Mp 1 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_1_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_1_4 : "Chair Mp 1 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_2 : "Chair Mp 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_2_1 : "Chair Mp 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_2_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_2_2 : "Chair Mp 2 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_2_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_2_3 : "Chair Mp 2 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_2_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_2_4 : "Chair Mp 2 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_3 : "Chair Mp 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_3_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_3_1 : "Chair Mp 3 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_3_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_3_2 : "Chair Mp 3 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_3_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_3_3 : "Chair Mp 3 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_3_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_3_4 : "Chair Mp 3 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_4 : "Chair Mp 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_4_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_4_1 : "Chair Mp 4 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_4_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_4_2 : "Chair Mp 4 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/chair_mp_4_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_4_3 : "Chair Mp 4 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-
-// ============================================================
-// PROPS - DOORS
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/doorway_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_1 : "Doorway 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_1_1 : "Doorway 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_1_half.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_1_half : "Doorway 1 Half"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_1_plain.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_1_plain : "Doorway 1 Plain"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_2 : "Doorway 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_2_1 : "Doorway 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_2_1_half.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_2_1_half : "Doorway 2 1 Half"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_2_2_half.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_2_2_half : "Doorway 2 2 Half"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_2_wide.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_2_wide : "Doorway 2 Wide"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_3_half.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_3_half : "Doorway 3 Half"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_3_wide.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_3_wide : "Doorway 3 Wide"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/doorway_door_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_doorway_door_mp_1 : "Doorway Door Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-
-// ============================================================
-// PROPS - FLOOR DETAILS
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/floor_ceiling_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_floor_ceiling_1 : "Floor Ceiling 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/floor_ceiling_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_floor_ceiling_2 : "Floor Ceiling 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/floor_ceiling_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_floor_ceiling_3 : "Floor Ceiling 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-
-// ============================================================
-// PROPS - LAMPS / LIGHTS
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/lamp_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_1_off : "Lamp 1 Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/lamp_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_1_on : "Lamp 1 On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/lamp_2_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_2_off : "Lamp 2 Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/lamp_2_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_2_on : "Lamp 2 On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/lamp_3_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_3_1_off : "Lamp 3 1 Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/lamp_3_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_3_1_on : "Lamp 3 1 On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/lamp_3_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_3_off : "Lamp 3 Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/lamp_3_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_3_on : "Lamp 3 On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-
-// ============================================================
-// PROPS - MISC
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/arc_1_wall_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_arc_1_wall_1 : "Arc 1 Wall 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/arc_1_wall_1_plain.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_arc_1_wall_1_plain : "Arc 1 Wall 1 Plain"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/arc_1_wall_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_arc_1_wall_2_1 : "Arc 1 Wall 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/arc_1_wall_2_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_arc_1_wall_2_2 : "Arc 1 Wall 2 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/arc_2_wall_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_arc_2_wall_1 : "Arc 2 Wall 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/arc_2_wall_1_plain.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_arc_2_wall_1_plain : "Arc 2 Wall 1 Plain"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/arc_2_wall_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_arc_2_wall_2_1 : "Arc 2 Wall 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/arc_2_wall_2_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_arc_2_wall_2_2 : "Arc 2 Wall 2 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ashtray_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ashtray_1 : "Ashtray 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bars_metal_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bars_metal_1 : "Bars Metal 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bars_metal_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bars_metal_2 : "Bars Metal 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
 @PointClass model("preview/battery_mp_1/battery_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_battery_mp_1 : "Battery Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
@@ -596,247 +185,31 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/beam_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_beam_1 : "Beam 1"
+@PointClass model("preview/canned_food_mp_1/canned_food_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_canned_food_mp_1 : "Canned Food Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/beam_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_beam_2 : "Beam 2"
+@PointClass model("preview/canned_food_mp_2/canned_food_mp_2.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_canned_food_mp_2 : "Canned Food Mp 2"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/beam_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_beam_4 : "Beam 4"
+@PointClass model("preview/canned_food_mp_3/canned_food_mp_3.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_canned_food_mp_3 : "Canned Food Mp 3"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/beam_5.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_beam_5 : "Beam 5"
+@PointClass model("preview/canned_food_mp_4/canned_food_mp_4.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_canned_food_mp_4 : "Canned Food Mp 4"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/bed_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_1 : "Bed 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_1_frame.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_1_frame : "Bed 1 Frame"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_2 : "Bed 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_2_1 : "Bed 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_4 : "Bed 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_4_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_4_1 : "Bed 4 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_4_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_4_2 : "Bed 4 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_4_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_4_3 : "Bed 4 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_4_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_4_4 : "Bed 4 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_5.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_5 : "Bed 5"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_5_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_5_1 : "Bed 5 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_5_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_5_2 : "Bed 5 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_5_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_5_3 : "Bed 5 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bed_5_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_5_4 : "Bed 5 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bedside_table_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_1 : "Bedside Table 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bedside_table_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_1_1 : "Bedside Table 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bedside_table_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_1_2 : "Bedside Table 1 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bedside_table_1_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_1_3 : "Bedside Table 1 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bedside_table_1_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_1_4 : "Bedside Table 1 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bedside_table_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_2 : "Bedside Table 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bedside_table_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_2_1 : "Bedside Table 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bedside_table_2_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_2_2 : "Bedside Table 2 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bedside_table_2_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_2_3 : "Bedside Table 2 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/bedside_table_2_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_2_4 : "Bedside Table 2 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/book_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_1 : "Book Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/book_mp_10.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_10 : "Book Mp 10"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/book_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_2 : "Book Mp 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/book_mp_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_3 : "Book Mp 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/book_mp_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_4 : "Book Mp 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/book_mp_5.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_5 : "Book Mp 5"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/book_mp_6.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_6 : "Book Mp 6"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/book_mp_7.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_7 : "Book Mp 7"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/book_mp_8.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_8 : "Book Mp 8"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/book_mp_9.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_9 : "Book Mp 9"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/brick.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_brick : "Brick"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/butcher_knife_mp_1/butcher_knife_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_butcher_knife_mp_1 : "Butcher Knife Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/button_12.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_button_12 : "Button 12"
+@PointClass model("preview/canned_food_mp_5_rusty/canned_food_mp_5_rusty.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_canned_food_mp_5_rusty : "Canned Food Mp 5 Rusty"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -920,199 +293,7 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/catwalk_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_catwalk_1 : "Catwalk 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_1 : "Ceiling Fan Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_1_1_light_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_1_1_light_off : "Ceiling Fan Mp 1 1 Light Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_1_1_light_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_1_1_light_on : "Ceiling Fan Mp 1 1 Light On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_2 : "Ceiling Fan Mp 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_2_1_light_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_2_1_light_off : "Ceiling Fan Mp 2 1 Light Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_2_1_light_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_2_1_light_on : "Ceiling Fan Mp 2 1 Light On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_1_fake_light_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_1_fake_light_1 : "Ceiling Lamp 1 Fake Light 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_1_fake_light_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_1_fake_light_2 : "Ceiling Lamp 1 Fake Light 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_1_off : "Ceiling Lamp 1 Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_1_on : "Ceiling Lamp 1 On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_2_fake_light_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_2_fake_light_1 : "Ceiling Lamp 2 Fake Light 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_2_fake_light_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_2_fake_light_2 : "Ceiling Lamp 2 Fake Light 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_2_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_2_off : "Ceiling Lamp 2 Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_2_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_2_on : "Ceiling Lamp 2 On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_a_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_a_off : "Ceiling Lamp 4 1 A Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_a_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_a_on : "Ceiling Lamp 4 1 A On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_b_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_b_off : "Ceiling Lamp 4 1 B Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_b_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_b_on : "Ceiling Lamp 4 1 B On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_off : "Ceiling Lamp 4 1 Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_on : "Ceiling Lamp 4 1 On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_a_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_a_off : "Ceiling Lamp 4 A Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_a_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_a_on : "Ceiling Lamp 4 A On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_b_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_b_off : "Ceiling Lamp 4 B Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_b_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_b_on : "Ceiling Lamp 4 B On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_off : "Ceiling Lamp 4 Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_on : "Ceiling Lamp 4 On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_1_fake_light_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_1_fake_light_1 : "Ceiling Lamp Mp 1 1 Fake Light 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_1_fake_light_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_1_fake_light_2 : "Ceiling Lamp Mp 1 1 Fake Light 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_1_off : "Ceiling Lamp Mp 1 1 Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_1_on : "Ceiling Lamp Mp 1 1 On"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_off : "Ceiling Lamp Mp 1 Off"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_on : "Ceiling Lamp Mp 1 On"
+@PointClass model("preview/floppy_disc_1/floppy_disc_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_floppy_disc_1 : "Floppy Disc 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -1130,205 +311,13 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/cell_phone_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cell_phone_3 : "Cell Phone 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cell_phone_battery_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cell_phone_battery_1 : "Cell Phone Battery 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cell_phone_battery_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cell_phone_battery_1_1 : "Cell Phone Battery 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cell_phone_battery_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cell_phone_battery_2 : "Cell Phone Battery 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cell_phone_battery_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cell_phone_battery_2_1 : "Cell Phone Battery 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cig_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cig_1 : "Cig 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cig_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cig_2 : "Cig 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cig_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cig_3 : "Cig 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
 @PointClass model("preview/cigs_packet_1/cigs_packet_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cigs_packet_1 : "Cigs Packet 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/clock_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_clock_1 : "Clock 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/clock_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_clock_2 : "Clock 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cobweb_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cobweb_1 : "Cobweb 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cobweb_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cobweb_2 : "Cobweb 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cobweb_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cobweb_4 : "Cobweb 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cobweb_5.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cobweb_5 : "Cobweb 5"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/coffee_table_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_coffee_table_1 : "Coffee Table 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/coffee_table_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_coffee_table_1_1 : "Coffee Table 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/coffee_table_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_coffee_table_1_2 : "Coffee Table 1 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/coffee_table_1_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_coffee_table_1_3 : "Coffee Table 1 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/coffee_table_1_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_coffee_table_1_4 : "Coffee Table 1 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
 @PointClass model("preview/coin_mp_1/coin_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_coin_mp_1 : "Coin Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/concrete_block_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_concrete_block_1 : "Concrete Block 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/cross_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cross_1 : "Cross 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/curtain_rod_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_curtain_rod_mp_1 : "Curtain Rod Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_1 : "Display Cabinet Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_1_1 : "Display Cabinet Mp 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_1_2 : "Display Cabinet Mp 1 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_1_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_1_3 : "Display Cabinet Mp 1 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_1_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_1_4 : "Display Cabinet Mp 1 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_2 : "Display Cabinet Mp 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_2_1 : "Display Cabinet Mp 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_2_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_2_2 : "Display Cabinet Mp 2 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_2_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_2_3 : "Display Cabinet Mp 2 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_2_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_2_4 : "Display Cabinet Mp 2 4"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -1352,108 +341,6 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/double_single_doorway_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_double_single_doorway_1 : "Double Single Doorway 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/double_single_doorway_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_double_single_doorway_2 : "Double Single Doorway 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/double_single_doorway_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_double_single_doorway_2_1 : "Double Single Doorway 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/double_single_doorway_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_double_single_doorway_3 : "Double Single Doorway 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/electrical_outlet_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_electrical_outlet_1 : "Electrical Outlet 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/elevator_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_elevator_1 : "Elevator 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/elevator_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_elevator_2 : "Elevator 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/elevator_buttons_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_elevator_buttons_1 : "Elevator Buttons 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/elevator_call_button_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_elevator_call_button_1 : "Elevator Call Button 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/elevator_doorway_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_elevator_doorway_1 : "Elevator Doorway 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/elevator_doorway_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_elevator_doorway_2 : "Elevator Doorway 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/elevator_doorway_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_elevator_doorway_2_1 : "Elevator Doorway 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/elevator_doorway_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_elevator_doorway_3 : "Elevator Doorway 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/elevator_screen_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_elevator_screen_1 : "Elevator Screen 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/elevator_sign_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_elevator_sign_1 : "Elevator Sign 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/fake_light_window_2_double.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_fake_light_window_2_double : "Fake Light Window 2 Double"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/fake_light_window_2_single.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_fake_light_window_2_single : "Fake Light Window 2 Single"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
 @PointClass model("preview/flashlight_1/flashlight_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_flashlight_1 : "Flashlight 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
@@ -1461,12 +348,6 @@
 ]
 
 @PointClass model("preview/flashlight_mp_1/flashlight_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_flashlight_mp_1 : "Flashlight Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/floppy_disc_1/floppy_disc_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_floppy_disc_1 : "Floppy Disc 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -1484,19 +365,7 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/half_arc_pillar_1_wall_1_plain.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_half_arc_pillar_1_wall_1_plain : "Half Arc Pillar 1 Wall 1 Plain"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/half_arc_pillar_2_tall_wall_1_plain.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_half_arc_pillar_2_tall_wall_1_plain : "Half Arc Pillar 2 Tall Wall 1 Plain"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/half_arc_pillar_2_wall_1_plain.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_half_arc_pillar_2_wall_1_plain : "Half Arc Pillar 2 Wall 1 Plain"
+@PointClass model("preview/butcher_knife_mp_1/butcher_knife_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_butcher_knife_mp_1 : "Butcher Knife Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -1508,19 +377,37 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/handheld_game_console_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_handheld_game_console_1 : "Handheld Game Console 1"
+@PointClass model("preview/screwdriver_mp_1/screwdriver_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_1 : "Screwdriver Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/handheld_tablet_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_handheld_tablet_1 : "Handheld Tablet 1"
+@PointClass model("preview/screwdriver_mp_1_1/screwdriver_mp_1_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_1_1 : "Screwdriver Mp 1 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/jerrycan_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_jerrycan_1 : "Jerrycan 1"
+@PointClass model("preview/screwdriver_mp_1_2/screwdriver_mp_1_2.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_1_2 : "Screwdriver Mp 1 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("preview/screwdriver_mp_2/screwdriver_mp_2.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_2 : "Screwdriver Mp 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("preview/screwdriver_mp_2_1/screwdriver_mp_2_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_2_1 : "Screwdriver Mp 2 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("preview/screwdriver_mp_2_2/screwdriver_mp_2_2.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_2_2 : "Screwdriver Mp 2 2"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -1628,24 +515,6 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/keypad_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_keypad_1 : "Keypad 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/keypad_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_keypad_2 : "Keypad 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/light_switch_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_light_switch_1 : "Light Switch 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
 @PointClass model("preview/lighter_mp_1/lighter_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lighter_mp_1 : "Lighter Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
@@ -1682,222 +551,6 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/metal_barrel_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_metal_barrel_mp_1 : "Metal Barrel Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/metal_barrel_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_metal_barrel_mp_2 : "Metal Barrel Mp 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/metal_barrel_mp_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_metal_barrel_mp_3 : "Metal Barrel Mp 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/monitoring_screen_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_monitoring_screen_mp_1 : "Monitoring Screen Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/monitoring_screen_mp_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_monitoring_screen_mp_1_1 : "Monitoring Screen Mp 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/mouse_pad_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_mouse_pad_mp_1 : "Mouse Pad Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/nails_1/nails_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_nails_1 : "Nails 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/nails_1_rusty/nails_1_rusty.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_nails_1_rusty : "Nails 1 Rusty"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/notebook_1/notebook_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_notebook_1 : "Notebook 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/old_mattress_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_old_mattress_mp_1 : "Old Mattress Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/old_mattress_mp_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_old_mattress_mp_1_1 : "Old Mattress Mp 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/open_book_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_open_book_mp_1 : "Open Book Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/padlock_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_1 : "Padlock 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/padlock_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_2 : "Padlock 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/padlock_2_knob.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_2_knob : "Padlock 2 Knob"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/padlock_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_3 : "Padlock 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/padlock_3_knob.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_3_knob : "Padlock 3 Knob"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/padlock_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_4 : "Padlock 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/padlock_4_knob.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_4_knob : "Padlock 4 Knob"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/painting_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_painting_1 : "Painting 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pc_keyboard_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_keyboard_mp_1 : "Pc Keyboard Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pc_keyboard_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_keyboard_mp_2 : "Pc Keyboard Mp 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pc_keyboard_mp_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_keyboard_mp_3 : "Pc Keyboard Mp 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pc_monitor_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_monitor_mp_1 : "Pc Monitor Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pc_mouse_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_mouse_mp_1 : "Pc Mouse Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pc_mouse_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_mouse_mp_2 : "Pc Mouse Mp 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pc_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_mp_1 : "Pc Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pc_speaker_1_left.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_speaker_1_left : "Pc Speaker 1 Left"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pc_speaker_1_right.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_speaker_1_right : "Pc Speaker 1 Right"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pillar_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pillar_1 : "Pillar 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pillar_1_plain_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pillar_1_plain_1 : "Pillar 1 Plain 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pillar_1_plain_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pillar_1_plain_2 : "Pillar 1 Plain 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pillar_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pillar_2 : "Pillar 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pillar_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pillar_3 : "Pillar 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pillow_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pillow_mp_1 : "Pillow Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/pillow_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pillow_mp_2 : "Pillow Mp 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
 @PointClass model("preview/pills_1/pills_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pills_1 : "Pills 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
@@ -1923,6 +576,36 @@
 ]
 
 @PointClass model("preview/pills_packet_1/pills_packet_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pills_packet_1 : "Pills Packet 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("preview/syringe_mp_1/syringe_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_syringe_mp_1 : "Syringe Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("preview/syringe_mp_1_1/syringe_mp_1_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_syringe_mp_1_1 : "Syringe Mp 1 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("preview/nails_1/nails_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_nails_1 : "Nails 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("preview/nails_1_rusty/nails_1_rusty.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_nails_1_rusty : "Nails 1 Rusty"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("preview/notebook_1/notebook_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_notebook_1 : "Notebook 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -1976,48 +659,6 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/plate_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_plate_mp_1 : "Plate Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/screwdriver_mp_1/screwdriver_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_1 : "Screwdriver Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/screwdriver_mp_1_1/screwdriver_mp_1_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_1_1 : "Screwdriver Mp 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/screwdriver_mp_1_2/screwdriver_mp_1_2.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_1_2 : "Screwdriver Mp 1 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/screwdriver_mp_2/screwdriver_mp_2.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_2 : "Screwdriver Mp 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/screwdriver_mp_2_1/screwdriver_mp_2_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_2_1 : "Screwdriver Mp 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("preview/screwdriver_mp_2_2/screwdriver_mp_2_2.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_screwdriver_mp_2_2 : "Screwdriver Mp 2 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
 @PointClass model("preview/shotgun_1/shotgun_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shotgun_1 : "Shotgun 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
@@ -2042,222 +683,6 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/side_doorway_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_side_doorway_1 : "Side Doorway 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/side_doorway_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_side_doorway_2 : "Side Doorway 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/side_doorway_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_side_doorway_2_1 : "Side Doorway 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/side_doorway_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_side_doorway_3 : "Side Doorway 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_1 : "Sofa 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_1_1 : "Sofa 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_1_2 : "Sofa 1 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_1_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_1_3 : "Sofa 1 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_2 : "Sofa 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_2_1 : "Sofa 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_2_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_2_2 : "Sofa 2 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_2_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_2_3 : "Sofa 2 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_3 : "Sofa 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_3_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_3_1 : "Sofa 3 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_3_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_3_2 : "Sofa 3 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_3_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_3_3 : "Sofa 3 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_4 : "Sofa 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_4_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_4_1 : "Sofa 4 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_4_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_4_2 : "Sofa 4 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/sofa_4_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_4_3 : "Sofa 4 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/spoon_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_spoon_mp_1 : "Spoon Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/stairs_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_stairs_3 : "Stairs 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/stairs_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_stairs_4 : "Stairs 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/stairs_5_concrete.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_stairs_5_concrete : "Stairs 5 Concrete"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/stairs_5_wood.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_stairs_5_wood : "Stairs 5 Wood"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/stairs_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_stairs_mp_1 : "Stairs Mp 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/supply_crate_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1 : "Supply Crate 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/supply_crate_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1_1 : "Supply Crate 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/supply_crate_1_1_empty.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1_1_empty : "Supply Crate 1 1 Empty"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/supply_crate_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1_2 : "Supply Crate 1 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/supply_crate_1_2_empty.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1_2_empty : "Supply Crate 1 2 Empty"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/supply_crate_1_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1_3 : "Supply Crate 1 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/supply_crate_1_3_empty.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1_3_empty : "Supply Crate 1 3 Empty"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/supply_crate_1_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1_4 : "Supply Crate 1 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/supply_crate_1_4_empty.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1_4_empty : "Supply Crate 1 4 Empty"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/supply_crate_1_empty.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1_empty : "Supply Crate 1 Empty"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
 @PointClass model("preview/suppressor_mp_1/suppressor_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_suppressor_mp_1 : "Suppressor Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
@@ -2270,31 +695,449 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("preview/syringe_mp_1/syringe_mp_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_syringe_mp_1 : "Syringe Mp 1"
+@PointClass model("preview/walkie_talkie_1/walkie_talkie_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_walkie_talkie_1 : "Walkie Talkie 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("preview/syringe_mp_1_1/syringe_mp_1_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_syringe_mp_1_1 : "Syringe Mp 1 1"
+@PointClass model("preview/tunnel_entrance_platform_1/tunnel_entrance_platform_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tunnel_entrance_platform_1 : "Tunnel Entrance Platform 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tin_can_mp_1_rusty.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tin_can_mp_1_rusty : "Tin Can Mp 1 Rusty"
+
+// ============================================================
+// PROPS - LIGHTING
+// ============================================================
+
+@PointClass model("pak-extracted/progs/custom/lamp_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_1_off : "Lamp 1 Off"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tin_can_mp_1_rusty_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tin_can_mp_1_rusty_1 : "Tin Can Mp 1 Rusty 1"
+@PointClass model("pak-extracted/progs/custom/lamp_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_1_on : "Lamp 1 On"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/toilet_cabin_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toilet_cabin_mp_1 : "Toilet Cabin Mp 1"
+@PointClass model("pak-extracted/progs/custom/lamp_2_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_2_off : "Lamp 2 Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/lamp_2_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_2_on : "Lamp 2 On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/lamp_3_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_3_off : "Lamp 3 Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/lamp_3_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_3_on : "Lamp 3 On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/lamp_3_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_3_1_off : "Lamp 3 1 Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/lamp_3_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_lamp_3_1_on : "Lamp 3 1 On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_1_off : "Ceiling Lamp 1 Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_1_on : "Ceiling Lamp 1 On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_1_fake_light_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_1_fake_light_1 : "Ceiling Lamp 1 Fake Light 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_1_fake_light_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_1_fake_light_2 : "Ceiling Lamp 1 Fake Light 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_2_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_2_off : "Ceiling Lamp 2 Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_2_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_2_on : "Ceiling Lamp 2 On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_2_fake_light_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_2_fake_light_1 : "Ceiling Lamp 2 Fake Light 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_2_fake_light_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_2_fake_light_2 : "Ceiling Lamp 2 Fake Light 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_off : "Ceiling Lamp 4 Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_on : "Ceiling Lamp 4 On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_a_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_a_off : "Ceiling Lamp 4 A Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_a_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_a_on : "Ceiling Lamp 4 A On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_b_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_b_off : "Ceiling Lamp 4 B Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_b_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_b_on : "Ceiling Lamp 4 B On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_off : "Ceiling Lamp 4 1 Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_on : "Ceiling Lamp 4 1 On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_a_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_a_off : "Ceiling Lamp 4 1 A Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_a_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_a_on : "Ceiling Lamp 4 1 A On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_b_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_b_off : "Ceiling Lamp 4 1 B Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_4_1_b_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_4_1_b_on : "Ceiling Lamp 4 1 B On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_off : "Ceiling Lamp Mp 1 Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_on : "Ceiling Lamp Mp 1 On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_1_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_1_off : "Ceiling Lamp Mp 1 1 Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_1_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_1_on : "Ceiling Lamp Mp 1 1 On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_1_fake_light_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_1_fake_light_1 : "Ceiling Lamp Mp 1 1 Fake Light 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_lamp_mp_1_1_fake_light_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_lamp_mp_1_1_fake_light_2 : "Ceiling Lamp Mp 1 1 Fake Light 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_1 : "Ceiling Fan Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_1_1_light_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_1_1_light_off : "Ceiling Fan Mp 1 1 Light Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_1_1_light_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_1_1_light_on : "Ceiling Fan Mp 1 1 Light On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_2 : "Ceiling Fan Mp 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_2_1_light_off.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_2_1_light_off : "Ceiling Fan Mp 2 1 Light Off"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/ceiling_fan_mp_2_1_light_on.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ceiling_fan_mp_2_1_light_on : "Ceiling Fan Mp 2 1 Light On"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/light_switch_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_light_switch_1 : "Light Switch 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+
+// ============================================================
+// PROPS - FURNITURE
+// ============================================================
+
+@PointClass model("pak-extracted/progs/custom/chair_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_1 : "Chair Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/chair_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_2 : "Chair Mp 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/chair_mp_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_3 : "Chair Mp 3"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/chair_mp_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_chair_mp_4 : "Chair Mp 4"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/shelf_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_2 : "Shelf Mp 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/shelf_mp_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_3 : "Shelf Mp 3"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/shelf_mp_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_4 : "Shelf Mp 4"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/shelf_mp_5.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_5 : "Shelf Mp 5"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/table_large_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_2 : "Table Large 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/table_large_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_3 : "Table Large 3"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/sofa_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_1 : "Sofa 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/sofa_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_2 : "Sofa 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/sofa_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_3 : "Sofa 3"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/sofa_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_sofa_4 : "Sofa 4"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/bed_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_1 : "Bed 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/bed_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_2 : "Bed 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/bed_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_4 : "Bed 4"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/bed_5.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bed_5 : "Bed 5"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/old_mattress_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_old_mattress_mp_1 : "Old Mattress Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/old_mattress_mp_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_old_mattress_mp_1_1 : "Old Mattress Mp 1 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/pillow_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pillow_mp_1 : "Pillow Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/pillow_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pillow_mp_2 : "Pillow Mp 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/bedside_table_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_1 : "Bedside Table 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/bedside_table_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bedside_table_2 : "Bedside Table 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/coffee_table_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_coffee_table_1 : "Coffee Table 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_1 : "Display Cabinet Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/display_cabinet_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_display_cabinet_mp_2 : "Display Cabinet Mp 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/wardrobe_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wardrobe_mp_1 : "Wardrobe Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/tv_table_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_1 : "Tv Table 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/tv_table_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_4 : "Tv Table 4"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -2306,43 +1149,72 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/toilet_mp_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toilet_mp_1_1 : "Toilet Mp 1 1"
+@PointClass model("pak-extracted/progs/custom/toilet_cabin_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toilet_cabin_mp_1 : "Toilet Cabin Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/toy_brick_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toy_brick_1 : "Toy Brick 1"
+
+// ============================================================
+// PROPS - ELECTRONICS
+// ============================================================
+
+@PointClass model("pak-extracted/progs/custom/pc_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_mp_1 : "Pc Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/toy_brick_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toy_brick_1_1 : "Toy Brick 1 1"
+@PointClass model("pak-extracted/progs/custom/pc_monitor_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_monitor_mp_1 : "Pc Monitor Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/toy_brick_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toy_brick_1_2 : "Toy Brick 1 2"
+@PointClass model("pak-extracted/progs/custom/pc_keyboard_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_keyboard_mp_1 : "Pc Keyboard Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/toy_brick_1_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toy_brick_1_3 : "Toy Brick 1 3"
+@PointClass model("pak-extracted/progs/custom/pc_keyboard_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_keyboard_mp_2 : "Pc Keyboard Mp 2"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tunnel_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tunnel_1 : "Tunnel 1"
+@PointClass model("pak-extracted/progs/custom/pc_keyboard_mp_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_keyboard_mp_3 : "Pc Keyboard Mp 3"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("preview/tunnel_entrance_platform_1/tunnel_entrance_platform_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tunnel_entrance_platform_1 : "Tunnel Entrance Platform 1"
+@PointClass model("pak-extracted/progs/custom/pc_mouse_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_mouse_mp_1 : "Pc Mouse Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/pc_mouse_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_mouse_mp_2 : "Pc Mouse Mp 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/pc_speaker_1_left.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_speaker_1_left : "Pc Speaker 1 Left"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/pc_speaker_1_right.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pc_speaker_1_right : "Pc Speaker 1 Right"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/mouse_pad_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_mouse_pad_mp_1 : "Mouse Pad Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -2372,61 +1244,67 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tv_table_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_1 : "Tv Table 1"
+@PointClass model("pak-extracted/progs/custom/monitoring_screen_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_monitoring_screen_mp_1 : "Monitoring Screen Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tv_table_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_1_1 : "Tv Table 1 1"
+@PointClass model("pak-extracted/progs/custom/monitoring_screen_mp_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_monitoring_screen_mp_1_1 : "Monitoring Screen Mp 1 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tv_table_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_1_2 : "Tv Table 1 2"
+@PointClass model("pak-extracted/progs/custom/handheld_game_console_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_handheld_game_console_1 : "Handheld Game Console 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tv_table_1_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_1_3 : "Tv Table 1 3"
+@PointClass model("pak-extracted/progs/custom/handheld_tablet_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_handheld_tablet_1 : "Handheld Tablet 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tv_table_1_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_1_4 : "Tv Table 1 4"
+@PointClass model("pak-extracted/progs/custom/cell_phone_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cell_phone_3 : "Cell Phone 3"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tv_table_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_4 : "Tv Table 4"
+@PointClass model("pak-extracted/progs/custom/cell_phone_battery_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cell_phone_battery_1 : "Cell Phone Battery 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tv_table_4_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_4_1 : "Tv Table 4 1"
+@PointClass model("pak-extracted/progs/custom/cell_phone_battery_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cell_phone_battery_2 : "Cell Phone Battery 2"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tv_table_4_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_4_2 : "Tv Table 4 2"
+@PointClass model("pak-extracted/progs/custom/keypad_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_keypad_1 : "Keypad 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tv_table_4_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_4_3 : "Tv Table 4 3"
+@PointClass model("pak-extracted/progs/custom/keypad_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_keypad_2 : "Keypad 2"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/tv_table_4_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tv_table_4_4 : "Tv Table 4 4"
+@PointClass model("pak-extracted/progs/custom/button_12.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_button_12 : "Button 12"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/electrical_outlet_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_electrical_outlet_1 : "Electrical Outlet 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -2438,49 +1316,216 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
+
+// ============================================================
+// PROPS - DECOR & CLUTTER
+// ============================================================
+
+@PointClass model("pak-extracted/progs/custom/ashtray_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_ashtray_1 : "Ashtray 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/cig_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cig_1 : "Cig 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/cig_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cig_2 : "Cig 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/cig_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cig_3 : "Cig 3"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/book_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_1 : "Book Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/book_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_2 : "Book Mp 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/book_mp_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_3 : "Book Mp 3"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/book_mp_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_4 : "Book Mp 4"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/book_mp_5.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_5 : "Book Mp 5"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/book_mp_6.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_6 : "Book Mp 6"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/book_mp_7.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_7 : "Book Mp 7"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/book_mp_8.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_8 : "Book Mp 8"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/book_mp_9.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_9 : "Book Mp 9"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/book_mp_10.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_book_mp_10 : "Book Mp 10"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/open_book_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_open_book_mp_1 : "Open Book Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/clock_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_clock_1 : "Clock 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/clock_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_clock_2 : "Clock 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/cross_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cross_1 : "Cross 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/painting_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_painting_1 : "Painting 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/curtain_rod_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_curtain_rod_mp_1 : "Curtain Rod Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/cobweb_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cobweb_1 : "Cobweb 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/cobweb_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cobweb_2 : "Cobweb 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/cobweb_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cobweb_4 : "Cobweb 4"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/cobweb_5.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cobweb_5 : "Cobweb 5"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/plate_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_plate_mp_1 : "Plate Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/spoon_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_spoon_mp_1 : "Spoon Mp 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/toy_brick_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toy_brick_1 : "Toy Brick 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/toy_brick_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toy_brick_1_1 : "Toy Brick 1 1"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/toy_brick_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toy_brick_1_2 : "Toy Brick 1 2"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
+@PointClass model("pak-extracted/progs/custom/toy_brick_1_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_toy_brick_1_3 : "Toy Brick 1 3"
+[
+    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
+    scale(float) : "Uniform scale" : 32.0
+]
+
 @PointClass model("pak-extracted/progs/custom/vhs_tape_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_vhs_tape_1 : "Vhs Tape 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("preview/walkie_talkie_1/walkie_talkie_1.obj") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_walkie_talkie_1 : "Walkie Talkie 1"
+@PointClass model("pak-extracted/progs/custom/padlock_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_1 : "Padlock 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/walkie_talkie_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_walkie_talkie_2 : "Walkie Talkie 2"
+@PointClass model("pak-extracted/progs/custom/padlock_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_2 : "Padlock 2"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/wardrobe_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wardrobe_mp_1 : "Wardrobe Mp 1"
+@PointClass model("pak-extracted/progs/custom/padlock_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_3 : "Padlock 3"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/wardrobe_mp_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wardrobe_mp_1_1 : "Wardrobe Mp 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wardrobe_mp_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wardrobe_mp_1_2 : "Wardrobe Mp 1 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wardrobe_mp_1_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wardrobe_mp_1_3 : "Wardrobe Mp 1 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wardrobe_mp_1_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wardrobe_mp_1_4 : "Wardrobe Mp 1 4"
+@PointClass model("pak-extracted/progs/custom/padlock_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_padlock_4 : "Padlock 4"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
@@ -2488,251 +1533,68 @@
 
 
 // ============================================================
-// PROPS - PIPES
+// PROPS - STORAGE & ENVIRONMENT
 // ============================================================
 
-@PointClass model("pak-extracted/progs/custom/pipe_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pipe_1 : "Pipe 1"
+@PointClass model("pak-extracted/progs/custom/metal_barrel_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_metal_barrel_mp_1 : "Metal Barrel Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/pipe_1_corner.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pipe_1_corner : "Pipe 1 Corner"
+@PointClass model("pak-extracted/progs/custom/metal_barrel_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_metal_barrel_mp_2 : "Metal Barrel Mp 2"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/pipe_1_cross.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pipe_1_cross : "Pipe 1 Cross"
+@PointClass model("pak-extracted/progs/custom/metal_barrel_mp_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_metal_barrel_mp_3 : "Metal Barrel Mp 3"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/pipe_1_short.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pipe_1_short : "Pipe 1 Short"
+@PointClass model("pak-extracted/progs/custom/supply_crate_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1 : "Supply Crate 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/pipe_valve_holder_large_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pipe_valve_holder_large_1 : "Pipe Valve Holder Large 1"
+@PointClass model("pak-extracted/progs/custom/supply_crate_1_empty.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_supply_crate_1_empty : "Supply Crate 1 Empty"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/pipe_valve_holder_large_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pipe_valve_holder_large_2 : "Pipe Valve Holder Large 2"
+@PointClass model("pak-extracted/progs/custom/cardboard_box_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cardboard_box_1 : "Cardboard Box 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/pipe_valve_holder_large_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pipe_valve_holder_large_2_1 : "Pipe Valve Holder Large 2 1"
+@PointClass model("pak-extracted/progs/custom/cardboard_box_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_cardboard_box_2 : "Cardboard Box 2"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/pipes_holder_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_pipes_holder_1 : "Pipes Holder 1"
+@PointClass model("pak-extracted/progs/custom/jerrycan_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_jerrycan_1 : "Jerrycan 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-
-// ============================================================
-// PROPS - SHELVES
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_2 : "Shelf Mp 2"
+@PointClass model("pak-extracted/progs/custom/bars_metal_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bars_metal_1 : "Bars Metal 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/shelf_mp_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_2_1 : "Shelf Mp 2 1"
+@PointClass model("pak-extracted/progs/custom/bars_metal_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_bars_metal_2 : "Bars Metal 2"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_2_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_2_2 : "Shelf Mp 2 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_2_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_2_3 : "Shelf Mp 2 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_2_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_2_4 : "Shelf Mp 2 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_3 : "Shelf Mp 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_3_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_3_1 : "Shelf Mp 3 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_3_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_3_2 : "Shelf Mp 3 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_3_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_3_3 : "Shelf Mp 3 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_3_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_3_4 : "Shelf Mp 3 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_4 : "Shelf Mp 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_4_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_4_1 : "Shelf Mp 4 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_4_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_4_2 : "Shelf Mp 4 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_4_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_4_3 : "Shelf Mp 4 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_4_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_4_4 : "Shelf Mp 4 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_5.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_5 : "Shelf Mp 5"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_5_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_5_1 : "Shelf Mp 5 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_5_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_5_2 : "Shelf Mp 5 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_5_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_5_3 : "Shelf Mp 5 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/shelf_mp_5_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_shelf_mp_5_4 : "Shelf Mp 5 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-
-// ============================================================
-// PROPS - TABLES
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/table_large_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_2 : "Table Large 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/table_large_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_2_1 : "Table Large 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/table_large_2_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_2_2 : "Table Large 2 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/table_large_2_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_2_3 : "Table Large 2 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/table_large_2_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_2_4 : "Table Large 2 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/table_large_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_3 : "Table Large 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/table_large_3_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_3_1 : "Table Large 3 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/table_large_3_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_3_2 : "Table Large 3 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/table_large_3_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_3_3 : "Table Large 3 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/table_large_3_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_table_large_3_4 : "Table Large 3 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-
-// ============================================================
-// PROPS - VENTS / GRATES
-// ============================================================
 
 @PointClass model("pak-extracted/progs/custom/vent_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_vent_1 : "Vent 1"
 [
@@ -2746,269 +1608,33 @@
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/vent_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_vent_3 : "Vent 3"
+@PointClass model("pak-extracted/progs/custom/car_battery_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_car_battery_1 : "Car Battery 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/vent_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_vent_mp_1 : "Vent Mp 1"
+@PointClass model("pak-extracted/progs/custom/carpet_mp_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_carpet_mp_1 : "Carpet Mp 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-
-// ============================================================
-// PROPS - WALLS / STRUCTURE
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/wall_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1 : "Wall 1"
+@PointClass model("pak-extracted/progs/custom/walkie_talkie_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_walkie_talkie_2 : "Walkie Talkie 2"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/wall_1_1_half.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_1_half : "Wall 1 1 Half"
+@PointClass model("pak-extracted/progs/custom/tin_can_mp_1_rusty.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tin_can_mp_1_rusty : "Tin Can Mp 1 Rusty"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/wall_1_1_rounded_corner_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_1_rounded_corner_1 : "Wall 1 1 Rounded Corner 1"
+@PointClass model("pak-extracted/progs/custom/tin_can_mp_1_rusty_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_tin_can_mp_1_rusty_1 : "Tin Can Mp 1 Rusty 1"
 [
     angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
     scale(float) : "Uniform scale" : 32.0
 ]
 
-@PointClass model("pak-extracted/progs/custom/wall_1_2_half.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_2_half : "Wall 1 2 Half"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_2_rounded_corner_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_2_rounded_corner_1 : "Wall 1 2 Rounded Corner 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_3_half.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_3_half : "Wall 1 3 Half"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_half.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_half : "Wall 1 Half"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_plain.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_plain : "Wall 1 Plain"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_rounded_corner.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_rounded_corner : "Wall 1 Rounded Corner"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_rounded_corner_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_rounded_corner_1 : "Wall 1 Rounded Corner 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_rounded_corner_1_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_rounded_corner_1_1 : "Wall 1 Rounded Corner 1 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_rounded_corner_1_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_rounded_corner_1_2 : "Wall 1 Rounded Corner 1 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_tunnel_hole.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_tunnel_hole : "Wall 1 Tunnel Hole"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_tunnel_hole_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_tunnel_hole_1 : "Wall 1 Tunnel Hole 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_1_tunnel_hole_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_1_tunnel_hole_2 : "Wall 1 Tunnel Hole 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_2_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_2_1 : "Wall 2 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wall_2_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wall_2_2 : "Wall 2 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-
-// ============================================================
-// PROPS - WINDOWS
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/window_1_single.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_1_single : "Window 1 Single"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_1_single_frame_only.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_1_single_frame_only : "Window 1 Single Frame Only"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_1_single_no_glass.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_1_single_no_glass : "Window 1 Single No Glass"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_1_double.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_1_double : "Window 2 1 Double"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_1_single.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_1_single : "Window 2 1 Single"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_1_single_frame_only.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_1_single_frame_only : "Window 2 1 Single Frame Only"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_1_single_no_glass.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_1_single_no_glass : "Window 2 1 Single No Glass"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_2_double.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_2_double : "Window 2 2 Double"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_2_single.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_2_single : "Window 2 2 Single"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_2_single_frame_only.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_2_single_frame_only : "Window 2 2 Single Frame Only"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_2_single_no_glass.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_2_single_no_glass : "Window 2 2 Single No Glass"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_double.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_double : "Window 2 Double"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_single.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_single : "Window 2 Single"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_single_frame_only.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_single_frame_only : "Window 2 Single Frame Only"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_2_single_no_glass.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_2_single_no_glass : "Window 2 Single No Glass"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_metal_bars_double.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_metal_bars_double : "Window Metal Bars Double"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/window_metal_bars_single.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_window_metal_bars_single : "Window Metal Bars Single"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-
-// ============================================================
-// PROPS - WOOD / PLANKS
-// ============================================================
-
-@PointClass model("pak-extracted/progs/custom/wooden_crate_1.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wooden_crate_1 : "Wooden Crate 1"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wooden_crate_2.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wooden_crate_2 : "Wooden Crate 2"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wooden_crate_3.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wooden_crate_3 : "Wooden Crate 3"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wooden_crate_4.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wooden_crate_4 : "Wooden Crate 4"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wooden_crate_5.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wooden_crate_5 : "Wooden Crate 5"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]
-
-@PointClass model("pak-extracted/progs/custom/wooden_crate_6.mdl") size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_wooden_crate_6 : "Wooden Crate 6"
-[
-    angle(angle) : "Yaw rotation (0=North, 90=East)" : 0
-    scale(float) : "Uniform scale" : 32.0
-]

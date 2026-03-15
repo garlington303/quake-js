@@ -193,10 +193,12 @@ try {
       : ".";
     mapStatusText = `Map loaded (${meshCount} meshes)${debugSuffix}`;
   }
+  setTimeout(() => { mapStatusText = null; }, 3000);
 } catch (error) {
   console.error("Failed to load map, falling back to debug scene.", error);
   mapStatusText = "Map load failed; using fallback scene.";
   createFallbackEnvironment(scene);
+  setTimeout(() => { mapStatusText = null; }, 5000);
 }
 
 engine.runRenderLoop(() => {

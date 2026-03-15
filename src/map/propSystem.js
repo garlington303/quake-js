@@ -27,19 +27,23 @@
  */
 
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader.js";
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
 import "@babylonjs/loaders/glTF"; // ensure glTF loader is registered
 
 // Directories (relative to public root) searched in order for GLB files.
 const GLB_SEARCH_DIRS = [
   "models/Items & Weapons",
+  "models/Furniture",
+  "models/Large Props",
+  "models/Electronics & Misc",
   "models/enemies",
   "models",
 ];
 
 // Default scale to bring meter-based GLB assets into Quake-ish units.
 // Can be overridden per-entity via `scale` in the .map.
-const DEFAULT_PROP_SCALE = 32.0;
+const DEFAULT_PROP_SCALE = 1.0;
 
 /**
  * Derive a list of GLB URLs to try for the given model property value.
@@ -65,6 +69,16 @@ function resolveGlbCandidates(modelProp) {
 }
 
 /**
+ * Encode spaces in a URL path so folder names like "Items & Weapons"
+ * survive the fetch.  We intentionally do NOT use full
+ * encodeURIComponent because Vite's static-file middleware expects
+ * literal '&' (it won't decode '%26' back to '&' for the FS lookup).
+ */
+function encodeUrlPath(rawPath) {
+  return rawPath.replaceAll(" ", "%20");
+}
+
+/**
  * Attempt to load a GLB from the first URL that responds with a 200.
  * Returns null if none succeed.
  * @param {string[]} candidates
@@ -73,10 +87,16 @@ function resolveGlbCandidates(modelProp) {
 async function findGlbUrl(candidates) {
   for (const url of candidates) {
     try {
-      // HEAD request to check existence without downloading the full file
+      const encoded = encodeUrlPath(url);
       // eslint-disable-next-line no-await-in-loop
-      const res = await fetch(url, { method: "HEAD" });
-      if (res.ok) return url;
+      const res = await fetch(encoded, { method: "HEAD" });
+      if (res.ok) {
+        // Reject SPA fallback: dev server returns 200 + text/html for
+        // missing files, which would make the GLB loader choke.
+        const ct = (res.headers.get("content-type") ?? "").toLowerCase();
+        if (ct.includes("text/html")) continue;
+        return url;
+      }
     } catch {
       // network error → try next
     }
@@ -160,34 +180,56 @@ export function createPropSystem(scene) {
       // Quake origin → Babylon position
       const position = parseOrigin(properties.origin) ?? Vector3.Zero();
 
-      // Rotation: prefer `angles` (pitch yaw roll), fall back to `angle` (yaw only)
+      // Rotation: prefer `angles` (pitch yaw roll), fall back to `angle` (yaw only).
+      // Negate yaw because Quake is right-handed (CCW from above) while
+      // Babylon is left-handed (CW from above).
       let pitch = 0, yaw = 0, roll = 0;
       if (properties.angles) {
         const parsed = parseAngles(properties.angles);
-        if (parsed) ({ pitch, yaw, roll } = parsed);
+        if (parsed) {
+          pitch = -parsed.pitch;
+          yaw   = -parsed.yaw;
+          roll  = -parsed.roll;
+        }
       } else {
-        yaw = Number(properties.angle ?? 0) * (Math.PI / 180);
+        yaw = -Number(properties.angle ?? 0) * (Math.PI / 180);
       }
 
       const userScale = Number(properties.scale ?? 1.0);
       const scale = userScale * DEFAULT_PROP_SCALE;
 
       try {
+        // Split into directory + filename and encode the directory so the
+        // '&' in "Items & Weapons" doesn't corrupt the request.
+        const lastSlash = glbUrl.lastIndexOf("/");
+        const dir = encodeUrlPath(glbUrl.slice(0, lastSlash + 1));
+        const file = glbUrl.slice(lastSlash + 1);
         // eslint-disable-next-line no-await-in-loop
-        const result = await SceneLoader.ImportMeshAsync("", glbUrl, "", scene);
-        const rootMeshes = result.meshes;
+        const result = await SceneLoader.ImportMeshAsync("", dir, file, scene);
 
-        rootMeshes.forEach((mesh) => {
-          if (mesh.parent) return; // only move root nodes
+        // Use a wrapper TransformNode for world-space placement so we
+        // don't conflict with the glTF loader's __root__ handedness
+        // flip (scaling Z by -1).
+        const anchor = new TransformNode(
+          `prop-${entity.classname}-${spawned}`,
+          scene,
+        );
+        anchor.position.copyFrom(position);
+        anchor.rotation.set(pitch, yaw, roll);
+        if (scale !== 1.0) {
+          anchor.scaling.setAll(scale);
+        }
 
-          mesh.position.copyFrom(position);
-          mesh.rotation.set(pitch, yaw, roll);
-          if (scale !== 1.0) {
-            mesh.scaling.setAll(scale);
+        result.meshes.forEach((mesh) => {
+          if (!mesh.parent) {
+            mesh.parent = anchor;
           }
+          // Enable collision on every sub-mesh so the player
+          // can't walk through placed props.
+          mesh.checkCollisions = true;
         });
 
-        spawnedMeshes.push(...rootMeshes);
+        spawnedMeshes.push(anchor, ...result.meshes);
         spawned += 1;
       } catch (err) {
         console.warn(`[propSystem] Failed to load GLB from ${glbUrl}:`, err);

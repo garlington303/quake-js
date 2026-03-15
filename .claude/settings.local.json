@@ -8,7 +8,23 @@
       "mcp__Windows-MCP__PowerShell",
       "Bash(grep -o '[a-z0-9_]*\\\\s\\\\+[-0-9]\\\\+\\\\s\\\\+[-0-9]\\\\+\\\\s\\\\+[-0-9]\\\\+\\\\s\\\\+[0-9.]\\\\+\\\\s\\\\+[0-9.]\\\\+\\\\s*$' \"D:\\\\Games\\\\quake-js\\\\public\\\\maps\\\\test.map\")",
       "Bash(sed 's/^[a-z0-9_]*\\\\s.*$/&/')",
-      "Bash(sed 's/.* //')"
+      "Bash(sed 's/.* //')",
+      "Bash(find /d/Games/quake-js/public/pak-extracted/progs/custom -name \"*.mdl\" -exec basename {} .mdl)",
+      "Bash(grep -o pak-extracted/progs/custom/[^]*.mdl /d/Games/quake-js/trenchbroom/props.fgd)",
+      "Bash(find /d/Games/quake-js/public/models -name \"*.glb\" -exec basename {} .glb)",
+      "Bash(xargs grep:*)",
+      "Bash(file /d/Games/quake-js/public/ui/*.png)",
+      "mcp__retrodiffusion__authenticate",
+      "mcp__retrodiffusion__create_inference",
+      "Bash(curl -s -o hud_hp_bar_new.png \"https://da8ztllw6by0f.cloudfront.net/bea0e56c96431f5a6016009f5131c645.png\")",
+      "Bash(curl -s -o hud_armor_bar_new.png \"https://da8ztllw6by0f.cloudfront.net/12bb5dd71c58da1f38a5ef05fad718fd.png\")",
+      "Bash(curl -s -o hud_crosshair_new.png \"https://da8ztllw6by0f.cloudfront.net/b3344270600702e6ca0ae7c6913e4f01.png\")",
+      "Bash(curl -s -o hud_ammo_panel_new.png \"https://da8ztllw6by0f.cloudfront.net/58ca1785073fd9263d9a5445d26ddd3c.png\")",
+      "Bash(curl -s -o hud_panel_bg_new.png \"https://da8ztllw6by0f.cloudfront.net/c7ccb0c0236934148fc9e3d055c61b3d.png\")",
+      "Bash(curl -s -o hud_ammo_panel_new2.png \"https://da8ztllw6by0f.cloudfront.net/d4f289e19413418461595fa34f2c0c80.png\")",
+      "Bash(curl -s -o hud_panel_bg_new2.png \"https://da8ztllw6by0f.cloudfront.net/68cb81e4f7cb9d6169a96ab6082eb64c.png\")",
+      "Bash(curl -s -o hud_crosshair_new2.png \"https://da8ztllw6by0f.cloudfront.net/4a4da5d280db07993c235914b86617de.png\")",
+      "Bash(curl -s -o /d/Games/quake-js/public/ui/hud_crosshair_new3.png \"https://da8ztllw6by0f.cloudfront.net/cd2e0a5f2def7d6b9d656cb35ede51c6.png\")"
     ]
   }
 }

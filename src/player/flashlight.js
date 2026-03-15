@@ -1,8 +1,11 @@
-import { Color3, Quaternion, SpotLight, TransformNode, Vector3 } from "@babylonjs/core";
+import { Color3 } from "@babylonjs/core/Maths/math.color.js";
+import { Quaternion, Vector3 } from "@babylonjs/core/Maths/math.vector.js";
+import { SpotLight } from "@babylonjs/core/Lights/spotLight.js";
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js";
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader.js";
 import "@babylonjs/loaders/glTF";
 
-const FLASHLIGHT_GLB_DIR = "/models/Items & Weapons/";
+const FLASHLIGHT_GLB_DIR = "/models/Items%20&%20Weapons/";
 const FLASHLIGHT_GLB_FILE = "flashlight_1.glb";
 const FLASHLIGHT_OFFSET = new Vector3(0.3, -0.3, 0.4);
 const FLASHLIGHT_SCALE = 0.8;

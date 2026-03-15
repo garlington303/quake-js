@@ -15,7 +15,7 @@ const SOUND_LIBRARY = {
   pickup:  { files: ["ITEM1.WAV", "ITEM2.WAV", "ITEM5.WAV"], volume: 0.7 },
   hurt:    { files: ["PUNCH6.WAV", "PUNCH4.WAV"], volume: 0.8 },
   death:   { files: ["EXPLODE10.WAV", "EXPLODE14.WAV"], volume: 0.9 },
-  footstep:{ files: ["STEP1.WAV", "STEP2.WAV", "STEP3.WAV"], volume: 0.9 },
+  footstep:{ files: ["STEP1.WAV"], volume: 0.35 },
 };
 
 const buffers = new Map();
@@ -206,7 +206,7 @@ function playFootstepSynth() {
 
 export function createAudioSystem() {
   const FOOTSTEP_THRESHOLD = 28;
-  const FOOTSTEP_INTERVAL = 0.75;
+  const FOOTSTEP_INTERVAL = 0.42;
   let footstepTimer = 0;
 
   const playShoot = () => {
