@@ -1,4 +1,8 @@
-import { Color3, Mesh, MeshBuilder, StandardMaterial, Texture } from "@babylonjs/core";
+import { Color3 } from "@babylonjs/core/Maths/math.color.js";
+import { Mesh } from "@babylonjs/core/Meshes/mesh.js";
+import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder.js";
+import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial.js";
+import { Texture } from "@babylonjs/core/Materials/Textures/texture.js";
 
 const DEFAULT_COLUMNS = 6;
 const DEFAULT_ROWS = 4;

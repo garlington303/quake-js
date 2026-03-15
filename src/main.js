@@ -1,10 +1,10 @@
-import { Color3 } from "@babylonjs/core/Maths/math.color.js";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder.js";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
 import { createEnemySystem } from "./gameplay/enemySystem.js";
 import { createItemSystem } from "./gameplay/itemSystem.js";
 import { createImpactSystem } from "./gameplay/impactSystem.js";
+import { createProjectileSystem } from "./gameplay/projectileSystem.js";
 import { loadMap } from "./map/mapLoader.js";
 import { setupCamera } from "./engine/camera.js";
 import { attachInput } from "./engine/input.js";
@@ -17,6 +17,7 @@ import { createHud } from "./ui/hud.js";
 import { applyRetroPipeline } from "./engine/retroPipeline.js";
 import { createLightSystem } from "./engine/lightSystem.js";
 import { createFlashlight } from "./player/flashlight.js";
+import { createHeadBob } from "./player/headBob.js";
 
 function parseFlag(value) {
   return ["1", "true", "yes", "on"].includes((value ?? "").toLowerCase());
@@ -85,10 +86,12 @@ const enemySystem = createEnemySystem(scene);
 const itemSystem = createItemSystem(scene);
 const viewModel = createViewModel(scene, camera);
 const impactSystem = createImpactSystem(scene);
+const projectileSystem = createProjectileSystem(scene);
 const hud = createHud();
 const audio = createAudioSystem();
 const lightSystem = createLightSystem(scene);
 const flashlight = createFlashlight(scene, camera);
+const headBob = createHeadBob(camera, scene);
 const queryParams = new URLSearchParams(window.location.search);
 const debugMapEnabled = parseFlag(queryParams.get("debugMap"));
 const debugCollisionExplicit = queryParams.has("debugCollision");
@@ -214,6 +217,7 @@ engine.runRenderLoop(() => {
       ammoShells = 25;
       camera.rotation.y = playerSpawnYaw;
       playerController.reset(playerSpawnPosition);
+      headBob.reset();
       hud.hideDeath();
     }
     hud.update(deltaTimeSeconds, {
@@ -227,6 +231,7 @@ engine.runRenderLoop(() => {
   }
 
   playerController.update(deltaTimeSeconds);
+  headBob.update(deltaTimeSeconds);
   audio.update(deltaTimeSeconds, scene.metadata?.player ?? {});
 
   if (input.consumeFlashlightToggle()) {
@@ -254,11 +259,9 @@ engine.runRenderLoop(() => {
     }
 
     if (hit?.type === "world" || hit?.type === "enemy") {
-      const impactColor = hit?.type === "enemy"
-        ? new Color3(1, 0.35, 0.35)
-        : new Color3(1, 0.72, 0.35);
-      impactSystem.spawnImpact(hit.position, { color: impactColor });
-      if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, hit?.type === "enemy");
+      const isEnemy = hit.type === "enemy";
+      impactSystem.spawnImpact(hit.position, { isEnemy });
+      if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, isEnemy);
     }
 
     viewModel.fire();
@@ -267,6 +270,7 @@ engine.runRenderLoop(() => {
   viewModel.update(deltaTimeSeconds);
   flashlight.update(deltaTimeSeconds);
   impactSystem.update(deltaTimeSeconds);
+  projectileSystem.update(deltaTimeSeconds);
   if (lightsEnabled) lightSystem.update(deltaTimeSeconds);
 
   // ── Item pickups ──────────────────────────────────────────────────────────

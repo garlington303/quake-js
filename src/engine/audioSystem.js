@@ -10,7 +10,7 @@ let preloadStarted = false;
 
 const MASTER_GAIN = 0.85;
 const SOUND_LIBRARY = {
-  shoot:   { files: ["SHOTGUN16.WAV", "SHOTGUN6.WAV", "SHOTGUN3.WAV"], volume: 0.9 },
+  shoot:   { files: ["SHOTGUN16.WAV"], volume: 0.9 },
   hit:     { files: ["PUNCH1.WAV", "PUNCH3.WAV", "PUNCH5.WAV"], volume: 0.6 },
   pickup:  { files: ["ITEM1.WAV", "ITEM2.WAV", "ITEM5.WAV"], volume: 0.7 },
   hurt:    { files: ["PUNCH6.WAV", "PUNCH4.WAV"], volume: 0.8 },

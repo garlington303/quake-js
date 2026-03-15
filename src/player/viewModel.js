@@ -209,17 +209,61 @@ async function loadShotgunModel(scene, parent) {
   };
 }
 
-function createMuzzleFlash(scene, parent) {
+// ── Procedural PSX-style hands ───────────────────────────────────────────────
+// Positions derived from live bounding-box: gun in vmRoot-local space at
+// X(0.18-0.25), Y(-0.10 to 0.17), Z(-0.39 to 1.19).
+// Right hand wraps the grip (~Z 0.15-0.35), left hand supports the pump (~Z 0.65-0.85).
+function buildHands(scene, parent) {
+  const mat = new StandardMaterial("hand-mat", scene);
+  // Quake-brown — dark tanned leather/skin, PSX low-light palette.
+  mat.diffuseColor  = new Color3(0.46, 0.31, 0.18);
+  mat.emissiveColor = new Color3(0.10, 0.06, 0.03);
+  mat.specularColor = Color3.Black();
+  mat.backFaceCulling = false;
+
+  function box(name, w, h, d, x, y, z) {
+    const m = MeshBuilder.CreateBox(name, { width: w, height: h, depth: d }, scene);
+    m.position.set(x, y, z);
+    m.material = mat;
+    m.parent = parent;
+    m.renderingGroupId = 1;
+    m.isPickable = false;
+    m.receiveShadows = false;
+    m.alwaysSelectAsActiveMesh = true;
+    return m;
+  }
+
+  // ── Right hand (dominant — trigger / grip) ───────────────────────────────
+  box("hand-r-palm",    0.090, 0.060, 0.110,  0.19, -0.185, 0.270);
+  box("hand-r-knuckle", 0.080, 0.032, 0.048,  0.18, -0.138, 0.305);
+  box("hand-r-arm",     0.082, 0.130, 0.085,  0.19, -0.295, 0.200);
+
+  // ── Left hand (support — under pump / forestock) ─────────────────────────
+  box("hand-l-palm",    0.090, 0.058, 0.110,  0.20, -0.185, 0.775);
+  box("hand-l-knuckle", 0.080, 0.030, 0.048,  0.19, -0.138, 0.810);
+  box("hand-l-arm",     0.082, 0.130, 0.085,  0.20, -0.295, 0.705);
+}
+
+// Flash is parented directly to the camera and pinned at the crosshair centre.
+// Z distance is close enough to always appear in front of the gun but far enough
+// not to clip with the near plane.
+const MUZZLE_FLASH_Z = 0.9;
+const MUZZLE_FLASH_SIZE = 0.28;
+
+function createMuzzleFlash(scene, camera) {
   const flash = createPixelSpriteEffect(scene, {
-    billboardMode: Mesh.BILLBOARDMODE_NONE,
+    billboardMode: Mesh.BILLBOARDMODE_ALL,
+    columns: 6,
+    rows: 1,
     frameCount: 6,
-    frameRate: 24,
-    parent,
+    frameRate: 20,
+    parent: camera,
     renderGroupId: 2,
-    size: 3,
-    textureUrl: "/gfx/Pixel%20VFX/Fire%20Spells%20Pixel%20VFX/Fire%20Spells/Spawn_Fireball.png",
+    size: MUZZLE_FLASH_SIZE,
+    textureUrl: "/ui/muzzle_flash.png?v=2",
   });
-  flash.mesh.position.set(0, 0.45, 7.6);
+  // Crosshair centre — (0, 0, Z) in camera-local space is always dead-centre.
+  flash.mesh.position.set(0, 0, MUZZLE_FLASH_Z);
   flash.mesh.isVisible = false;
   return flash;
 }
@@ -230,7 +274,8 @@ export function createViewModel(scene, camera) {
   root.position.copyFrom(VM_OFFSET);
 
   const fallback = buildFallbackShotgun(scene, root);
-  const flash = createMuzzleFlash(scene, root);
+  buildHands(scene, root);
+  const flash = createMuzzleFlash(scene, camera);
   let activePump = fallback.pump;
   let prevCamPos = camera.position.clone();
   let bobPhase = 0;

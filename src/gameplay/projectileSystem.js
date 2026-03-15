@@ -1,13 +1,14 @@
-import { Color3, Vector3 } from "@babylonjs/core";
+import { Color3 } from "@babylonjs/core/Maths/math.color.js";
+import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
 import { createPixelSpriteEffect } from "./pixelSpriteEffect.js";
 
 const DEFAULT_SPEED = 1400;
 
 const DEFAULT_PROJECTILE_EFFECT = {
-  frameCount: 6,
-  frameRate: 18,
-  size: 0.7,
-  textureUrl: "/gfx/Pixel%20VFX/Fire%20Spells%20Pixel%20VFX/Fire%20Spells/Fireball_Small.png",
+  frameCount: 24,
+  frameRate: 24,
+  size: 1.8,
+  textureUrl: "/gfx/Pixel%20VFX/Fire%20Spells%20Pixel%20VFX/Fire%20Spells/Lavaball.png",
 };
 
 export function createProjectileSystem(scene) {

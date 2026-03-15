@@ -45,7 +45,12 @@ export function createLightSystem(scene) {
 
   function spawnMuzzleFlash(camera) {
     const forward = camera.getForwardRay(1).direction;
-    const position = camera.position.add(forward.scale(0.6)).add(new Vector3(0, -0.05, 0));
+    const right = Vector3.Cross(Vector3.Up(), forward).normalize();
+    // Match barrel-tip: forward 1.2 units, down 0.5, right 0.06
+    const position = camera.position
+      .add(forward.scale(1.2))
+      .add(new Vector3(0, -0.5, 0))
+      .add(right.scale(0.06));
     spawnLight(position, {
       color: new Color3(1, 0.85, 0.6),
       intensity: 2.2,

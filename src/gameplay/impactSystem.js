@@ -1,13 +1,24 @@
-import { Color3 } from "@babylonjs/core";
+import { Color3 } from "@babylonjs/core/Maths/math.color.js";
 import { createPixelSpriteEffect } from "./pixelSpriteEffect.js";
 
-const DEFAULT_DURATION = 0.14;
-
-const DEFAULT_IMPACT_EFFECT = {
+const WORLD_IMPACT = {
+  columns: 6,
+  rows: 1,
   frameCount: 6,
-  frameRate: 22,
-  size: 1.2,
-  textureUrl: "/gfx/Pixel%20VFX/Fire%20Spells%20Pixel%20VFX/Fire%20Spells/Fireball_Hit.png",
+  frameRate: 20,
+  size: 2.5,
+  duration: 0.3,
+  textureUrl: "/ui/muzzle_flash.png?v=2",
+};
+
+const ENEMY_IMPACT = {
+  columns: 6,
+  rows: 1,
+  frameCount: 6,
+  frameRate: 24,
+  size: 2.0,
+  duration: 0.25,
+  textureUrl: "/ui/muzzle_flash.png?v=2",
 };
 
 export function createImpactSystem(scene) {
@@ -15,15 +26,18 @@ export function createImpactSystem(scene) {
 
   return {
     spawnImpact(position, options = {}) {
-      const color = options.color ?? new Color3(1, 0.72, 0.35);
-      const duration = options.durationSeconds ?? DEFAULT_DURATION;
+      const isEnemy = options.isEnemy ?? false;
+      const preset = isEnemy ? ENEMY_IMPACT : WORLD_IMPACT;
+      const color = options.color ?? (isEnemy ? new Color3(1, 0.35, 0.35) : new Color3(1, 0.72, 0.35));
+      const duration = options.durationSeconds ?? preset.duration;
       const effect = createPixelSpriteEffect(scene, {
-        ...DEFAULT_IMPACT_EFFECT,
+        columns: options.columns ?? preset.columns,
+        rows: options.rows ?? preset.rows,
         emissiveColor: color,
-        frameCount: options.frameCount ?? DEFAULT_IMPACT_EFFECT.frameCount,
-        frameRate: options.frameRate ?? DEFAULT_IMPACT_EFFECT.frameRate,
-        size: options.size ?? DEFAULT_IMPACT_EFFECT.size,
-        textureUrl: options.textureUrl ?? DEFAULT_IMPACT_EFFECT.textureUrl,
+        frameCount: options.frameCount ?? preset.frameCount,
+        frameRate: options.frameRate ?? preset.frameRate,
+        size: options.size ?? preset.size,
+        textureUrl: options.textureUrl ?? preset.textureUrl,
       });
       effect.setPosition(position);
 
