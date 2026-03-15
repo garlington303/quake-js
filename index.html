@@ -5,13 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Babylon TrenchFPS</title>
     <style>
+      /* ── Cinematic ratio ──────────────────────────────────────────────────
+         Change --cinema-ratio to adjust the letterbox (2.39 = anamorphic scope).
+         --bar-h is the height of each black bar; clamps to 0 on ultra-wide
+         displays where the viewport is already wider than the target ratio.
+      ──────────────────────────────────────────────────────────────────── */
+      :root {
+        --cinema-ratio: 2.39;
+        --bar-h: max(0px, calc((100vh - 100vw / var(--cinema-ratio)) / 2));
+      }
+
       html,
       body {
         margin: 0;
         width: 100%;
         height: 100%;
         overflow: hidden;
-        background: #10141a;
+        background: #000;
       }
 
       body {
@@ -24,6 +34,21 @@
         position: relative;
       }
 
+      /* Letterbox bars — sit above the canvas, below the HUD */
+      #app::before,
+      #app::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: var(--bar-h);
+        background: #000;
+        z-index: 5;
+        pointer-events: none;
+      }
+      #app::before { top: 0; }
+      #app::after  { bottom: 0; }
+
       #renderCanvas {
         width: 100%;
         height: 100%;
@@ -33,11 +58,16 @@
 
       .hud {
         position: absolute;
-        inset: 0;
+        /* Inset the HUD so elements live inside the cinematic frame */
+        top: var(--bar-h);
+        bottom: var(--bar-h);
+        left: 0;
+        right: 0;
         color: #e8edf2;
         pointer-events: none;
         font-size: 12px;
         font-variant-numeric: tabular-nums;
+        z-index: 10;
       }
 
       /* ── Bottom taskbar: centres all panels in a row ── */
@@ -52,6 +82,9 @@
       }
 
       .hud-vitals {
+        position: absolute;
+        top: 16px;
+        left: 16px;
         display: flex;
         flex-direction: column;
         gap: 0;
@@ -107,6 +140,7 @@
         background-repeat: no-repeat;
         image-rendering: pixelated;
         margin-top: 2px;
+        mix-blend-mode: screen;
       }
 
       .hud-bar-fill {
@@ -146,6 +180,7 @@
         justify-content: center;
         gap: 0px;
         text-align: center;
+        mix-blend-mode: screen;
       }
 
       .hud-ammo-label {
@@ -215,23 +250,27 @@
       <canvas id="renderCanvas" aria-label="Babylon TrenchFPS render canvas"></canvas>
       <div id="crosshair" class="crosshair" aria-hidden="true"></div>
       <div id="hud" class="hud" aria-live="polite">
-        <div class="hud-taskbar">
-          <div class="hud-vitals">
-            <div class="hud-stat">
-              <div class="hud-stat-row">
-                <span class="hud-label">HP</span>
-                <span class="hud-value" id="hud-health">100</span>
-              </div>
-              <div class="hud-bar hp"><div id="hud-health-bar" class="hud-bar-fill"></div></div>
+
+        <!-- Top-left: HP + Armor bars -->
+        <div class="hud-vitals">
+          <div class="hud-stat">
+            <div class="hud-stat-row">
+              <span class="hud-label">HP</span>
+              <span class="hud-value" id="hud-health">100</span>
             </div>
-            <div class="hud-stat">
-              <div class="hud-stat-row">
-                <span class="hud-label">Armor</span>
-                <span class="hud-value" id="hud-armor">0</span>
-              </div>
-              <div class="hud-bar armor"><div id="hud-armor-bar" class="hud-bar-fill armor"></div></div>
-            </div>
+            <div class="hud-bar hp"><div id="hud-health-bar" class="hud-bar-fill"></div></div>
           </div>
+          <div class="hud-stat">
+            <div class="hud-stat-row">
+              <span class="hud-label">Armor</span>
+              <span class="hud-value" id="hud-armor">0</span>
+            </div>
+            <div class="hud-bar armor"><div id="hud-armor-bar" class="hud-bar-fill armor"></div></div>
+          </div>
+        </div>
+
+        <!-- Bottom-centre: Ammo + Combat -->
+        <div class="hud-taskbar">
           <div class="hud-ammo-panel">
             <div class="hud-ammo-label">Ammo</div>
             <div class="hud-ammo-value" id="hud-ammo">&infin;</div>
@@ -242,7 +281,7 @@
             <div class="hud-stat-inline"><span class="hud-label">Shots</span><span class="hud-value" id="hud-shots">0</span></div>
           </div>
         </div>
-        <div id="hud-status" class="hud-status" style="position:absolute;bottom:120px;left:50%;transform:translateX(-50%)">Click to lock pointer</div>
+
       </div>
     </div>
     <script type="module" src="/src/main.js"></script>

@@ -35,7 +35,6 @@ export function createHud() {
   const enemyValue  = document.getElementById("hud-enemies");
   const shotsValue  = document.getElementById("hud-shots");
   const killsValue  = document.getElementById("hud-kills");
-  const statusValue = document.getElementById("hud-status");
   const healthBar   = document.getElementById("hud-health-bar");
   const armorBar    = document.getElementById("hud-armor-bar");
   const crosshair   = document.getElementById("crosshair");
@@ -85,13 +84,6 @@ export function createHud() {
       }
       if (killsValue) {
         killsValue.textContent = data.kills?.toString() ?? "0";
-      }
-      if (statusValue) {
-        if (data.statusText) {
-          statusValue.textContent = data.statusText;
-        } else {
-          statusValue.textContent = data.pointerLocked ? "Pointer locked" : "Click to lock pointer";
-        }
       }
 
       if (hitMarkerRemaining > 0) {
