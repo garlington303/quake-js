@@ -103,8 +103,8 @@ if (retroEnabled) {
   applyRetroPipeline(scene, camera, {
     scanlineIntensity: 0.24,
     noiseIntensity: 0.035,
-    vignette: 0.25,
-    curvature: 0.12,
+    vignette: 0,
+    curvature: 0,
     ditherScale: 1.0,
   });
 }

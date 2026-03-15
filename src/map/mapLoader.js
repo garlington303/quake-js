@@ -185,13 +185,29 @@ function computeLightIntensity(raw) {
   return (raw / 100) * 10;
 }
 
-const MAX_TORCH_LIGHTS = 4;
+const MAX_TORCH_LIGHTS = 8;
+
+// Prop classname substrings that indicate the prop emits light when its
+// name ends with "_on".  Matches ceiling fans with lights, lamps, lanterns, etc.
+const PROP_LIGHT_KEYWORDS = ["lamp", "light", "lantern", "torch", "neon", "glow", "sconce"];
+
+function isPropLightEmitter(entity) {
+  const cn = entity.classname;
+  if (!cn.startsWith("prop_")) return false;
+  if (!cn.endsWith("_on")) return false;
+  const lower = cn.toLowerCase();
+  return PROP_LIGHT_KEYWORDS.some((kw) => lower.includes(kw));
+}
 
 function applyLights(scene, entities) {
   const lightEntities = entities.filter(
     (entity) => entity.classname === "light" || entity.classname?.startsWith("light_"),
   );
-  if (lightEntities.length === 0) return 0;
+
+  // Prop entities that visually emit light (e.g. prop_ceiling_fan_mp_2_1_light_on)
+  const propLightEntities = entities.filter(isPropLightEmitter);
+
+  if (lightEntities.length === 0 && propLightEntities.length === 0) return 0;
 
   // Compute an average color from all map light entities
   let r = 0, g = 0, b = 0, counted = 0;
@@ -210,7 +226,7 @@ function applyLights(scene, entities) {
   mapLight.groundColor = avgColor.scale(0.15);
   mapLight.specular = Color3.Black();
 
-  // Place a few brightest lights as torch point lights for pools of light
+  // Place a few brightest map light entities as torch point lights
   const torchCandidates = lightEntities
     .map((entity) => {
       const rawIntensity = parseLightIntensity(entity);
@@ -229,7 +245,25 @@ function applyLights(scene, entities) {
     torch.range = rawIntensity != null ? Math.max(30, rawIntensity * 8) : 60;
   });
 
-  return lightEntities.length;
+  // Create point lights for prop light emitters (ceiling lamps, sconces, etc.)
+  // Use a cool-white colour to match fluorescent/industrial fixtures.
+  propLightEntities.forEach((entity, index) => {
+    const position = parseOrigin(entity.properties.origin);
+    if (!position) return;
+
+    // Prop lights sit at the entity origin which is the fixture itself —
+    // nudge the light source slightly downward so it illuminates the floor.
+    const lightPos = position.clone();
+    lightPos.y -= 4;
+
+    const propLight = new PointLight(`prop-light-${index}`, lightPos, scene);
+    propLight.diffuse  = new Color3(0.95, 0.98, 1.0);   // cool white
+    propLight.specular = new Color3(0.3,  0.32, 0.35);
+    propLight.intensity = 1.8;
+    propLight.range = 80;
+  });
+
+  return lightEntities.length + propLightEntities.length;
 }
 
 // Maps Quake standard monster classnames to our internal enemy type keys

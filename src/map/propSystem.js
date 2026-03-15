@@ -46,6 +46,18 @@ const GLB_SEARCH_DIRS = [
 const DEFAULT_PROP_SCALE = 1.0;
 
 /**
+ * Alias map: logical model stems → actual GLB stem on disk.
+ * Allows map entities to use convenient names even when the asset
+ * ships under a different filename convention.
+ */
+const PROP_STEM_ALIASES = {
+  ceiling_lamp_4_1_on:  "ceiling_fan_mp_2_1_light_on",
+  ceiling_lamp_4_1_off: "ceiling_fan_mp_2_1_light_off",
+  ceiling_lamp_1_on:    "ceiling_fan_mp_1_1_light_on",
+  ceiling_lamp_1_off:   "ceiling_fan_mp_1_1_light_off",
+};
+
+/**
  * Derive a list of GLB URLs to try for the given model property value.
  * @param {string} modelProp  e.g. "progs/custom/ammo_box_1.mdl" or "models/foo.glb"
  * @returns {string[]}  ordered list of candidate URLs
@@ -155,9 +167,10 @@ export function createPropSystem(scene) {
       let modelProp = properties.model ?? properties.model_path ?? "";
       if (!modelProp && entity.classname.startsWith("prop_")) {
         // e.g. "prop_bedside_table_1" → stem "bedside_table_1"
-        const stem = entity.classname.slice("prop_".length);
+        let stem = entity.classname.slice("prop_".length);
         if (stem) {
-          modelProp = stem;  // bare stem, no extension — triggers directory search
+          // Resolve alias if one exists (e.g. ceiling_lamp_4_1_on → ceiling_fan_mp_2_1_light_on)
+          modelProp = PROP_STEM_ALIASES[stem] ?? stem;
         }
       }
       if (!modelProp) {
