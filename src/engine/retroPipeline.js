@@ -51,9 +51,9 @@ void main(void) {
 
 export function applyRetroPipeline(scene, camera, options = {}) {
   const settings = {
-    scanlineIntensity: 0.22,
-    noiseIntensity: 0.03,
-    vignette: 0.25,
+    scanlineIntensity: 0.15,
+    noiseIntensity: 0.02,
+    vignette: 0.15,
     curvature: 0.12,
     ditherScale: 1.0,
     ...options,

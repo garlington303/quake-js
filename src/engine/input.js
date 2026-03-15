@@ -15,6 +15,7 @@ export function attachInput(canvas) {
     jump: false,
     jumpQueued: false,
     primaryFireQueued: false,
+    flashlightToggled: false,
     pointerLocked: false,
     lookDeltaX: 0,
     lookDeltaY: 0,
@@ -35,6 +36,9 @@ export function attachInput(canvas) {
   window.addEventListener("keydown", (event) => {
     if (!event.repeat && event.code === "Space") {
       state.jumpQueued = true;
+    }
+    if (!event.repeat && event.code === "KeyF") {
+      state.flashlightToggled = true;
     }
     setKeyState(event.code, true);
   });
@@ -94,6 +98,11 @@ export function attachInput(canvas) {
       const queued = state.primaryFireQueued;
       state.primaryFireQueued = false;
       return queued;
+    },
+    consumeFlashlightToggle() {
+      const toggled = state.flashlightToggled;
+      state.flashlightToggled = false;
+      return toggled;
     },
   };
 }

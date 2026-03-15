@@ -1,0 +1,259 @@
+// QuakeJS Entity Definition File (FGD)
+// For use with TrenchBroom map editor
+//
+// QuakeJS is a Babylon.js-based Quake-style first-person shooter.
+// Maps are compiled from .map files (Standard or Valve format) and
+// loaded at runtime by the Babylon.js engine. Entity properties are
+// parsed from the map and used to drive game logic in JavaScript.
+//
+// Supported map formats: Standard, Valve
+// Texture format: PNG, JPG, WEBP (in textures/ folder)
+// Entity scripts: entities/*.js
+
+// ============================================================
+// WORLD
+// ============================================================
+
+@SolidClass color(255 128 0) = worldspawn : "The world entity. Every map must have exactly one worldspawn."
+[
+    message(string) : "Map title or introductory message"
+    sky(string) : "Sky texture name (without extension)"
+    wad(string) : "WAD file list (unused in QuakeJS, textures are PNG/JPG)"
+    music(string) : "Background music track filename"
+]
+
+// ============================================================
+// PLAYER STARTS
+// ============================================================
+
+@PointClass size(-16 -16 -24, 16 16 32) color(0 255 0) = info_player_start : "Player spawn point. Place at least one in every map."
+[
+    angle(angle) : "Facing direction on spawn" : 0
+]
+
+@PointClass size(-16 -16 -24, 16 16 32) color(0 255 0) = player_start : "Alias for info_player_start. Player spawn point."
+[
+    angle(angle) : "Facing direction on spawn" : 0
+]
+
+// ============================================================
+// LIGHTS
+// ============================================================
+
+@PointClass color(255 255 64) = light : "Dynamic or baked light source."
+[
+    intensity(float) : "Overall intensity multiplier" : 5
+    light(integer) : "Light brightness (Quake-style unit)" : 200
+    radius(float) : "Radius of influence in world units" : 400
+    _color(color255) : "Light color (R G B 0-255)" : "255 242 209"
+]
+
+// ============================================================
+// MONSTERS / ENEMIES
+// ============================================================
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = enemy_spawn : "Generic enemy spawn point. Use the type property to select enemy."
+[
+    type(choices) : "Enemy type" : "soldier" =
+    [
+        "soldier"    : "Soldier"
+        "dog"        : "Dog"
+        "ogre"       : "Ogre"
+        "knight"     : "Knight"
+        "hell_knight": "Hell Knight"
+        "zombie"     : "Zombie"
+        "wizard"     : "Wizard (Scrag)"
+        "fiend"      : "Fiend (Demon)"
+        "shambler"   : "Shambler"
+        "shalrath"   : "Shalrath (Vore)"
+        "tarbaby"    : "Tarbaby"
+        "fish"       : "Fish (Rotfish)"
+    ]
+]
+
+// --- Standard Quake monster classnames ---
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_soldier : "Quake Soldier enemy." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_dog : "Attack dog enemy." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_ogre : "Ogre with chainsaw and grenades." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_knight : "Knight melee enemy." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_hell_knight : "Hell Knight ranged enemy." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_zombie : "Undead zombie enemy." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_wizard : "Wizard (Scrag) flying enemy." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_demon1 : "Fiend/Demon melee enemy." []
+
+@PointClass size(-48 -48 -32, 48 48 64) color(220 32 32) = monster_shambler : "Shambler - large powerful enemy. Uses bigger bounding box." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_shalrath : "Shalrath (Vore) ranged enemy." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_tarbaby : "Tarbaby bouncing enemy." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_fish : "Fish (Rotfish) underwater enemy." []
+
+@PointClass size(-16 -16 -24, 16 16 32) color(220 32 32) = monster_boss : "Final boss entity." []
+
+// ============================================================
+// ITEMS - HEALTH
+// ============================================================
+
+@PointClass color(0 192 255) = item_health : "Health pickup."
+[
+    health(integer) : "Amount of health restored" : 15
+]
+
+@PointClass color(0 192 255) = item_health_small : "Small health pack (+5 HP)." []
+
+@PointClass color(0 192 255) = item_health_large : "Large health pack (+25 HP)." []
+
+@PointClass color(0 192 255) = item_health_mega : "Mega health pickup (+100 HP, up to 250)." []
+
+// ============================================================
+// ITEMS - ARMOR
+// ============================================================
+
+@PointClass color(0 128 255) = item_armor : "Generic armor pickup."
+[
+    armor(integer) : "Armor value granted" : 50
+]
+
+@PointClass color(0 128 255) = item_armor1 : "Green Armor (+100 armor, 0.3 protection)." []
+
+@PointClass color(0 128 255) = item_armor2 : "Yellow Armor (+150 armor, 0.6 protection)." []
+
+@PointClass color(0 128 255) = item_armorInv : "Red Armor / Pentagram (+200 armor, 0.8 protection)." []
+
+// ============================================================
+// ITEMS - AMMO & WEAPONS
+// ============================================================
+
+@PointClass color(255 128 0) = item_shells : "Shells ammo pickup (shotgun ammo)." []
+
+@PointClass color(255 128 0) = item_spikes : "Nails/spikes ammo pickup." []
+
+@PointClass color(255 128 0) = item_rockets : "Rockets ammo pickup." []
+
+@PointClass color(255 128 0) = item_cells : "Cells ammo pickup (lightning gun)." []
+
+@PointClass color(255 128 0) = item_ammo_shells : "Box of shells ammo." []
+
+@PointClass color(255 128 0) = weapon_shotgun : "Shotgun weapon pickup." []
+
+@PointClass color(255 128 0) = weapon_supershotgun : "Super Shotgun weapon pickup." []
+
+@PointClass color(255 128 0) = weapon_nailgun : "Nailgun weapon pickup." []
+
+@PointClass color(255 128 0) = weapon_supernailgun : "Super Nailgun weapon pickup." []
+
+@PointClass color(255 128 0) = weapon_grenadelauncher : "Grenade Launcher weapon pickup." []
+
+@PointClass color(255 128 0) = weapon_rocketlauncher : "Rocket Launcher weapon pickup." []
+
+@PointClass color(255 128 0) = weapon_lightning : "Lightning Gun / Thunderbolt weapon pickup." []
+
+// ============================================================
+// TRIGGERS (point)
+// ============================================================
+
+@PointClass size(-8 -8 -8, 8 8 8) color(255 255 0) = trigger_relay : "Invisible relay that fires its target when triggered. Used to chain trigger events."
+[
+    targetname(string) : "Name of this entity (so others can target it)"
+    target(string) : "Entity targetname to activate when triggered"
+    delay(float) : "Seconds to wait before firing target" : 0
+]
+
+// ============================================================
+// BRUSH ENTITIES - GEOMETRY
+// ============================================================
+
+@SolidClass color(255 128 0) = func_wall : "Solid non-moving brush entity. Used to group geometry or apply special render properties."
+[
+    targetname(string) : "Name of this entity for targeting"
+]
+
+@SolidClass color(255 128 0) = func_illusionary : "Illusionary brush — renders but has no collision. Players and projectiles pass through it."
+[
+]
+
+// ============================================================
+// BRUSH ENTITIES - MOVERS
+// ============================================================
+
+@SolidClass color(255 128 0) = func_door : "A sliding door brush entity."
+[
+    targetname(string) : "Name of this entity for targeting"
+    angle(angle) : "Direction the door slides open" : 0
+    speed(float) : "Movement speed in units per second" : 100
+    wait(float) : "Seconds to stay open before closing (-1 = stay open)" : 3
+    lip(integer) : "Lip amount — units left overlapping frame when open" : 8
+    dmg(integer) : "Damage dealt to blocking entities" : 2
+]
+
+@SolidClass color(255 128 0) = func_button : "A push-button brush entity. Fires its target when touched or shot."
+[
+    targetname(string) : "Name of this entity for targeting"
+    target(string) : "Entity targetname to activate when pressed"
+    angle(angle) : "Direction the button moves when pressed" : 0
+    speed(float) : "Movement speed when depressing" : 40
+    wait(float) : "Seconds before button resets (-1 = stay pressed)" : 1
+]
+
+// ============================================================
+// BRUSH ENTITIES - TRIGGERS
+// ============================================================
+
+@SolidClass color(255 64 0) = trigger_once : "Trigger volume that fires its target once, then deactivates."
+[
+    target(string) : "Entity targetname to activate on touch"
+    message(string) : "Message displayed to player on trigger"
+    delay(float) : "Seconds to wait before firing target" : 0
+]
+
+@SolidClass color(255 64 0) = trigger_multiple : "Trigger volume that fires its target repeatedly when entered."
+[
+    target(string) : "Entity targetname to activate on touch"
+    wait(float) : "Minimum seconds between activations" : 0.5
+    message(string) : "Message displayed to player on trigger"
+    delay(float) : "Seconds to wait before firing target" : 0
+]
+
+@SolidClass color(255 64 0) = trigger_secret : "Trigger that marks discovery of a secret area. Increments the secrets counter."
+[
+    target(string) : "Entity targetname to activate on touch"
+]
+
+// ============================================================
+// STATIC MODEL PROPS
+// ============================================================
+
+// prop_static - single reusable entity for all decorative 3D models
+//
+// TrenchBroom preview: set the 'model' property to an MDL path relative
+// to the game root (e.g. pak-extracted/progs/custom/ammo_box_1.mdl).
+// TrenchBroom will display the model in the viewport if you configure
+// the QuakeJS game path to point at: <project>/public/
+//
+// In-game rendering: propSystem.js looks for a matching GLB file in:
+//   /models/Items & Weapons/{stem}.glb
+//   /models/enemies/{stem}.glb
+//   /models/{stem}.glb
+// You can also set 'model' directly to a GLB path
+// (e.g. "models/Items & Weapons/ammo_box_1.glb") to skip auto-search.
+@PointClass model({ "path": model }) size(-16 -16 -16, 16 16 16) color(0 255 128) = prop_static : "Static decorative 3D model placed in the world."
+[
+    model(string)   : "MDL path relative to game root (pak-extracted/progs/custom/foo.mdl)" : "pak-extracted/progs/custom/ammo_box_1.mdl"
+    angle(angle)    : "Yaw rotation in degrees (0 = North)" : 0
+    angles(string)  : "Pitch Yaw Roll in degrees - overrides angle when set" : "0 0 0"
+    scale(float)    : "Uniform scale multiplier" : 1.0
+    solid(choices)  : "Collision behaviour" : 0 =
+    [
+        0 : "No collision (decorative only)"
+        1 : "Use model bounding box"
+    ]
+]

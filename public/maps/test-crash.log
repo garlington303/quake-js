@@ -1,0 +1,103 @@
+Adding file system path "D:\\Apps\\TrenchBroom Level Editor\\defaults\\assets"
+Adding file system path "D:\\Games\\QUAKE\\Quake\\id1"
+Adding file system package "PAK0.PAK"
+Adding file system package "PAK1.PAK"
+Loading document from D:\Games\quake-js\public\maps\test.map
+Found 0 shaders
+Loaded entity definition file Quake.fgd
+Found 0 shaders
+Loaded "D:\\Games\\quake-js\\public\\maps\\test.map" in 146ms
+Adding file system path "D:\\Apps\\TrenchBroom Level Editor\\defaults\\assets"
+Adding file system path "D:\\Games\\quake-js\\public\\"
+Creating new document
+Found 0 shaders
+Unquoted float default value 1 (at FileLocation{line: 15, column: 36})
+Unquoted float default value 300 (at FileLocation{line: 16, column: 39})
+Unquoted float default value 3 (at FileLocation{line: 198, column: 54})
+Unquoted float default value 0.5 (at FileLocation{line: 222, column: 38})
+Loaded entity definition file QuakeJS.fgd
+Found 0 shaders
+Saved "D:\\Games\\quake-js\\public\\maps\\test.map" in 25ms
+Saved "D:\\Games\\quake-js\\public\\maps\\test.map" in 9ms
+Saved "D:\\Games\\quake-js\\public\\maps\\test.map" in 9ms
+Saved "D:\\Games\\quake-js\\public\\maps\\test.map" in 9ms
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Could not resize brush: Brush is empty
+Created autosave backup at "D:\\Games\\quake-js\\public\\maps\\autosave\\test.9.map"
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Created autosave backup at "D:\\Games\\quake-js\\public\\maps\\autosave\\test.10.map"
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Could not clip brush: Brush is empty
+Created autosave backup at "D:\\Games\\quake-js\\public\\maps\\autosave\\test.11.map"
+Reloading entity definitions
+Unquoted float default value 1 (at FileLocation{line: 15, column: 36})
+Unquoted float default value 300 (at FileLocation{line: 16, column: 39})
+Unquoted float default value 3 (at FileLocation{line: 198, column: 54})
+Unquoted float default value 0.5 (at FileLocation{line: 222, column: 38})
+Loaded entity definition file QuakeJS.fgd
+Found 0 shaders
+Created autosave backup at "D:\\Games\\quake-js\\public\\maps\\autosave\\test.4.map"
+Found 0 shaders
+Reloading entity definitions
+Unquoted float default value 1 (at FileLocation{line: 15, column: 36})
+Unquoted float default value 300 (at FileLocation{line: 16, column: 39})
+Unquoted float default value 3 (at FileLocation{line: 198, column: 54})
+Unquoted float default value 0.5 (at FileLocation{line: 222, column: 38})
+Loaded entity definition file QuakeJS.fgd

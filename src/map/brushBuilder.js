@@ -1,4 +1,10 @@
-import { Color3, Mesh, StandardMaterial, Texture, TransformNode, Vector3, VertexData } from "@babylonjs/core";
+import { Color3 } from "@babylonjs/core/Maths/math.color.js";
+import { Mesh } from "@babylonjs/core/Meshes/mesh.js";
+import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial.js";
+import { Texture } from "@babylonjs/core/Materials/Textures/texture.js";
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js";
+import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
+import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData.js";
 
 const EPSILON = 0.01;
 const TEXTURE_SIZE = 128;
@@ -221,6 +227,7 @@ function getOrCreateMaterial(scene, cache, textureName, textureProvider = null) 
   const material = new StandardMaterial(`brush-${normalizedName}`, scene);
   material.diffuseColor = textureToColor(normalizedName);
   material.specularColor = Color3.Black();
+  material.ambientColor = new Color3(1, 1, 1);
   material.backFaceCulling = false;
 
   const wadTexture = textureProvider?.getTexture?.(normalizedName) ?? null;
@@ -262,6 +269,18 @@ function getQuakeUvAxes(normal) {
 }
 
 function projectUv(point, face) {
+  const scaleX = Math.abs(face.scaleX) > EPSILON ? face.scaleX : 1;
+  const scaleY = Math.abs(face.scaleY) > EPSILON ? face.scaleY : 1;
+
+  // ── Valve 220 format — axes are explicit, no extra rotation step needed ──────
+  if (face.uvFormat === "valve" && face.uAxis && face.vAxis) {
+    return {
+      u: (dot(point, face.uAxis) + face.offsetX) / (TEXTURE_SIZE * scaleX),
+      v: (dot(point, face.vAxis) + face.offsetY) / (TEXTURE_SIZE * scaleY),
+    };
+  }
+
+  // ── Standard format — derive axes from the dominant normal axis ───────────
   const { uAxis, vAxis } = getQuakeUvAxes(face.plane.normal);
   const rotation = radians(face.rotation ?? 0);
 
@@ -272,9 +291,6 @@ function projectUv(point, face) {
   const sinR = Math.sin(rotation);
   const rotU = rawU * cosR - rawV * sinR;
   const rotV = rawU * sinR + rawV * cosR;
-
-  const scaleX = Math.abs(face.scaleX) > EPSILON ? face.scaleX : 1;
-  const scaleY = Math.abs(face.scaleY) > EPSILON ? face.scaleY : 1;
 
   return {
     u: (rotU + face.offsetX) / (TEXTURE_SIZE * scaleX),
@@ -630,6 +646,90 @@ function dedupeCollisionTriangles(geometry) {
   geometry.indices = dedupedIndices;
 }
 
+// Brush-entity classnames that render but never contribute to world collision.
+// func_door gets its own moveable TransformNode via buildBrushEntityMesh.
+const NO_COLLISION_CLASSNAMES = new Set([
+  "func_illusionary",
+  "func_wall",
+  "func_door",
+  "func_button",
+  "trigger_once",
+  "trigger_multiple",
+  "trigger_secret",
+  "trigger_relay",
+]);
+
+// Classnames that should not even render (pure-volume trigger brushes)
+const INVISIBLE_CLASSNAMES = new Set([
+  "trigger_once",
+  "trigger_multiple",
+  "trigger_secret",
+  "trigger_relay",
+]);
+
+/**
+ * Build the render meshes for a single brush entity (func_door, func_wall, …).
+ * Returns an array of Babylon meshes parented to a fresh TransformNode.
+ * The caller is responsible for managing the node position.
+ */
+export function buildBrushEntityMesh(scene, entity, options = {}) {
+  const textureProvider = options.textureProvider ?? null;
+  const materialCache = options.materialCache ?? new Map();
+  const root = new TransformNode(`entity-${entity.classname}-${options.entityIndex ?? 0}`, scene);
+  const meshes = [];
+
+  entity.brushes.forEach((brush, brushIndex) => {
+    const orientedFaces = orientFaces(brush);
+    const faceGeometries = buildFaceGeometries(brush, orientedFaces);
+
+    faceGeometries.forEach((geom, texName) => {
+      const material = getOrCreateMaterial(scene, materialCache, texName, textureProvider);
+      const mesh = createMeshFromGeometry(
+        scene,
+        root,
+        geom,
+        material,
+        `entity-mesh-${brushIndex}-${texName}`,
+        false, // no per-mesh collision — door system handles it separately
+      );
+      if (mesh) {
+        mesh.metadata = { classname: entity.classname, source: "brush-entity" };
+        meshes.push(mesh);
+      }
+    });
+  });
+
+  return { root, meshes };
+}
+
+/**
+ * Compute AABB of a brush entity's geometry in Babylon space (Y-up).
+ * Returns { min: Vector3, max: Vector3 }.
+ */
+export function computeEntityBounds(entity) {
+  const inf = Infinity;
+  const bounds = {
+    min: new Vector3(inf, inf, inf),
+    max: new Vector3(-inf, -inf, -inf),
+  };
+
+  entity.brushes.forEach((brush) => {
+    brush.faces.forEach((face) => {
+      face.points.forEach((p) => {
+        // Quake → Babylon: (x, z, y)
+        bounds.min.x = Math.min(bounds.min.x, p.x);
+        bounds.min.y = Math.min(bounds.min.y, p.z);
+        bounds.min.z = Math.min(bounds.min.z, p.y);
+        bounds.max.x = Math.max(bounds.max.x, p.x);
+        bounds.max.y = Math.max(bounds.max.y, p.z);
+        bounds.max.z = Math.max(bounds.max.z, p.y);
+      });
+    });
+  });
+
+  return bounds;
+}
+
 export function buildBrushMeshes(scene, mapData, options = {}) {
   const debug = options.debug ?? {};
   const debugEnabled = Boolean(debug.enabled);
@@ -648,6 +748,9 @@ export function buildBrushMeshes(scene, mapData, options = {}) {
 
   mapData.entities.forEach((entity, entityIndex) => {
     const isWorldspawn = entity.classname === "worldspawn";
+    // Brush entities with their own systems are handled by mapLoader, not here.
+    const skipRendering = INVISIBLE_CLASSNAMES.has(entity.classname);
+    const skipCollision = NO_COLLISION_CLASSNAMES.has(entity.classname) || !isWorldspawn;
     const orientedBrushes = entity.brushes.map((brush) => ({
       brush,
       faces: orientFaces(brush),
@@ -686,6 +789,9 @@ export function buildBrushMeshes(scene, mapData, options = {}) {
         return;
       }
 
+      // Skip rendering invisible trigger volumes
+      if (skipRendering) return;
+
       if (debugEnabled) {
         // Debug path: one mesh per texture per brush so brush picking still works.
         faceGeometries.forEach((geom, textureName) => {
@@ -719,7 +825,7 @@ export function buildBrushMeshes(scene, mapData, options = {}) {
         });
       }
 
-      if (isWorldspawn) {
+      if (!skipCollision) {
         faceGeometries.forEach((geom) => {
           appendGeometry(collisionGeometry, geom);
         });
@@ -731,7 +837,7 @@ export function buildBrushMeshes(scene, mapData, options = {}) {
     });
 
     // Non-debug: emit one render mesh per unique texture for this entity.
-    if (!debugEnabled && entityGeom) {
+    if (!debugEnabled && !skipRendering && entityGeom) {
       entityGeom.forEach((geom, texName) => {
         const material = getOrCreateMaterial(scene, materialCache, texName, textureProvider);
         const mesh = createMeshFromGeometry(

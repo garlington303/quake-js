@@ -11,27 +11,64 @@ function parseQuotedProperty(line) {
   };
 }
 
-function parseBrushFace(line) {
-  const facePattern = /^\s*\(\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s*\)\s*\(\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s*\)\s*\(\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s*\)\s+(\S+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s*$/;
-  const match = line.match(facePattern);
+// Shared prefix: three plane points + texture name
+// ( x y z ) ( x y z ) ( x y z ) TEXNAME …
+const PLANE_PREFIX =
+  /^\s*\(\s*([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s*\)\s*\(\s*([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s*\)\s*\(\s*([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s*\)\s+(\S+)\s+/;
 
-  if (!match) {
-    return null;
+// Standard (Quake id) format: offsetX offsetY rotation scaleX scaleY
+const STANDARD_TAIL = /([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s*$/;
+
+// Valve 220 format:  [ ux uy uz offsetU ] [ vx vy vz offsetV ] rotation scaleU scaleV
+const VALVE_TAIL =
+  /\[\s*([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s*\]\s*\[\s*([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s*\]\s+([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)\s*$/;
+
+function parseBrushFace(line) {
+  const prefixMatch = line.match(PLANE_PREFIX);
+  if (!prefixMatch) return null;
+
+  const points = [
+    { x: Number(prefixMatch[1]), y: Number(prefixMatch[2]), z: Number(prefixMatch[3]) },
+    { x: Number(prefixMatch[4]), y: Number(prefixMatch[5]), z: Number(prefixMatch[6]) },
+    { x: Number(prefixMatch[7]), y: Number(prefixMatch[8]), z: Number(prefixMatch[9]) },
+  ];
+  const texture = prefixMatch[10];
+  const tail = line.slice(prefixMatch[0].length);
+
+  // Try Valve 220 first (has square brackets)
+  const valveMatch = tail.match(VALVE_TAIL);
+  if (valveMatch) {
+    return {
+      points,
+      texture,
+      uvFormat: "valve",
+      // Explicit UV axes (in Quake/world space)
+      uAxis:   { x: Number(valveMatch[1]),  y: Number(valveMatch[2]),  z: Number(valveMatch[3])  },
+      offsetX:   Number(valveMatch[4]),
+      vAxis:   { x: Number(valveMatch[5]),  y: Number(valveMatch[6]),  z: Number(valveMatch[7])  },
+      offsetY:   Number(valveMatch[8]),
+      rotation:  Number(valveMatch[9]),
+      scaleX:    Number(valveMatch[10]),
+      scaleY:    Number(valveMatch[11]),
+    };
   }
 
-  return {
-    points: [
-      { x: Number(match[1]), y: Number(match[2]), z: Number(match[3]) },
-      { x: Number(match[4]), y: Number(match[5]), z: Number(match[6]) },
-      { x: Number(match[7]), y: Number(match[8]), z: Number(match[9]) },
-    ],
-    texture: match[10],
-    offsetX: Number(match[11]),
-    offsetY: Number(match[12]),
-    rotation: Number(match[13]),
-    scaleX: Number(match[14]),
-    scaleY: Number(match[15]),
-  };
+  // Fall back to Standard format
+  const stdMatch = tail.match(STANDARD_TAIL);
+  if (stdMatch) {
+    return {
+      points,
+      texture,
+      uvFormat: "standard",
+      offsetX:  Number(stdMatch[1]),
+      offsetY:  Number(stdMatch[2]),
+      rotation: Number(stdMatch[3]),
+      scaleX:   Number(stdMatch[4]),
+      scaleY:   Number(stdMatch[5]),
+    };
+  }
+
+  return null;
 }
 
 function parseBrush(blockText) {

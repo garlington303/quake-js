@@ -64,32 +64,32 @@ export function createFallbackEnvironment(scene) {
 export function createScene(engine, canvas) {
   const scene = new Scene(engine);
 
-  scene.clearColor.set(0.06, 0.08, 0.11, 1.0);
+  scene.clearColor.set(0.08, 0.1, 0.14, 1.0);
   scene.collisionsEnabled = true;
   scene.gravity = new Vector3(0, -GRAVITY_UNITS_PER_SECOND_SQUARED, 0);
 
   const keyLight = new DirectionalLight("key-light", new Vector3(-0.35, -1, -0.25), scene);
-  keyLight.intensity = 1.15;
+  keyLight.intensity = 0.8;
   keyLight.diffuse = new Color3(1, 0.96, 0.9);
-  keyLight.specular = new Color3(0.5, 0.5, 0.5);
+  keyLight.specular = new Color3(0.3, 0.3, 0.3);
 
   const light = new HemisphericLight("sky-light", new Vector3(0.2, 1, 0.1), scene);
-  light.intensity = 0.85;
-  light.diffuse = new Color3(0.85, 0.9, 0.95);
-  light.groundColor = new Color3(0.35, 0.38, 0.45);
+  light.intensity = 0.5;
+  light.diffuse = new Color3(0.7, 0.72, 0.78);
+  light.groundColor = new Color3(0.2, 0.22, 0.28);
   light.specular = Color3.Black();
 
   const fillLight = new HemisphericLight("fill-light", new Vector3(0, -1, 0), scene);
-  fillLight.intensity = 0.25;
-  fillLight.diffuse = new Color3(0.35, 0.38, 0.45);
-  fillLight.groundColor = new Color3(0.5, 0.45, 0.4);
+  fillLight.intensity = 0.2;
+  fillLight.diffuse = new Color3(0.35, 0.32, 0.38);
+  fillLight.groundColor = new Color3(0.3, 0.28, 0.25);
   fillLight.specular = Color3.Black();
 
-  scene.ambientColor = new Color3(0.24, 0.24, 0.24);
+  scene.ambientColor = new Color3(0.15, 0.15, 0.18);
 
   const imageProcessing = scene.imageProcessingConfiguration;
-  imageProcessing.exposure = 1.1;
-  imageProcessing.contrast = 1.25;
+  imageProcessing.exposure = 1.3;
+  imageProcessing.contrast = 1.3;
   imageProcessing.toneMappingEnabled = true;
   imageProcessing.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
 

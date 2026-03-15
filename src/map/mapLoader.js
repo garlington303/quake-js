@@ -1,7 +1,13 @@
-import { Color3, PointLight, Vector3 } from "@babylonjs/core";
+import { Color3 } from "@babylonjs/core/Maths/math.color.js";
+import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight.js";
+import { PointLight } from "@babylonjs/core/Lights/pointLight.js";
+import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
 import { PLAYER_EYE_HEIGHT, PLAYER_HEIGHT } from "../player/playerConstants.js";
-import { buildBrushMeshes } from "./brushBuilder.js";
+import { buildBrushEntityMesh, buildBrushMeshes, computeEntityBounds } from "./brushBuilder.js";
+import { createDoorSystem } from "./doorSystem.js";
 import { parseMap } from "./mapParser.js";
+import { createPropSystem } from "./propSystem.js";
+import { createTriggerSystem } from "./triggerSystem.js";
 import { createWadTextureProvider, loadWad } from "./wadLoader.js";
 
 function parseWadList(worldspawn) {
@@ -122,21 +128,19 @@ function getEntityPosition(entity) {
 }
 
 function applyPlayerSpawn(camera, playerCollider, entities) {
-  if (!camera) {
-    return;
-  }
-
   const spawnEntity = entities.find(
     (entity) => entity.classname === "info_player_start" || entity.classname === "player_start"
   );
 
   if (!spawnEntity) {
-    return;
+    return { position: null, yaw: 0 };
   }
 
   const spawnPosition = parseOrigin(spawnEntity.properties.origin);
+  const yawDegrees = Number(spawnEntity.properties.angle ?? 0);
+  const yaw = (yawDegrees * Math.PI) / 180;
 
-  if (spawnPosition) {
+  if (camera && spawnPosition) {
     camera.position.copyFrom(spawnPosition);
     if (playerCollider) {
       const eyeOffset = PLAYER_EYE_HEIGHT - PLAYER_HEIGHT / 2;
@@ -145,8 +149,11 @@ function applyPlayerSpawn(camera, playerCollider, entities) {
     }
   }
 
-  const yawDegrees = Number(spawnEntity.properties.angle ?? 0);
-  camera.rotation.y = (yawDegrees * Math.PI) / 180;
+  if (camera) {
+    camera.rotation.y = yaw;
+  }
+
+  return { position: spawnPosition ?? null, yaw };
 }
 
 function parseLightColor(entity) {
@@ -178,30 +185,51 @@ function computeLightIntensity(raw) {
   return (raw / 100) * 10;
 }
 
+const MAX_TORCH_LIGHTS = 4;
+
 function applyLights(scene, entities) {
-  let count = 0;
-  entities
-    .filter((entity) => entity.classname === "light" || entity.classname?.startsWith("light_"))
-    .forEach((entity, index) => {
-      const position = parseOrigin(entity.properties.origin) ?? new Vector3(0, 8, 0);
-      const light = new PointLight(`map-light-${index}`, position, scene);
+  const lightEntities = entities.filter(
+    (entity) => entity.classname === "light" || entity.classname?.startsWith("light_"),
+  );
+  if (lightEntities.length === 0) return 0;
+
+  // Compute an average color from all map light entities
+  let r = 0, g = 0, b = 0, counted = 0;
+  for (const entity of lightEntities) {
+    const color = parseLightColor(entity);
+    if (color) { r += color.r; g += color.g; b += color.b; counted++; }
+  }
+  const avgColor = counted > 0
+    ? new Color3(r / counted, g / counted, b / counted)
+    : new Color3(1, 0.95, 0.85);
+
+  // Low-intensity ambient hemispheric — just enough to see
+  const mapLight = new HemisphericLight("map-light", new Vector3(0, 1, 0), scene);
+  mapLight.intensity = 0.4;
+  mapLight.diffuse = avgColor;
+  mapLight.groundColor = avgColor.scale(0.15);
+  mapLight.specular = Color3.Black();
+
+  // Place a few brightest lights as torch point lights for pools of light
+  const torchCandidates = lightEntities
+    .map((entity) => {
       const rawIntensity = parseLightIntensity(entity);
-      const intensity = rawIntensity != null ? computeLightIntensity(rawIntensity) : 1.6;
-      light.intensity = intensity;
-      const color = parseLightColor(entity);
-      if (color) {
-        light.diffuse = color;
-        light.specular = color;
-      }
-      const radius = parseLightRadius(entity);
-      if (radius != null) {
-        light.range = Math.max(6, radius * 9);
-      } else if (rawIntensity != null) {
-        light.range = Math.max(12, rawIntensity * 12);
-      }
-      count += 1;
-    });
-  return count;
+      return { entity, rawIntensity, sortKey: rawIntensity ?? 0 };
+    })
+    .sort((a, b) => b.sortKey - a.sortKey)
+    .slice(0, MAX_TORCH_LIGHTS);
+
+  torchCandidates.forEach(({ entity, rawIntensity }, index) => {
+    const position = parseOrigin(entity.properties.origin) ?? new Vector3(0, 8, 0);
+    const torch = new PointLight(`torch-${index}`, position, scene);
+    const color = parseLightColor(entity) ?? new Color3(1, 0.75, 0.4);
+    torch.diffuse = color;
+    torch.specular = color.scale(0.3);
+    torch.intensity = 2.5;
+    torch.range = rawIntensity != null ? Math.max(30, rawIntensity * 8) : 60;
+  });
+
+  return lightEntities.length;
 }
 
 // Maps Quake standard monster classnames to our internal enemy type keys
@@ -308,6 +336,41 @@ function applyPickups(itemSystem, entities) {
   return count;
 }
 
+const TRIGGER_CLASSNAMES = new Set(["trigger_once", "trigger_multiple", "trigger_secret"]);
+const DOOR_CLASSNAMES    = new Set(["func_door"]);
+
+function applyDoorsAndTriggers(scene, entities, textureProvider, materialCache) {
+  const doorSystem    = createDoorSystem(scene);
+  const triggerSystem = createTriggerSystem();
+
+  // ── Register func_door entities ─────────────────────────────────────────
+  entities
+    .filter((e) => DOOR_CLASSNAMES.has(e.classname) && e.brushes.length > 0)
+    .forEach((entity, i) => {
+      const { root, meshes } = buildBrushEntityMesh(scene, entity, {
+        textureProvider,
+        materialCache,
+        entityIndex: i,
+      });
+      const bounds = computeEntityBounds(entity);
+      doorSystem.registerDoor(entity, meshes, bounds, root);
+    });
+
+  // ── Register trigger volumes ─────────────────────────────────────────────
+  entities
+    .filter((e) => TRIGGER_CLASSNAMES.has(e.classname) && e.brushes.length > 0)
+    .forEach((entity) => {
+      const bounds = computeEntityBounds(entity);
+      triggerSystem.registerTrigger(entity, bounds);
+    });
+
+  // ── Relay point entities (no brushes) also handled here ─────────────────
+  // (trigger_relay is a point entity that fires a target when activated;
+  //  it's registered as a named door-system target that just fires onward)
+
+  return { doorSystem, triggerSystem };
+}
+
 export async function loadMap(scene, options = {}) {
   const {
     camera = null,
@@ -327,10 +390,40 @@ export async function loadMap(scene, options = {}) {
   const mapData = parseMap(mapText);
   const wadEntries = parseWadList(mapData.worldspawn);
   const wadResult = await loadWadTextures(scene, wadEntries);
+
+  // Shared material cache so doors and worldspawn don't duplicate materials
+  const materialCache = new Map();
+
   const mapGeometry = buildBrushMeshes(scene, mapData, {
     debug,
+    materialCache,
     textureProvider: wadResult?.provider ?? null,
   });
+
+  const { doorSystem, triggerSystem } = applyDoorsAndTriggers(
+    scene,
+    mapData.entities,
+    wadResult?.provider ?? null,
+    materialCache,
+  );
+
+  // Wire trigger → door activation
+  const onTriggerFire = (target) => {
+    if (target) doorSystem.activate(target);
+  };
+
+  // Hook update into Babylon's render loop
+  const mapUpdateObserver = scene.onBeforeRenderObservable.add(() => {
+    const dt = scene.getEngine().getDeltaTime() / 1000;
+    const playerPos = camera?.position ?? Vector3.Zero();
+    doorSystem.update(dt);
+    doorSystem.checkProximityTrigger(playerPos);
+    triggerSystem.update(dt, playerPos, onTriggerFire);
+  });
+
+  const propSystem = createPropSystem(scene);
+  const propCount = await propSystem.spawnProps(mapData.entities);
+
   const spawnedEnemies = applyEnemies(enemySystem, mapData.entities);
   const pickupCount = applyPickups(itemSystem, mapData.entities);
 
@@ -338,11 +431,14 @@ export async function loadMap(scene, options = {}) {
   scene.metadata.mapDebug = mapGeometry.debugInfo;
   scene.metadata.mapStats = {
     debugEnabled: Boolean(debug?.enabled),
+    doorCount: mapData.entities.filter((e) => DOOR_CLASSNAMES.has(e.classname)).length,
     enemyCount: spawnedEnemies.length,
     entityCount: mapData.entities.length,
     meshCount: mapGeometry.meshes.length,
     pickupCount,
+    propCount,
     skippedBrushCount: mapGeometry.debugInfo?.skippedBrushCount ?? 0,
+    triggerCount: mapData.entities.filter((e) => TRIGGER_CLASSNAMES.has(e.classname)).length,
     url,
     wadCount: wadResult?.wadCount ?? 0,
   };
@@ -367,13 +463,22 @@ export async function loadMap(scene, options = {}) {
     console.groupEnd();
   }
 
-  applyPlayerSpawn(camera, playerCollider, mapData.entities);
+  const spawnInfo = applyPlayerSpawn(camera, playerCollider, mapData.entities);
   const lightCount = applyLights(scene, mapData.entities);
   scene.metadata.mapStats.lightCount = lightCount;
 
   return {
+    doorSystem,
     mapData,
     mapGeometry,
     mapText,
+    spawnPosition: spawnInfo.position,
+    spawnYaw: spawnInfo.yaw,
+    triggerSystem,
+    dispose: () => {
+      scene.onBeforeRenderObservable.remove(mapUpdateObserver);
+      triggerSystem.reset();
+      propSystem.dispose();
+    },
   };
 }

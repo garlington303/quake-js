@@ -303,5 +303,5 @@ export function createViewModel(scene, camera) {
     root.rotation.x = recoilRot;
   }
 
-  return { fire, update };
+  return { fire, update, root };
 }

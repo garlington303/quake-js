@@ -16,6 +16,7 @@ import { createAudioSystem } from "./engine/audioSystem.js";
 import { createHud } from "./ui/hud.js";
 import { applyRetroPipeline } from "./engine/retroPipeline.js";
 import { createLightSystem } from "./engine/lightSystem.js";
+import { createFlashlight } from "./player/flashlight.js";
 
 function parseFlag(value) {
   return ["1", "true", "yes", "on"].includes((value ?? "").toLowerCase());
@@ -87,6 +88,7 @@ const impactSystem = createImpactSystem(scene);
 const hud = createHud();
 const audio = createAudioSystem();
 const lightSystem = createLightSystem(scene);
+const flashlight = createFlashlight(scene, camera);
 const queryParams = new URLSearchParams(window.location.search);
 const debugMapEnabled = parseFlag(queryParams.get("debugMap"));
 const debugCollisionExplicit = queryParams.has("debugCollision");
@@ -171,9 +173,13 @@ try {
     mapDebugOptions.showCollisionMesh = visible;
     return true;
   };
-  // Capture spawn so respawn can teleport back here.
-  playerSpawnPosition = camera.position.clone();
-  playerSpawnYaw = camera.rotation.y;
+  // Use spawn data returned from the map loader.
+  if (mapResult.spawnPosition) {
+    playerSpawnPosition = mapResult.spawnPosition.clone();
+  } else {
+    playerSpawnPosition = camera.position.clone();
+  }
+  playerSpawnYaw = mapResult.spawnYaw ?? camera.rotation.y;
   // Flush controller internal state (velocity, smoothing) to the spawn position.
   playerController.reset(playerSpawnPosition);
 
@@ -221,11 +227,16 @@ engine.runRenderLoop(() => {
   playerController.update(deltaTimeSeconds);
   audio.update(deltaTimeSeconds, scene.metadata?.player ?? {});
 
+  if (input.consumeFlashlightToggle()) {
+    const flashlightOn = flashlight.toggle();
+    viewModel.root.setEnabled(!flashlightOn);
+  }
+
   // ── Weapon fire ───────────────────────────────────────────────────────────
   fireCooldownTimer = Math.max(0, fireCooldownTimer - deltaTimeSeconds);
   const wantsFire = input.consumePrimaryFire();
 
-  if (wantsFire && fireCooldownTimer === 0 && ammoShells > 0) {
+  if (wantsFire && fireCooldownTimer === 0 && ammoShells > 0 && !flashlight.isOn) {
     fireCooldownTimer = FIRE_COOLDOWN;
     ammoShells -= 1;
 
@@ -252,6 +263,7 @@ engine.runRenderLoop(() => {
   }
 
   viewModel.update(deltaTimeSeconds);
+  flashlight.update(deltaTimeSeconds);
   impactSystem.update(deltaTimeSeconds);
   if (lightsEnabled) lightSystem.update(deltaTimeSeconds);
 
