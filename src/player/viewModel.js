@@ -1,6 +1,12 @@
 import { Color3, Mesh, MeshBuilder, Quaternion, StandardMaterial, TransformNode, Vector3 } from "@babylonjs/core";
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader.js";
 import "@babylonjs/loaders/glTF";
+// Pre-import skeletal animation modules so Vite bundles them eagerly.
+// BabylonJS lazily imports these when it encounters skeleton data inside a GLB;
+// without this the dynamic import fails when SceneLoader loads from a blob URL.
+import "@babylonjs/core/Animations/animationGroup";
+import "@babylonjs/core/Bones/bone";
+import "@babylonjs/core/Bones/skeleton";
 import { createPixelSpriteEffect } from "../gameplay/pixelSpriteEffect.js";
 
 const VM_OFFSET = new Vector3(0, -0.36, 0.72);
@@ -11,6 +17,25 @@ const SHOTGUN_MODEL_SCALE = 1.1;
 // Explicit FPS orientation for this asset/camera setup:
 // barrel points away from player and model stays upright.
 const SHOTGUN_MODEL_ROTATION = Quaternion.FromEulerAngles(0, Math.PI / 2, 0);
+
+// PSX first-person arms GLB.
+// Model is in glTF Y-up space. Character faces -Z (its front normals point -Z).
+// In BabylonJS the camera looks along +Z, so the front face of the model is
+// already toward the camera — no rotation needed for visibility.
+//
+// HOWEVER: the model was authored for a Unity-style view where the player looks
+// in -Z. Left/right IK hands are mirrored versus BabylonJS screen space:
+//   IK L = model +X = world left when camera looks +Z → appears on the wrong side.
+// Fix: scale X by −1 (mirror) so the front face stays toward the camera AND the
+// hands swap to the correct screen sides without inverting normals.
+//
+// Scale 0.5 × mirror: arm span ~0.81 wide at Z≈1, hands sit at cam-local
+// Y≈-0.34 NDC (lower screen, FOV 1.2 rad).
+const ARMS_GLB_URL = "/models/arms_fp.glb";
+const ARMS_MODEL_OFFSET = new Vector3(0.13, -0.69, 0.26);
+const ARMS_MODEL_SCALE = 0.5;
+// Identity rotation — mirroring is done via negative X scale below.
+const ARMS_MODEL_ROTATION = Quaternion.FromEulerAngles(0, 0, 0);
 
 const BOB_SPEED_WALK = 4.5;
 const BOB_AMP_X_WALK = 0.006;
@@ -209,6 +234,56 @@ async function loadShotgunModel(scene, parent) {
   };
 }
 
+async function loadArmsModel(scene, parent) {
+  const modelRoot = new TransformNode("viewmodel-arms-glb", scene);
+  modelRoot.parent = parent;
+  modelRoot.position.copyFrom(ARMS_MODEL_OFFSET);
+  // Negative X scale mirrors the model so right hand → screen right (correct FPS
+  // orientation) while keeping front normals facing the camera.
+  modelRoot.scaling.set(-ARMS_MODEL_SCALE, ARMS_MODEL_SCALE, ARMS_MODEL_SCALE);
+  modelRoot.rotationQuaternion = ARMS_MODEL_ROTATION.clone();
+
+  // Load via direct URL (not blob) so BabylonJS's internal dynamic imports for
+  // skeletal animation modules resolve correctly against the page origin.
+  const rootUrl = window.location.origin + "/models/";
+  const result = await SceneLoader.ImportMeshAsync("", rootUrl, "arms_fp.glb", scene);
+
+  result.materials?.forEach((material) => configureImportedMaterial(material));
+  const meshSet = new Set(result.meshes);
+  const topLevelMeshes = result.meshes.filter((mesh) => !mesh.parent || !meshSet.has(mesh.parent));
+
+  topLevelMeshes.forEach((mesh) => {
+    mesh.parent = modelRoot;
+  });
+
+  result.meshes.forEach((mesh) => {
+    configureImportedMaterial(mesh.material);
+    mesh.isPickable = false;
+    mesh.receiveShadows = false;
+    mesh.renderingGroupId = 1;
+    mesh.alwaysSelectAsActiveMesh = true;
+  });
+
+  // BabylonJS auto-starts the first animation group on GLB import.
+  // Stop everything, then play the combat-ready idle so the hands rest
+  // in a natural weapon-holding pose.
+  result.animationGroups?.forEach((g) => g.stop());
+  const idleAnim = result.animationGroups?.find((g) => g.name === "Combat_idle_loop")
+    ?? result.animationGroups?.find((g) => g.name === "Relax_hands_idle_loop")
+    ?? result.animationGroups?.[0];
+  idleAnim?.start(true, 1.0, idleAnim.from, idleAnim.to, false);
+
+  return {
+    animationGroups: result.animationGroups ?? [],
+    dispose() {
+      result.animationGroups?.forEach((g) => g.stop());
+      modelRoot.dispose();
+      result.meshes.forEach((mesh) => mesh.dispose());
+    },
+    root: modelRoot,
+  };
+}
+
 // ── Procedural PSX-style hands ───────────────────────────────────────────────
 // Positions derived from live bounding-box: gun in vmRoot-local space at
 // X(0.18-0.25), Y(-0.10 to 0.17), Z(-0.39 to 1.19).
@@ -233,15 +308,32 @@ function buildHands(scene, parent) {
     return m;
   }
 
+  const meshes = [];
+
+  function tracked(name, w, h, d, x, y, z) {
+    const m = box(name, w, h, d, x, y, z);
+    meshes.push(m);
+    return m;
+  }
+
   // ── Right hand (dominant — trigger / grip) ───────────────────────────────
-  box("hand-r-palm",    0.090, 0.060, 0.110,  0.19, -0.185, 0.270);
-  box("hand-r-knuckle", 0.080, 0.032, 0.048,  0.18, -0.138, 0.305);
-  box("hand-r-arm",     0.082, 0.130, 0.085,  0.19, -0.295, 0.200);
+  tracked("hand-r-palm",    0.090, 0.060, 0.110,  0.19, -0.185, 0.270);
+  tracked("hand-r-knuckle", 0.080, 0.032, 0.048,  0.18, -0.138, 0.305);
+  tracked("hand-r-arm",     0.082, 0.130, 0.085,  0.19, -0.295, 0.200);
 
   // ── Left hand (support — under pump / forestock) ─────────────────────────
-  box("hand-l-palm",    0.090, 0.058, 0.110,  0.20, -0.185, 0.775);
-  box("hand-l-knuckle", 0.080, 0.030, 0.048,  0.19, -0.138, 0.810);
-  box("hand-l-arm",     0.082, 0.130, 0.085,  0.20, -0.295, 0.705);
+  tracked("hand-l-palm",    0.090, 0.058, 0.110,  0.20, -0.185, 0.775);
+  tracked("hand-l-knuckle", 0.080, 0.030, 0.048,  0.19, -0.138, 0.810);
+  tracked("hand-l-arm",     0.082, 0.130, 0.085,  0.20, -0.295, 0.705);
+
+  mat.freeze();
+
+  return {
+    dispose() {
+      meshes.forEach((m) => m.dispose());
+      mat.dispose();
+    },
+  };
 }
 
 // Flash is parented directly to the camera and pinned at the crosshair centre.
@@ -274,7 +366,7 @@ export function createViewModel(scene, camera) {
   root.position.copyFrom(VM_OFFSET);
 
   const fallback = buildFallbackShotgun(scene, root);
-  buildHands(scene, root);
+  const fallbackHands = buildHands(scene, root);
   const flash = createMuzzleFlash(scene, camera);
   let activePump = fallback.pump;
   let prevCamPos = camera.position.clone();
@@ -291,6 +383,15 @@ export function createViewModel(scene, camera) {
     })
     .catch((error) => {
       console.warn("Failed to load shotgun GLB viewmodel, using fallback mesh.", error);
+    });
+
+  // Load PSX first-person arms, replacing the procedural box hands on success.
+  loadArmsModel(scene, root)
+    .then(() => {
+      fallbackHands.dispose();
+    })
+    .catch((error) => {
+      console.warn("Failed to load arms GLB viewmodel, keeping fallback hands.", error);
     });
 
   function fire() {
