@@ -18,17 +18,18 @@ import { applyRetroPipeline } from "./engine/retroPipeline.js";
 import { createLightSystem } from "./engine/lightSystem.js";
 import { createFlashlight } from "./player/flashlight.js";
 import { createHeadBob } from "./player/headBob.js";
+import { WEAPONS, WEAPON_ORDER } from "./gameConstants.js";
 
 function parseFlag(value) {
   return ["1", "true", "yes", "on"].includes((value ?? "").toLowerCase());
 }
 
-function inspectForwardHit(scene, camera, maxDistance = 512) {
+function inspectForwardHit(scene, camera, maxDistance = 512, debug = false) {
   const pick = scene.pickWithRay(camera.getForwardRay(maxDistance), () => true);
 
   if (!pick?.hit) {
     const result = { hit: false, maxDistance };
-    console.log("[map-debug] forward inspect", result);
+    if (debug) console.log("[map-debug] forward inspect", result);
     return result;
   }
 
@@ -46,7 +47,7 @@ function inspectForwardHit(scene, camera, maxDistance = 512) {
       : null,
   };
 
-  console.log("[map-debug] forward inspect", result);
+  if (debug) console.log("[map-debug] forward inspect", result);
   return result;
 }
 
@@ -123,20 +124,8 @@ canvas.addEventListener("click", () => {
   audio.resume();
 });
 
-// Weapon constants
-const SHOTGUN_FIRE_COOLDOWN  = 0.85;
-const SWORD_SWING_COOLDOWN   = 0.42;
-const GRENADE_THROW_COOLDOWN = 0.80;
-const STAFF_CAST_COOLDOWN    = 0.50;
-const MELEE_RANGE            = 128;
-const MELEE_DAMAGE           = 50;
-const STAFF_RANGE            = 900;
-const STAFF_DAMAGE           = 35;
-const GRENADE_RADIUS         = 180;
-const GRENADE_DAMAGE         = 80;
-
-// Weapon order for scroll cycling
-const WEAPON_ORDER = ["shotgun", "sword", "grenade", "staff"];
+// Destructure weapon constants from centralised config
+const { shotgun: W_SHOTGUN, sword: W_SWORD, grenade: W_GRENADE, staff: W_STAFF } = WEAPONS;
 
 let playerHealth = 100;
 let playerArmor = 0;
@@ -151,7 +140,7 @@ let throwCooldownTimer  = 0;
 let castCooldownTimer   = 0;
 let activeWeapon = "shotgun";
 let mapStatusText = "Loading map...";
-const GOD_MODE = false;
+const GOD_MODE = parseFlag(queryParams.get("godMode"));
 
 // Landing detection state
 let prevGrounded = true;
@@ -188,7 +177,7 @@ try {
   const meshCount = mapResult?.mapGeometry?.meshes?.length ?? 0;
   window.__trenchfps.mapDebug = mapResult?.mapGeometry?.debugInfo ?? null;
   window.__trenchfps.mapGeometry = mapResult?.mapGeometry ?? null;
-  window.__trenchfps.inspectForward = (maxDistance = 512) => inspectForwardHit(scene, camera, maxDistance);
+  window.__trenchfps.inspectForward = (maxDistance = 512) => inspectForwardHit(scene, camera, maxDistance, mapDebugOptions.enabled);
   window.__trenchfps.playerColliderState = () => ({
     checkCollisions: playerCollider.checkCollisions,
     ellipsoid: playerCollider.ellipsoid?.clone?.() ?? playerCollider.ellipsoid,
@@ -312,10 +301,10 @@ engine.runRenderLoop(() => {
     if (activeWeapon === "shotgun" && fireCooldownTimer === 0) {
       if (ammoShells <= 0) {
         audio.playDryFire();
-        fireCooldownTimer = 0.3;
+        fireCooldownTimer = W_SHOTGUN.dryFireCooldown;
       } else {
       ammoShells -= 1;
-      fireCooldownTimer = SHOTGUN_FIRE_COOLDOWN;
+      fireCooldownTimer = W_SHOTGUN.cooldown;
 
       const hit = enemySystem.handlePrimaryFire(camera);
       audio.playShoot();
@@ -338,9 +327,9 @@ engine.runRenderLoop(() => {
       }
 
     } else if (activeWeapon === "sword" && meleeCooldownTimer === 0) {
-      meleeCooldownTimer = SWORD_SWING_COOLDOWN;
+      meleeCooldownTimer = W_SWORD.cooldown;
 
-      const hit = enemySystem.handleMeleeAttack(camera, MELEE_RANGE, MELEE_DAMAGE);
+      const hit = enemySystem.handleMeleeAttack(camera, W_SWORD.range, W_SWORD.damage);
       audio.playSwing();
 
       if (hit?.type === "enemy") {
@@ -361,10 +350,10 @@ engine.runRenderLoop(() => {
     } else if (activeWeapon === "grenade" && throwCooldownTimer === 0) {
       if (grenadeCount <= 0) {
         audio.playDryFire();
-        throwCooldownTimer = 0.3;
+        throwCooldownTimer = W_GRENADE.dryFireCooldown;
       } else {
         grenadeCount -= 1;
-        throwCooldownTimer = GRENADE_THROW_COOLDOWN;
+        throwCooldownTimer = W_GRENADE.cooldown;
         audio.playGrenadeThrow();
         viewModel.throwGrenade();
 
@@ -383,7 +372,7 @@ engine.runRenderLoop(() => {
             audio.playExplosion();
             if (lightsEnabled) lightSystem.spawnImpactLight(pos, false);
             impactSystem.spawnImpact(pos, { size: 4.0 });
-            const hits = enemySystem.handleExplosionDamage(pos, GRENADE_RADIUS, GRENADE_DAMAGE);
+            const hits = enemySystem.handleExplosionDamage(pos, W_GRENADE.radius, W_GRENADE.damage);
             for (const h of hits) {
               kills += h.enemyDown ? 1 : 0;
               if (h.enemyDown) audio.playEnemyDeath();
@@ -395,13 +384,13 @@ engine.runRenderLoop(() => {
       }
 
     } else if (activeWeapon === "staff" && castCooldownTimer === 0) {
-      castCooldownTimer = STAFF_CAST_COOLDOWN;
+      castCooldownTimer = W_STAFF.cooldown;
       audio.playCastSpell();
       viewModel.castStaff();
 
       // Instant damage at range, visual bolt flies to hit point
-      const hit = enemySystem.handleMeleeAttack(camera, STAFF_RANGE, STAFF_DAMAGE);
-      const targetPos = hit?.position ?? camera.position.add(camera.getForwardRay().direction.scale(STAFF_RANGE));
+      const hit = enemySystem.handleMeleeAttack(camera, W_STAFF.range, W_STAFF.damage);
+      const targetPos = hit?.position ?? camera.position.add(camera.getForwardRay().direction.scale(W_STAFF.range));
 
       projectileSystem.spawnBolt({
         origin: camera.position.add(camera.getForwardRay().direction.scale(3)),

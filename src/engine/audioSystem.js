@@ -22,7 +22,9 @@ const buffers = new Map();
 
 function getCtx() {
   if (!ctx) {
-    ctx = new AudioContext();
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    ctx = new AC();
     masterGain = ctx.createGain();
     masterGain.gain.value = MASTER_GAIN;
     masterGain.connect(ctx.destination);
@@ -67,7 +69,7 @@ function pickRandom(list) {
 
 async function playSample(key) {
   const entry = SOUND_LIBRARY[key];
-  if (!entry) return false;
+  if (!entry || !ctx) return false;
   const fileName = pickRandom(entry.files);
 
   try {
@@ -89,7 +91,7 @@ async function playSample(key) {
 }
 
 function preloadAll() {
-  if (preloadStarted) return;
+  if (preloadStarted || !ctx) return;
   preloadStarted = true;
   const files = Object.values(SOUND_LIBRARY).flatMap((entry) => entry.files);
   files.forEach((file) => {
@@ -101,6 +103,7 @@ function preloadAll() {
 
 function playShootSynth() {
   const c = getCtx();
+  if (!c) return;
 
   // White noise burst — shotgun body
   const noise = c.createBufferSource();
@@ -129,6 +132,7 @@ function playShootSynth() {
 
 function playHitSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   const gain = c.createGain();
   osc.type = "square";
@@ -143,6 +147,7 @@ function playHitSynth() {
 
 function playPickupSynth() {
   const c = getCtx();
+  if (!c) return;
   // Two-tone ascending chirp
   [380, 620].forEach((freq, i) => {
     const osc = c.createOscillator();
@@ -162,6 +167,7 @@ function playPickupSynth() {
 
 function playHurtSynth() {
   const c = getCtx();
+  if (!c) return;
   const noise = c.createBufferSource();
   noise.buffer = noiseBuffer(c, 0.22);
   const lpf = c.createBiquadFilter();
@@ -177,6 +183,7 @@ function playHurtSynth() {
 
 function playDeathSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   const gain = c.createGain();
   osc.type = "sawtooth";
@@ -191,6 +198,7 @@ function playDeathSynth() {
 
 function playFootstepSynth() {
   const c = getCtx();
+  if (!c) return;
   const noise = c.createBufferSource();
   noise.buffer = noiseBuffer(c, 0.06);
   const bpf = c.createBiquadFilter();
@@ -208,6 +216,7 @@ function playFootstepSynth() {
 // Sword swoosh — filtered noise burst with a pitch-descending body
 function playSwingSynth() {
   const c = getCtx();
+  if (!c) return;
 
   // High-frequency air-cut noise
   const noise = c.createBufferSource();
@@ -243,6 +252,7 @@ function playSwingSynth() {
 // Enemy pain grunt — short low organic thud + pitch-drop
 function playEnemyHurtSynth() {
   const c = getCtx();
+  if (!c) return;
   // Noise body — body-impact thud
   const noise = c.createBufferSource();
   noise.buffer = noiseBuffer(c, 0.12);
@@ -271,6 +281,7 @@ function playEnemyHurtSynth() {
 // Enemy death scream — descending shriek + thud on landing
 function playEnemyDeathSynth() {
   const c = getCtx();
+  if (!c) return;
   // Shriek — fast descending oscillator
   const shriek = c.createOscillator();
   const shriekGain = c.createGain();
@@ -299,6 +310,7 @@ function playEnemyDeathSynth() {
 // Enemy aggro alert — rising warble when enemy first spots player
 function playEnemyAggroSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   const gain = c.createGain();
   osc.type = "square";
@@ -316,6 +328,7 @@ function playEnemyAggroSynth() {
 // Landing thud — low-pass noise burst, volume scales with fall speed
 function playLandSynth(speed) {
   const c = getCtx();
+  if (!c) return;
   const vol = Math.min(0.65, 0.2 + (speed / 600) * 0.45);
   const noise = c.createBufferSource();
   noise.buffer = noiseBuffer(c, 0.12);
@@ -333,6 +346,7 @@ function playLandSynth(speed) {
 // Weapon switch click — short triangle-wave descending blip
 function playWeaponSwitchSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   const gain = c.createGain();
   osc.type = "triangle";
@@ -349,6 +363,7 @@ function playWeaponSwitchSynth() {
 // Dry fire click — sharp metallic tick when trigger is pulled on empty chamber
 function playDryFireSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   const gain = c.createGain();
   osc.type = "square";
@@ -365,6 +380,7 @@ function playDryFireSynth() {
 // Grenade throw — short air-whoosh, low thud
 function playGrenadeThrowSynth() {
   const c = getCtx();
+  if (!c) return;
   // Whoosh: noise through a high-pass ramping to low-pass
   const buf = noiseBuffer(c, 0.15);
   const src = c.createBufferSource();
@@ -387,6 +403,7 @@ function playGrenadeThrowSynth() {
 // Grenade bounce clunk — dull metallic thud with short ring
 function playBounceClunkSynth() {
   const c = getCtx();
+  if (!c) return;
   // Low-pass noise thud
   const buf = noiseBuffer(c, 0.09);
   const src = c.createBufferSource();
@@ -420,6 +437,7 @@ function playBounceClunkSynth() {
 // Explosion — sub-bass punch, noise decay
 function playExplosionSynth() {
   const c = getCtx();
+  if (!c) return;
   // Sub-bass thud
   const osc = c.createOscillator();
   osc.type = "sine";
@@ -453,6 +471,7 @@ function playExplosionSynth() {
 // Staff cast — magical crystalline charge-and-release
 function playCastSpellSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   osc.type = "sine";
   osc.frequency.setValueAtTime(280, c.currentTime);
