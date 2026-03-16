@@ -16,6 +16,8 @@ export function attachInput(canvas) {
     jumpQueued: false,
     primaryFireQueued: false,
     flashlightToggled: false,
+    weaponSelectQueued: null, // null | "shotgun" | "sword"
+    weaponScrollDelta: 0,     // +1 = scroll down (next), -1 = scroll up (prev)
     pointerLocked: false,
     lookDeltaX: 0,
     lookDeltaY: 0,
@@ -39,6 +41,18 @@ export function attachInput(canvas) {
     }
     if (!event.repeat && event.code === "KeyF") {
       state.flashlightToggled = true;
+    }
+    if (!event.repeat && event.code === "Digit1") {
+      state.weaponSelectQueued = "shotgun";
+    }
+    if (!event.repeat && event.code === "Digit2") {
+      state.weaponSelectQueued = "sword";
+    }
+    if (!event.repeat && event.code === "Digit3") {
+      state.weaponSelectQueued = "grenade";
+    }
+    if (!event.repeat && event.code === "Digit4") {
+      state.weaponSelectQueued = "staff";
     }
     setKeyState(event.code, true);
   });
@@ -76,6 +90,12 @@ export function attachInput(canvas) {
     state.lookDeltaY += event.movementY;
   });
 
+  // Scroll wheel — cycle weapons (deltaY > 0 = scroll down = next weapon)
+  window.addEventListener("wheel", (event) => {
+    if (!state.pointerLocked) return;
+    state.weaponScrollDelta += event.deltaY > 0 ? 1 : -1;
+  }, { passive: true });
+
   return {
     state,
     consumeLookDelta() {
@@ -103,6 +123,18 @@ export function attachInput(canvas) {
       const toggled = state.flashlightToggled;
       state.flashlightToggled = false;
       return toggled;
+    },
+    consumeWeaponSelect() {
+      const sel = state.weaponSelectQueued;
+      state.weaponSelectQueued = null;
+      return sel;
+    },
+    // Returns +1 (next), -1 (prev), or 0 (no scroll this frame).
+    consumeWeaponScroll() {
+      const delta = state.weaponScrollDelta;
+      state.weaponScrollDelta = 0;
+      if (delta === 0) return 0;
+      return delta > 0 ? 1 : -1;
     },
   };
 }

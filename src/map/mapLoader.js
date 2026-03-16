@@ -34,7 +34,7 @@ async function loadQuakePalette() {
     const buffer = await response.arrayBuffer();
     const bytes = new Uint8Array(buffer);
     if (bytes.length < 768) return null;
-    return bytes.slice(0, 768); // 256 × RGB
+    return bytes.slice(0, 768); // 256 Ã— RGB
   } catch {
     return null;
   }
@@ -141,11 +141,15 @@ function applyPlayerSpawn(camera, playerCollider, entities) {
   const yaw = (yawDegrees * Math.PI) / 180;
 
   if (camera && spawnPosition) {
-    camera.position.copyFrom(spawnPosition);
+    // spawnPosition is the player's FEET/base origin (Quake convention).
+    // Camera = eye, which is PLAYER_EYE_HEIGHT above feet.
+    const eyePosition = spawnPosition.clone();
+    eyePosition.y += PLAYER_EYE_HEIGHT;
+    camera.position.copyFrom(eyePosition);
     if (playerCollider) {
-      const eyeOffset = PLAYER_EYE_HEIGHT - PLAYER_HEIGHT / 2;
+      // Collider center = feet + half height
       playerCollider.position.copyFrom(spawnPosition);
-      playerCollider.position.y -= eyeOffset;
+      playerCollider.position.y += PLAYER_HEIGHT / 2;
     }
   }
 
@@ -185,7 +189,7 @@ function computeLightIntensity(raw) {
   return (raw / 100) * 10;
 }
 
-const MAX_TORCH_LIGHTS = 8;
+const MAX_TORCH_LIGHTS = 8;  // UBOs disabled, classic uniforms handle more lights safely
 
 // Prop classname substrings that indicate the prop emits light when its
 // name ends with "_on".  Matches ceiling fans with lights, lamps, lanterns, etc.
@@ -219,14 +223,14 @@ function applyLights(scene, entities) {
     ? new Color3(r / counted, g / counted, b / counted)
     : new Color3(1, 0.95, 0.85);
 
-  // Low-intensity ambient hemispheric — just enough to see
+  // Minimal ambient — just enough to hint at geometry in unlit areas
   const mapLight = new HemisphericLight("map-light", new Vector3(0, 1, 0), scene);
-  mapLight.intensity = 0.4;
-  mapLight.diffuse = avgColor;
+  mapLight.intensity = 0.35;
+  mapLight.diffuse = avgColor.scale(0.5);
   mapLight.groundColor = avgColor.scale(0.15);
   mapLight.specular = Color3.Black();
 
-  // Place a few brightest map light entities as torch point lights
+  // Place brightest map light entities as torch point lights — primary illumination
   const torchCandidates = lightEntities
     .map((entity) => {
       const rawIntensity = parseLightIntensity(entity);
@@ -240,27 +244,24 @@ function applyLights(scene, entities) {
     const torch = new PointLight(`torch-${index}`, position, scene);
     const color = parseLightColor(entity) ?? new Color3(1, 0.75, 0.4);
     torch.diffuse = color;
-    torch.specular = color.scale(0.3);
-    torch.intensity = 2.5;
-    torch.range = rawIntensity != null ? Math.max(30, rawIntensity * 8) : 60;
+    torch.specular = color.scale(0.5);
+    torch.intensity = 18.0;
+    torch.range = rawIntensity != null ? Math.max(120, rawIntensity * 4) : 320;
   });
 
-  // Create point lights for prop light emitters (ceiling lamps, sconces, etc.)
-  // Use a cool-white colour to match fluorescent/industrial fixtures.
+  // Prop light emitters (ceiling lamps, sconces, etc.)
   propLightEntities.forEach((entity, index) => {
     const position = parseOrigin(entity.properties.origin);
     if (!position) return;
 
-    // Prop lights sit at the entity origin which is the fixture itself —
-    // nudge the light source slightly downward so it illuminates the floor.
     const lightPos = position.clone();
     lightPos.y -= 4;
 
     const propLight = new PointLight(`prop-light-${index}`, lightPos, scene);
-    propLight.diffuse  = new Color3(0.95, 0.98, 1.0);   // cool white
-    propLight.specular = new Color3(0.3,  0.32, 0.35);
-    propLight.intensity = 1.8;
-    propLight.range = 80;
+    propLight.diffuse  = new Color3(0.95, 0.98, 1.0);
+    propLight.specular = new Color3(0.4,  0.42, 0.45);
+    propLight.intensity = 8.0;
+    propLight.range = 140;
   });
 
   return lightEntities.length + propLightEntities.length;
@@ -275,6 +276,7 @@ const QUAKE_MONSTER_TYPE_MAP = {
   monster_knight:         "knight",
   monster_hell_knight:    "hell_knight",
   monster_zombie:         "zombie",
+  monster_imp:            "imp",
   monster_wizard:         "wizard",
   monster_demon1:         "fiend",
   monster_shambler:       "shambler",
@@ -377,7 +379,7 @@ function applyDoorsAndTriggers(scene, entities, textureProvider, materialCache) 
   const doorSystem    = createDoorSystem(scene);
   const triggerSystem = createTriggerSystem();
 
-  // ── Register func_door entities ─────────────────────────────────────────
+  // â"€â"€ Register func_door entities â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   entities
     .filter((e) => DOOR_CLASSNAMES.has(e.classname) && e.brushes.length > 0)
     .forEach((entity, i) => {
@@ -390,7 +392,7 @@ function applyDoorsAndTriggers(scene, entities, textureProvider, materialCache) 
       doorSystem.registerDoor(entity, meshes, bounds, root);
     });
 
-  // ── Register trigger volumes ─────────────────────────────────────────────
+  // â"€â"€ Register trigger volumes â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   entities
     .filter((e) => TRIGGER_CLASSNAMES.has(e.classname) && e.brushes.length > 0)
     .forEach((entity) => {
@@ -398,7 +400,7 @@ function applyDoorsAndTriggers(scene, entities, textureProvider, materialCache) 
       triggerSystem.registerTrigger(entity, bounds);
     });
 
-  // ── Relay point entities (no brushes) also handled here ─────────────────
+  // â"€â"€ Relay point entities (no brushes) also handled here â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   // (trigger_relay is a point entity that fires a target when activated;
   //  it's registered as a named door-system target that just fires onward)
 
@@ -441,7 +443,7 @@ export async function loadMap(scene, options = {}) {
     materialCache,
   );
 
-  // Wire trigger → door activation
+  // Wire trigger â†' door activation
   const onTriggerFire = (target) => {
     if (target) doorSystem.activate(target);
   };

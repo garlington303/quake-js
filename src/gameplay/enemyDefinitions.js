@@ -1,7 +1,71 @@
-const SKULL_SHEET_URL = new URL("../../assets/enemies/skull_sheet.png", import.meta.url).href;
+﻿const SKULL_SHEET_URL = new URL("../../assets/enemies/skull_sheet.png", import.meta.url).href;
+
+// Base URL for the Meshy imp model folder.
+// "character output.glb" has a space — we encode it so URL parsing stays clean.
+const IMP_BASE = "/models/enemies/meshy_monster_imp";
 
 export const ENEMY_DEFINITIONS = {
-  // Stubs — replace spriteSheetUrl when sprite sheets are available
+  // ── Meshy AI rigged enemy ────────────────────────────────────────────────
+  imp: {
+    // Gameplay stats
+    name:                   "imp",
+    health:                 30,
+    attackDamage:           12,
+    attackRange:            72,          // claw reach (Quake units)
+    attackCooldownSeconds:  0.9,
+    sightRange:             480,
+    speed:                  54,          // fast, skittery
+
+    // Ground movement
+    movementMode:           "ground",
+    hitRadius:              18,
+    size:                   56,
+    knockdownCount:         0,           // dies cleanly, no knockdown phase
+
+    // ── Skeletal animation setup ──────────────────────────────────────────
+    modelType: "skeletal",
+
+    // One GLB per animation clip (Meshy AI export format).
+    // Keys must match what enemySystem.js requests: idle / walk / attack / pain / death.
+    modelAnims: {
+      idle:    `${IMP_BASE}/character_output.glb`,   // standing / base pose
+      walk:    `${IMP_BASE}/monster_imp_walking.glb`,
+      run:     `${IMP_BASE}/monster_imp_running.glb`,  // used when closing distance fast
+      attack:  `${IMP_BASE}/monster_imp_attack.glb`,
+      attack2: `${IMP_BASE}/monster_imp_attack2.glb`,  // alternate claw combo
+    },
+
+    // Model tuning — tweak if the imp floats or clips into the floor.
+    modelFootLift: 0,
+
+    // Rotation offset (radians) applied on top of setFacing yaw.
+    // Meshy GLBs typically face –Z after glTF import → add Math.PI to flip.
+    // If the imp faces backwards in-game, toggle between 0 and Math.PI here.
+    modelFacingOffset: 0,
+
+    // Hitbox override (Quake units) — used by getHitbox() in the skeletal loader.
+    modelHalfHeight: 28,
+    modelRadius:     16,
+
+    // Animation playback rates (fps) per state - tuned per character feel
+    modelAnimRates: {
+      idle:   10,  // base pose, slow
+      walk:   12,  // skittery scuttle
+      attack: 18,  // fast claw strike
+      pain:   14,
+      death:  10,
+    },
+
+    // Sprite fallbacks (unused but required by the shared interface)
+    animation:    { delayMs: 100, from: 0, to: 3 },
+    bobAmplitude: 0,
+    bobSpeed:     0,
+    cellHeight:   256,
+    cellWidth:    256,
+    spriteSheetUrl: SKULL_SHEET_URL,
+  },
+
+  // ── Stubs — replace spriteSheetUrl when sprite sheets are available ──────
   grunt: {
     animation: { delayMs: 120, from: 0, to: 3 },
     attackCooldownSeconds: 1.5,
@@ -18,6 +82,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 400,
     size: 56,
     speed: 36,
+    modelAnimRates: { idle: 8, walk: 10, attack: 14, pain: 10, death: 8 },
     spriteSheetUrl: SKULL_SHEET_URL, // placeholder
     modelUrl: "/models/enemies/soldier.glb",
   },
@@ -40,6 +105,16 @@ export const ENEMY_DEFINITIONS = {
     speed: 24,
     spriteSheetUrl: SKULL_SHEET_URL, // placeholder
     modelUrl: "/models/enemies/zombie.glb",
+    modelFrameRate: 2.5,
+    modelAnimRates: {
+      idle:   3,   // lurching stand
+      walk:   4,   // shambling walk
+      attack: 6,   // toss arm
+      pain:   5,   // slow collapse / knockdown fall
+      death:  4,   // cruc_ crucifixion frames
+    },
+    modelFootLift: 10,
+    knockdownCount: 1,
   },
 
   knight: {
@@ -58,6 +133,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 420,
     size: 64,
     speed: 40,
+    modelAnimRates: { idle: 8, walk: 10, attack: 14, pain: 10, death: 8 },
     spriteSheetUrl: SKULL_SHEET_URL, // placeholder
     modelUrl: "/models/enemies/knight.glb",
     modelFootLift: 10,
@@ -79,6 +155,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 450,
     size: 72,
     speed: 30,
+    modelAnimRates: { idle: 7, walk: 9, attack: 12, pain: 9, death: 7 },
     spriteSheetUrl: SKULL_SHEET_URL, // placeholder
     modelUrl: "/models/enemies/ogre.glb",
   },
@@ -99,6 +176,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 500,
     size: 72,
     speed: 58,
+    modelAnimRates: { idle: 10, walk: 14, attack: 18, pain: 12, death: 10 },
     spriteSheetUrl: SKULL_SHEET_URL, // placeholder
     modelUrl: "/models/enemies/fiend.glb",
   },
@@ -119,11 +197,11 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 600,
     size: 96,
     speed: 28,
+    modelAnimRates: { idle: 6, walk: 8, attack: 10, pain: 8, death: 6 },
     spriteSheetUrl: SKULL_SHEET_URL,
     modelUrl: "/models/enemies/shambler.glb",
   },
 
-  // Quake standard monster names — stats match original Quake QuakeC
   soldier: {
     animation: { delayMs: 120, from: 0, to: 3 },
     attackCooldownSeconds: 1.5,
@@ -137,6 +215,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 400,
     size: 56,
     speed: 36,
+    modelAnimRates: { idle: 8, walk: 10, attack: 12, pain: 10, death: 8 },
     spriteSheetUrl: SKULL_SHEET_URL,
     modelUrl: "/models/enemies/soldier.glb",
   },
@@ -154,6 +233,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 350,
     size: 40,
     speed: 64,
+    modelAnimRates: { idle: 10, walk: 16, attack: 18, pain: 12, death: 10 },
     spriteSheetUrl: SKULL_SHEET_URL,
     modelUrl: "/models/enemies/dog.glb",
   },
@@ -171,6 +251,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 500,
     size: 72,
     speed: 50,
+    modelAnimRates: { idle: 8, walk: 11, attack: 14, pain: 10, death: 8 },
     spriteSheetUrl: SKULL_SHEET_URL,
     modelUrl: "/models/enemies/hell_knight.glb",
   },
@@ -188,6 +269,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 480,
     size: 56,
     speed: 48,
+    modelAnimRates: { idle: 9, walk: 11, attack: 14, pain: 10, death: 9 },
     spriteSheetUrl: SKULL_SHEET_URL,
     modelUrl: "/models/enemies/wizard.glb",
   },
@@ -205,6 +287,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 520,
     size: 80,
     speed: 36,
+    modelAnimRates: { idle: 8, walk: 10, attack: 11, pain: 9, death: 8 },
     spriteSheetUrl: SKULL_SHEET_URL,
     modelUrl: "/models/enemies/shalrath.glb",
   },
@@ -222,6 +305,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 300,
     size: 40,
     speed: 72,
+    modelAnimRates: { idle: 10, walk: 14, attack: 16, pain: 10, death: 12 },
     spriteSheetUrl: SKULL_SHEET_URL,
     modelUrl: "/models/enemies/tarbaby.glb",
   },
@@ -239,6 +323,7 @@ export const ENEMY_DEFINITIONS = {
     sightRange: 280,
     size: 40,
     speed: 56,
+    modelAnimRates: { idle: 10, walk: 12, attack: 14, pain: 10, death: 10 },
     spriteSheetUrl: SKULL_SHEET_URL,
     modelUrl: "/models/enemies/fish.glb",
   },

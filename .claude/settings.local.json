@@ -24,7 +24,8 @@
       "Bash(curl -s -o hud_ammo_panel_new2.png \"https://da8ztllw6by0f.cloudfront.net/d4f289e19413418461595fa34f2c0c80.png\")",
       "Bash(curl -s -o hud_panel_bg_new2.png \"https://da8ztllw6by0f.cloudfront.net/68cb81e4f7cb9d6169a96ab6082eb64c.png\")",
       "Bash(curl -s -o hud_crosshair_new2.png \"https://da8ztllw6by0f.cloudfront.net/4a4da5d280db07993c235914b86617de.png\")",
-      "Bash(curl -s -o /d/Games/quake-js/public/ui/hud_crosshair_new3.png \"https://da8ztllw6by0f.cloudfront.net/cd2e0a5f2def7d6b9d656cb35ede51c6.png\")"
+      "Bash(curl -s -o /d/Games/quake-js/public/ui/hud_crosshair_new3.png \"https://da8ztllw6by0f.cloudfront.net/cd2e0a5f2def7d6b9d656cb35ede51c6.png\")",
+      "Bash(find /d/Games/quake-js -name *.glsl -o -name *.shader)"
     ]
   }
 }

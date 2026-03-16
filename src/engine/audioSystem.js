@@ -1,4 +1,4 @@
-/**
+﻿/**
  * audioSystem.js
  * Uses audio files from /public/sounds with synth fallbacks.
  * AudioContext is created lazily on first call so it follows user gestures.
@@ -15,7 +15,7 @@ const SOUND_LIBRARY = {
   pickup:  { files: ["ITEM1.WAV", "ITEM2.WAV", "ITEM5.WAV"], volume: 0.7 },
   hurt:    { files: ["PUNCH6.WAV", "PUNCH4.WAV"], volume: 0.8 },
   death:   { files: ["EXPLODE10.WAV", "EXPLODE14.WAV"], volume: 0.9 },
-  footstep:{ files: ["STEP1.WAV"], volume: 0.35 },
+  footstep:{ files: ["STEP1.WAV"], volume: 0.35, pitchVariation: 0.2 },
 };
 
 const buffers = new Map();
@@ -76,6 +76,9 @@ async function playSample(key) {
     const gain = ctx.createGain();
     gain.gain.value = entry.volume;
     source.buffer = buffer;
+    if (entry.pitchVariation) {
+      source.playbackRate.value = 1.0 + (Math.random() - 0.5) * entry.pitchVariation;
+    }
     source.connect(gain);
     gain.connect(masterGain);
     source.start();
@@ -202,6 +205,282 @@ function playFootstepSynth() {
   noise.start();
 }
 
+// Sword swoosh — filtered noise burst with a pitch-descending body
+function playSwingSynth() {
+  const c = getCtx();
+
+  // High-frequency air-cut noise
+  const noise = c.createBufferSource();
+  noise.buffer = noiseBuffer(c, 0.18);
+  const hpf = c.createBiquadFilter();
+  hpf.type = "highpass";
+  hpf.frequency.value = 1800;
+  const noiseGain = c.createGain();
+  noiseGain.gain.setValueAtTime(0.001, c.currentTime);
+  noiseGain.gain.linearRampToValueAtTime(0.38, c.currentTime + 0.03);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.18);
+  noise.connect(hpf);
+  hpf.connect(noiseGain);
+  noiseGain.connect(masterGain ?? c.destination);
+  noise.start();
+
+  // Tone whoosh — descends quickly to give a whip crack feel
+  const osc = c.createOscillator();
+  const oscGain = c.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(520, c.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(120, c.currentTime + 0.14);
+  oscGain.gain.setValueAtTime(0.001, c.currentTime);
+  oscGain.gain.linearRampToValueAtTime(0.18, c.currentTime + 0.02);
+  oscGain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.14);
+  osc.connect(oscGain);
+  oscGain.connect(masterGain ?? c.destination);
+  osc.start();
+  osc.stop(c.currentTime + 0.18);
+}
+
+
+// Enemy pain grunt — short low organic thud + pitch-drop
+function playEnemyHurtSynth() {
+  const c = getCtx();
+  // Noise body — body-impact thud
+  const noise = c.createBufferSource();
+  noise.buffer = noiseBuffer(c, 0.12);
+  const lpf = c.createBiquadFilter();
+  lpf.type = "lowpass";
+  lpf.frequency.value = 420;
+  const noiseGain = c.createGain();
+  ramp(noiseGain.gain, 0.45, 0.001, 0.12);
+  noise.connect(lpf);
+  lpf.connect(noiseGain);
+  noiseGain.connect(masterGain ?? c.destination);
+  noise.start();
+  // Pitch drop — organic grunt
+  const osc = c.createOscillator();
+  const oscGain = c.createGain();
+  osc.type = "sawtooth";
+  osc.frequency.setValueAtTime(320, c.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(80, c.currentTime + 0.14);
+  ramp(oscGain.gain, 0.22, 0.001, 0.14);
+  osc.connect(oscGain);
+  oscGain.connect(masterGain ?? c.destination);
+  osc.start();
+  osc.stop(c.currentTime + 0.15);
+}
+
+// Enemy death scream — descending shriek + thud on landing
+function playEnemyDeathSynth() {
+  const c = getCtx();
+  // Shriek — fast descending oscillator
+  const shriek = c.createOscillator();
+  const shriekGain = c.createGain();
+  shriek.type = "sawtooth";
+  shriek.frequency.setValueAtTime(780, c.currentTime);
+  shriek.frequency.exponentialRampToValueAtTime(55, c.currentTime + 0.55);
+  shriekGain.gain.setValueAtTime(0.001, c.currentTime);
+  shriekGain.gain.linearRampToValueAtTime(0.38, c.currentTime + 0.03);
+  shriekGain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.55);
+  shriek.connect(shriekGain);
+  shriekGain.connect(masterGain ?? c.destination);
+  shriek.start();
+  shriek.stop(c.currentTime + 0.56);
+  // Thud on landing
+  const thud = c.createOscillator();
+  const thudGain = c.createGain();
+  thud.frequency.setValueAtTime(90, c.currentTime + 0.45);
+  thud.frequency.exponentialRampToValueAtTime(28, c.currentTime + 0.7);
+  ramp(thudGain.gain, 0.5, 0.001, 0.25);
+  thud.connect(thudGain);
+  thudGain.connect(masterGain ?? c.destination);
+  thud.start(c.currentTime + 0.45);
+  thud.stop(c.currentTime + 0.75);
+}
+
+// Enemy aggro alert — rising warble when enemy first spots player
+function playEnemyAggroSynth() {
+  const c = getCtx();
+  const osc = c.createOscillator();
+  const gain = c.createGain();
+  osc.type = "square";
+  osc.frequency.setValueAtTime(200, c.currentTime);
+  osc.frequency.linearRampToValueAtTime(440, c.currentTime + 0.12);
+  osc.frequency.linearRampToValueAtTime(300, c.currentTime + 0.22);
+  gain.gain.setValueAtTime(0.001, c.currentTime);
+  gain.gain.linearRampToValueAtTime(0.18, c.currentTime + 0.04);
+  gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.22);
+  osc.connect(gain);
+  gain.connect(masterGain ?? c.destination);
+  osc.start();
+  osc.stop(c.currentTime + 0.23);
+}
+// Landing thud — low-pass noise burst, volume scales with fall speed
+function playLandSynth(speed) {
+  const c = getCtx();
+  const vol = Math.min(0.65, 0.2 + (speed / 600) * 0.45);
+  const noise = c.createBufferSource();
+  noise.buffer = noiseBuffer(c, 0.12);
+  const lpf = c.createBiquadFilter();
+  lpf.type = "lowpass";
+  lpf.frequency.value = 180;
+  const gain = c.createGain();
+  ramp(gain.gain, vol, 0.001, 0.12);
+  noise.connect(lpf);
+  lpf.connect(gain);
+  gain.connect(masterGain ?? c.destination);
+  noise.start();
+}
+
+// Weapon switch click — short triangle-wave descending blip
+function playWeaponSwitchSynth() {
+  const c = getCtx();
+  const osc = c.createOscillator();
+  const gain = c.createGain();
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(300, c.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(120, c.currentTime + 0.06);
+  gain.gain.setValueAtTime(0.3, c.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.06);
+  osc.connect(gain);
+  gain.connect(masterGain ?? c.destination);
+  osc.start();
+  osc.stop(c.currentTime + 0.07);
+}
+
+// Dry fire click — sharp metallic tick when trigger is pulled on empty chamber
+function playDryFireSynth() {
+  const c = getCtx();
+  const osc = c.createOscillator();
+  const gain = c.createGain();
+  osc.type = "square";
+  osc.frequency.setValueAtTime(1200, c.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(400, c.currentTime + 0.025);
+  gain.gain.setValueAtTime(0.25, c.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.03);
+  osc.connect(gain);
+  gain.connect(masterGain ?? c.destination);
+  osc.start();
+  osc.stop(c.currentTime + 0.035);
+}
+
+// Grenade throw — short air-whoosh, low thud
+function playGrenadeThrowSynth() {
+  const c = getCtx();
+  // Whoosh: noise through a high-pass ramping to low-pass
+  const buf = noiseBuffer(c, 0.15);
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  const bpf = c.createBiquadFilter();
+  bpf.type = "bandpass";
+  bpf.frequency.setValueAtTime(800, c.currentTime);
+  bpf.frequency.exponentialRampToValueAtTime(200, c.currentTime + 0.15);
+  bpf.Q.value = 1.2;
+  const g = c.createGain();
+  g.gain.setValueAtTime(0.5, c.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.15);
+  src.connect(bpf);
+  bpf.connect(g);
+  g.connect(masterGain ?? c.destination);
+  src.start();
+  src.stop(c.currentTime + 0.15);
+}
+
+// Grenade bounce clunk — dull metallic thud with short ring
+function playBounceClunkSynth() {
+  const c = getCtx();
+  // Low-pass noise thud
+  const buf = noiseBuffer(c, 0.09);
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  const lpf = c.createBiquadFilter();
+  lpf.type = "lowpass";
+  lpf.frequency.setValueAtTime(900, c.currentTime);
+  lpf.frequency.exponentialRampToValueAtTime(180, c.currentTime + 0.09);
+  const ng = c.createGain();
+  ng.gain.setValueAtTime(0.38, c.currentTime);
+  ng.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.09);
+  src.connect(lpf);
+  lpf.connect(ng);
+  ng.connect(masterGain ?? c.destination);
+  src.start();
+  src.stop(c.currentTime + 0.09);
+  // Short metallic ring
+  const osc = c.createOscillator();
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(220, c.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(90, c.currentTime + 0.18);
+  const og = c.createGain();
+  og.gain.setValueAtTime(0.18, c.currentTime);
+  og.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.18);
+  osc.connect(og);
+  og.connect(masterGain ?? c.destination);
+  osc.start();
+  osc.stop(c.currentTime + 0.18);
+}
+
+// Explosion — sub-bass punch, noise decay
+function playExplosionSynth() {
+  const c = getCtx();
+  // Sub-bass thud
+  const osc = c.createOscillator();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(90, c.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(25, c.currentTime + 0.45);
+  const oscGain = c.createGain();
+  oscGain.gain.setValueAtTime(1.0, c.currentTime);
+  oscGain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.45);
+  osc.connect(oscGain);
+  oscGain.connect(masterGain ?? c.destination);
+  osc.start();
+  osc.stop(c.currentTime + 0.45);
+  // Noise burst
+  const buf = noiseBuffer(c, 0.5);
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  const lpf = c.createBiquadFilter();
+  lpf.type = "lowpass";
+  lpf.frequency.setValueAtTime(3000, c.currentTime);
+  lpf.frequency.exponentialRampToValueAtTime(200, c.currentTime + 0.5);
+  const ng = c.createGain();
+  ng.gain.setValueAtTime(0.75, c.currentTime);
+  ng.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.5);
+  src.connect(lpf);
+  lpf.connect(ng);
+  ng.connect(masterGain ?? c.destination);
+  src.start();
+  src.stop(c.currentTime + 0.5);
+}
+
+// Staff cast — magical crystalline charge-and-release
+function playCastSpellSynth() {
+  const c = getCtx();
+  const osc = c.createOscillator();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(280, c.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(880, c.currentTime + 0.08);
+  osc.frequency.exponentialRampToValueAtTime(440, c.currentTime + 0.22);
+  const g = c.createGain();
+  g.gain.setValueAtTime(0.0001, c.currentTime);
+  g.gain.linearRampToValueAtTime(0.4, c.currentTime + 0.06);
+  g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.22);
+  osc.connect(g);
+  g.connect(masterGain ?? c.destination);
+  osc.start();
+  osc.stop(c.currentTime + 0.22);
+  // Shimmer overtone
+  const osc2 = c.createOscillator();
+  osc2.type = "triangle";
+  osc2.frequency.setValueAtTime(560, c.currentTime);
+  osc2.frequency.exponentialRampToValueAtTime(1760, c.currentTime + 0.18);
+  const g2 = c.createGain();
+  g2.gain.setValueAtTime(0.0001, c.currentTime);
+  g2.gain.linearRampToValueAtTime(0.2, c.currentTime + 0.04);
+  g2.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.18);
+  osc2.connect(g2);
+  g2.connect(masterGain ?? c.destination);
+  osc2.start();
+  osc2.stop(c.currentTime + 0.18);
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export function createAudioSystem() {
@@ -239,6 +518,23 @@ export function createAudioSystem() {
     playSample("footstep").then((ok) => { if (!ok) playFootstepSynth(); });
   };
 
+  // Sword swing — synth only (no WAV file needed)
+  const playSwing = () => {
+    getCtx();
+    playSwingSynth();
+  };
+
+  const playEnemyHurt  = () => { getCtx(); playEnemyHurtSynth(); };
+  const playEnemyDeath = () => { getCtx(); playEnemyDeathSynth(); };
+  const playEnemyAggro = () => { getCtx(); playEnemyAggroSynth(); };
+  const playLand = (speed = 200) => { getCtx(); playLandSynth(speed); };
+  const playWeaponSwitch = () => { getCtx(); playWeaponSwitchSynth(); };
+  const playDryFire = () => { getCtx(); playDryFireSynth(); };
+  const playGrenadeThrow = () => { getCtx(); playGrenadeThrowSynth(); };
+  const playBounce = () => { getCtx(); playBounceClunkSynth(); };
+  const playExplosion = () => { getCtx(); playExplosionSynth(); };
+  const playCastSpell = () => { getCtx(); playCastSpellSynth(); };
+
   return {
     playShoot,
     playHit,
@@ -246,6 +542,17 @@ export function createAudioSystem() {
     playHurt,
     playDeath,
     playFootstep,
+    playSwing,
+    playEnemyHurt,
+    playEnemyDeath,
+    playEnemyAggro,
+    playLand,
+    playWeaponSwitch,
+    playDryFire,
+    playGrenadeThrow,
+    playBounce,
+    playExplosion,
+    playCastSpell,
     resume: () => {
       getCtx();
       preloadAll();

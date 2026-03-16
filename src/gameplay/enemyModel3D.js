@@ -1,4 +1,4 @@
-/**
+﻿/**
  * enemyModel3D.js
  * Loads a Quake GLB model (morph-target animated) and drives frame animation.
  *
@@ -20,13 +20,32 @@ import "@babylonjs/loaders/glTF"; // register glTF loader
 
 const FRAME_RATE = 10; // frames per second for morph animation
 
-// Quake animation group prefix patterns (ordered, first match wins)
+// Quake animation group prefix patterns (ordered, first match wins).
+// Covers both generic names and monster-specific Quake MDL conventions
+// (e.g. zombie uses zdie/zpain/ztoss, knight uses knigh/kpain, etc.)
 const ANIM_PREFIXES = [
-  { name: "idle",   prefixes: ["stand", "idle"] },
-  { name: "walk",   prefixes: ["run", "walk"] },
-  { name: "attack", prefixes: ["attak", "attack", "shoot", "melee"] },
-  { name: "pain",   prefixes: ["pain"] },
-  { name: "death",  prefixes: ["deth", "death", "die"] },
+  // idle: stand/hover covers most enemies; fly covers tarbaby/wizard base pose
+  { name: "idle",   prefixes: ["stand", "idle", "hover", "fly"] },
+  // walk: run is the most common quake walk; swim covers fish
+  { name: "walk",   prefixes: ["run", "walk", "crawl", "swim"] },
+  // attack: extended to cover hell_knight (slice/smash/w_attack/char_a/magic),
+  //         wizard (magatt), tarbaby (jump), fiend/dog (leap)
+  { name: "attack", prefixes: [
+      "attak", "attack", "att",
+      "shoot", "melee",
+      "ztoss", "toss", "throw",
+      "slash", "swing", "claw", "bite",
+      "slice", "smash",
+      "w_attack", "char_a", "magatt", "magic",
+      "jump", "leap",
+    ] },
+  { name: "pain",   prefixes: ["pain", "zpain", "kpain", "opain"] },
+  // death: cruc covers zombie's cruc_1-6; exp covers tarbaby explosion
+  { name: "death",  prefixes: [
+      "deth", "death", "die",
+      "zdie", "bdeath", "rdeath", "crumpl", "chunk",
+      "cruc", "exp",
+    ] },
   { name: "extra",  prefixes: [] }, // catch-all
 ];
 
@@ -121,6 +140,13 @@ export async function loadEnemyModel(scene, modelUrl, position, options = {}) {
   const mainMesh = meshes[0];
   const mtm = mainMesh.morphTargetManager;
   const groups = groupFrames(mtm);
+  console.log(`[enemyModel3D] ${filename} animation groups:`,
+    Object.entries(groups).map(([k, v]) => `${k}(${v.length})`).join(", ") || "(none)");
+  // Log ALL frame names per group so we can verify / extend prefix lists.
+  for (const [gName, indices] of Object.entries(groups)) {
+    const names = indices.map((i) => mtm.getTarget(i).name);
+    console.log(`  [${gName}] frames (${names.length}):`, names.join(", "));
+  }
 
   // __root__ is the top-level container; position it so all children follow.
   // The MDL→GLB export maps Quake Z (up) to Blender Y (forward), which ends up
@@ -154,6 +180,10 @@ export async function loadEnemyModel(scene, modelUrl, position, options = {}) {
   const bias = Math.min(FOOT_BIAS_UNITS, modelHeight * 0.02);
   const footLift = Number.isFinite(options.footLift) ? options.footLift : 3;
   const groundOffset = -(bbox.minimumWorld.y + bias) + footLift;
+  const baseFrameRate = Number.isFinite(options.frameRate) && options.frameRate > 0
+    ? options.frameRate
+    : FRAME_RATE;
+  let currentFrameRate = baseFrameRate;
   rootMesh.position.copyFrom(position);
   rootMesh.position.y += groundOffset;
 
@@ -164,33 +194,68 @@ export async function loadEnemyModel(scene, modelUrl, position, options = {}) {
   let looping = true;
   let done = false;
 
-  function applyFrame(idx) {
+  // Apply morph influences with linear blend between current and next frame.
+  // blendFactor 0 = fully current frame, 1 = fully next frame.
+  function applyFrame(idx, blendFactor = 0) {
     const count = mtm.numTargets;
     for (let i = 0; i < count; i++) {
       mtm.getTarget(i).influence = 0;
     }
-    if (currentGroup.length > 0) {
-      mtm.getTarget(currentGroup[idx]).influence = 1;
+    if (currentGroup.length === 0) return;
+    const nextIdx = (idx + 1) % currentGroup.length;
+    mtm.getTarget(currentGroup[idx]).influence = 1 - blendFactor;
+    // Only write the next-frame influence when it differs (avoids fighting
+    // the same target when the group has only one frame).
+    if (nextIdx !== idx) {
+      mtm.getTarget(currentGroup[nextIdx]).influence = blendFactor;
     }
   }
 
   applyFrame(0);
 
-  function playAnimation(name, loop = true) {
-    const g = groups[name];
-    if (!g) return;
+  function playAnimation(name, loop = true, rateOverride = null) {
+    let g = groups[name];
+    if (!g) {
+      // Graceful cross-substitution: fish/shalrath have no idle (swim→walk),
+      // wizard has no walk (hover→idle). Avoids freezing on missing groups.
+      if (name === "idle" && groups.walk) g = groups.walk;
+      else if (name === "walk" && groups.idle) g = groups.idle;
+    }
+    if (!g) {
+      // Nothing available — stay on current animation rather than breaking.
+      return;
+    }
     currentGroup = g;
     frameIndex = 0;
     frameAccum = 0;
     looping = loop;
     done = false;
+    currentFrameRate = (Number.isFinite(rateOverride) && rateOverride > 0) ? rateOverride : baseFrameRate;
+    applyFrame(0);
+  }
+
+  // Play an animation group in reverse order (e.g. fall → rise).
+  // Reverses the index array so existing forward-play logic works unchanged.
+  function playAnimationReverse(name, loop = false, rateOverride = null) {
+    let g = groups[name];
+    if (!g) {
+      if (name === "idle" && groups.walk) g = groups.walk;
+      else if (name === "walk" && groups.idle) g = groups.idle;
+    }
+    if (!g) return;
+    currentGroup = g.slice().reverse();
+    frameIndex = 0;
+    frameAccum = 0;
+    looping = loop;
+    done = false;
+    currentFrameRate = (Number.isFinite(rateOverride) && rateOverride > 0) ? rateOverride : baseFrameRate;
     applyFrame(0);
   }
 
   function update(deltaTime) {
     if (done || currentGroup.length === 0) return;
     frameAccum += deltaTime;
-    const frameDuration = 1 / FRAME_RATE;
+    const frameDuration = 1 / currentFrameRate;
     while (frameAccum >= frameDuration) {
       frameAccum -= frameDuration;
       frameIndex++;
@@ -204,7 +269,9 @@ export async function loadEnemyModel(scene, modelUrl, position, options = {}) {
         }
       }
     }
-    applyFrame(frameIndex);
+    // Blend smoothly toward the next frame using the sub-frame accumulator.
+    const blend = done ? 0 : frameAccum / frameDuration;
+    applyFrame(frameIndex, blend);
   }
 
   function setPosition(pos) {
@@ -249,9 +316,11 @@ export async function loadEnemyModel(scene, modelUrl, position, options = {}) {
     },
     setPosition,
     playAnimation,
+    playAnimationReverse,
     update,
     dispose,
     hasAnimation: (name) => Boolean(groups[name]),
+    isDone: () => done,
     setFacing,
     setHitFlash,
   };

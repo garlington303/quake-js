@@ -1,4 +1,4 @@
-import { Color3, DirectionalLight, HemisphericLight, ImageProcessingConfiguration, MeshBuilder, Scene, StandardMaterial, Vector3 } from "@babylonjs/core";
+import { Color3, Color4, DirectionalLight, GlowLayer, HemisphericLight, ImageProcessingConfiguration, MeshBuilder, Scene, StandardMaterial, Vector3 } from "@babylonjs/core";
 
 const GRAVITY_UNITS_PER_SECOND_SQUARED = 800;
 
@@ -64,32 +64,40 @@ export function createFallbackEnvironment(scene) {
 export function createScene(engine, canvas) {
   const scene = new Scene(engine);
 
-  scene.clearColor.set(0.08, 0.1, 0.14, 1.0);
+  scene.clearColor = new Color4(0.01, 0.01, 0.02, 1.0);
   scene.collisionsEnabled = true;
   scene.gravity = new Vector3(0, -GRAVITY_UNITS_PER_SECOND_SQUARED, 0);
 
+  // ── Minimal ambient — dark but geometry always readable ─────────────────
   const keyLight = new DirectionalLight("key-light", new Vector3(-0.35, -1, -0.25), scene);
-  keyLight.intensity = 0.8;
-  keyLight.diffuse = new Color3(1, 0.96, 0.9);
-  keyLight.specular = new Color3(0.3, 0.3, 0.3);
+  keyLight.intensity = 0.45;
+  keyLight.diffuse = new Color3(0.28, 0.28, 0.35);
+  keyLight.specular = new Color3(0.06, 0.06, 0.08);
 
   const light = new HemisphericLight("sky-light", new Vector3(0.2, 1, 0.1), scene);
-  light.intensity = 0.5;
-  light.diffuse = new Color3(0.7, 0.72, 0.78);
-  light.groundColor = new Color3(0.2, 0.22, 0.28);
+  light.intensity = 0.3;
+  light.diffuse = new Color3(0.18, 0.18, 0.24);
+  light.groundColor = new Color3(0.06, 0.06, 0.1);
   light.specular = Color3.Black();
 
-  const fillLight = new HemisphericLight("fill-light", new Vector3(0, -1, 0), scene);
-  fillLight.intensity = 0.2;
-  fillLight.diffuse = new Color3(0.35, 0.32, 0.38);
-  fillLight.groundColor = new Color3(0.3, 0.28, 0.25);
-  fillLight.specular = Color3.Black();
+  scene.ambientColor = new Color3(0.1, 0.1, 0.12);
 
-  scene.ambientColor = new Color3(0.15, 0.15, 0.18);
+  // ── Fog — exponential depth haze ────────────────────────────────────────
+  scene.fogMode = Scene.FOGMODE_EXP2;
+  scene.fogDensity = 0.0015;
+  scene.fogColor = new Color3(0.01, 0.01, 0.02);
 
+  // ── Glow layer — bloom on emissive surfaces (torches, muzzle flash) ────
+  const glowLayer = new GlowLayer("glow", scene, {
+    mainTextureFixedSize: 512,
+    blurKernelSize: 64,
+  });
+  glowLayer.intensity = 1.1;
+
+  // ── Cinematic color grading ─────────────────────────────────────────────
   const imageProcessing = scene.imageProcessingConfiguration;
-  imageProcessing.exposure = 1.3;
-  imageProcessing.contrast = 1.3;
+  imageProcessing.exposure = 2.2;
+  imageProcessing.contrast = 1.4;
   imageProcessing.toneMappingEnabled = true;
   imageProcessing.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
 

@@ -7,6 +7,7 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
 import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData.js";
 
 const EPSILON = 0.01;
+const INSIDE_EPSILON = 0.1;  // generous tolerance for pointInsideBrush on large brushes
 const TEXTURE_SIZE = 128;
 
 function colorFromIndex(index) {
@@ -298,27 +299,58 @@ function projectUv(point, face) {
   };
 }
 
+function buildOrientedFaceSet(faces, flipAll) {
+  return faces.map((face) => {
+    const [pointA, pointB, pointC] = face.points;
+    let normal = normalize(cross(subtract(pointB, pointA), subtract(pointC, pointA)));
+    if (flipAll) normal = scale(normal, -1);
+    const distance = dot(normal, pointA);
+    return { ...face, plane: { normal, distance } };
+  });
+}
+
+function countValidVertices(orientedFaces) {
+  let count = 0;
+  for (let i = 0; i < orientedFaces.length; i++) {
+    for (let j = i + 1; j < orientedFaces.length; j++) {
+      for (let k = j + 1; k < orientedFaces.length; k++) {
+        const point = intersectPlanes(
+          orientedFaces[i].plane, orientedFaces[j].plane, orientedFaces[k].plane,
+        );
+        if (point && pointInsideBrush(point, orientedFaces)) {
+          count++;
+          if (count >= 3) return count; // early-out: enough to confirm valid
+        }
+      }
+    }
+  }
+  return count;
+}
+
 function orientFaces(brush) {
+  // Two-pass approach: the winding order of face-definition points may give
+  // outward OR inward normals depending on the editor.  Try the initial cross
+  // product direction first; if no valid brush vertices emerge, flip all
+  // normals.  This avoids the old seed-point-average heuristic which failed
+  // on thin wall/ceiling brushes.
+  const initial = buildOrientedFaceSet(brush.faces, false);
+  if (countValidVertices(initial) >= 3) return initial;
+
+  const flipped = buildOrientedFaceSet(brush.faces, true);
+  if (countValidVertices(flipped) >= 3) return flipped;
+
+  // Fallback: use seed-point average heuristic (original approach)
   const seedPoints = brush.faces.flatMap((face) => face.points);
   const interiorPoint = averagePoint(seedPoints);
-
   return brush.faces.map((face) => {
     const [pointA, pointB, pointC] = face.points;
     let normal = normalize(cross(subtract(pointB, pointA), subtract(pointC, pointA)));
     let distance = dot(normal, pointA);
-
     if (dot(normal, interiorPoint) > distance) {
       normal = scale(normal, -1);
       distance = dot(normal, pointA);
     }
-
-    return {
-      ...face,
-      plane: {
-        normal,
-        distance,
-      },
-    };
+    return { ...face, plane: { normal, distance } };
   });
 }
 
@@ -338,7 +370,7 @@ function intersectPlanes(planeA, planeB, planeC) {
 }
 
 function pointInsideBrush(point, faces) {
-  return faces.every((face) => dot(face.plane.normal, point) <= face.plane.distance + EPSILON);
+  return faces.every((face) => dot(face.plane.normal, point) <= face.plane.distance + INSIDE_EPSILON);
 }
 
 function pointStrictlyInsideBrush(point, faces) {
@@ -503,7 +535,7 @@ function buildFaceGeometries(brush, orientedFaces) {
   for (const face of orientedFaces) {
     const polygon = buildFacePolygon(face, orientedFaces);
 
-    if (!polygon || !polygonWithinBounds(polygon, bounds, 2)) {
+    if (!polygon) {
       continue;
     }
 

@@ -1,53 +1,81 @@
-import { Color3, Mesh, MeshBuilder, Quaternion, StandardMaterial, TransformNode, Vector3 } from "@babylonjs/core";
+﻿import { Color3, Mesh, MeshBuilder, PointLight, Quaternion, StandardMaterial, TransformNode, Vector3 } from "@babylonjs/core";
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader.js";
 import "@babylonjs/loaders/glTF";
-// Pre-import skeletal animation modules so Vite bundles them eagerly.
-// BabylonJS lazily imports these when it encounters skeleton data inside a GLB;
-// without this the dynamic import fails when SceneLoader loads from a blob URL.
-import "@babylonjs/core/Animations/animationGroup";
-import "@babylonjs/core/Bones/bone";
-import "@babylonjs/core/Bones/skeleton";
 import { createPixelSpriteEffect } from "../gameplay/pixelSpriteEffect.js";
 
 const VM_OFFSET = new Vector3(0, -0.36, 0.72);
 const PROCEDURAL_VM_SCALE = 0.045;
+
+// ── Shotgun ──────────────────────────────────────────────────────────────────
 const SHOTGUN_GLB_URL = "/models/shotgun_1.glb";
 const SHOTGUN_MODEL_OFFSET = new Vector3(0, -0.3, 0.42);
 const SHOTGUN_MODEL_SCALE = 1.1;
-// Explicit FPS orientation for this asset/camera setup:
-// barrel points away from player and model stays upright.
 const SHOTGUN_MODEL_ROTATION = Quaternion.FromEulerAngles(0, Math.PI / 2, 0);
 
-// PSX first-person arms GLB.
-// Model is in glTF Y-up space. Character faces -Z (its front normals point -Z).
-// In BabylonJS the camera looks along +Z, so the front face of the model is
-// already toward the camera — no rotation needed for visibility.
-//
-// HOWEVER: the model was authored for a Unity-style view where the player looks
-// in -Z. Left/right IK hands are mirrored versus BabylonJS screen space:
-//   IK L = model +X = world left when camera looks +Z → appears on the wrong side.
-// Fix: scale X by −1 (mirror) so the front face stays toward the camera AND the
-// hands swap to the correct screen sides without inverting normals.
-//
-// Scale 0.5 × mirror: arm span ~0.81 wide at Z≈1, hands sit at cam-local
-// Y≈-0.34 NDC (lower screen, FOV 1.2 rad).
-const ARMS_GLB_URL = "/models/arms_fp.glb";
-const ARMS_MODEL_OFFSET = new Vector3(0.13, -0.69, 0.26);
-const ARMS_MODEL_SCALE = 0.5;
-// Identity rotation — mirroring is done via negative X scale below.
-const ARMS_MODEL_ROTATION = Quaternion.FromEulerAngles(0, 0, 0);
+// ── Grenade ───────────────────────────────────────────────────────────────────
+const GRENADE_GLB_URL = "/models/Items%20&%20Weapons/frag_grenade.glb";
+const GRENADE_MODEL_OFFSET = new Vector3(0.13, -0.30, 0.54);
+const GRENADE_MODEL_SCALE = 0.025;
+const GRENADE_MODEL_ROTATION = Quaternion.FromEulerAngles(0.3, 0.2, 0.4);
 
+// ── Staff ─────────────────────────────────────────────────────────────────────
+const STAFF_GLB_URL = "/models/Items%20&%20Weapons/ice_mace_staff.glb";
+const STAFF_MODEL_OFFSET = new Vector3(0.16, -0.32, 0.50);
+const STAFF_MODEL_SCALE = 0.85;
+const STAFF_MODEL_ROTATION = Quaternion.FromEulerAngles(Math.PI / 2, 0.15, 0.10);
+
+// ── Sword ─────────────────────────────────────────────────────────────────────
+// sword_test.glb: single mesh, no rig, bbox min[-0.11,-0.95,-0.04] max[0.11,0.95,0.04].
+// The blade runs along the Y-axis.  We tilt it ~40 ° counter-clockwise in Z so it
+// reads as a diagonal one-handed slash weapon held in the lower-right.
+const SWORD_GLB_URL = "/models/sword_test.glb";
+// Handle off-screen at lower-right; blade runs forward into the scene and angles
+// inward toward screen center — identical grammar to the shotgun barrel.
+const SWORD_MODEL_OFFSET = new Vector3(0.18, -0.08, 0.10);
+const SWORD_MODEL_SCALE = 0.70;
+// x: +PI/2 maps blade Y → +Z (forward),  y: -0.20 yaws tip toward screen center,
+// z: slight clockwise roll for right-hand grip.
+const SWORD_MODEL_ROTATION = Quaternion.FromEulerAngles(Math.PI / 2, -0.20, 0.12);
+
+// ── Mouse sway (weapon inertia) ───────────────────────────────────────────────
+const SWAY_SCALE_X = 0.0018;   // horizontal mouse → weapon offset (opposite dir)
+const SWAY_SCALE_Y = 0.0008;   // vertical mouse → weapon offset
+const SWAY_MAX     = 0.025;    // clamp so fast flicks don't overshoot
+const SWAY_LERP    = 8;        // decay rate toward zero (per second)
+
+// ── Strafe tilt ───────────────────────────────────────────────────────────────
+const STRAFE_TILT      = 0.055;  // max roll angle (radians) at full strafe
+const STRAFE_TILT_LERP = 6;      // smoothing speed
+
+// ── Shared bob ───────────────────────────────────────────────────────────────
 const BOB_SPEED_WALK = 4.5;
 const BOB_AMP_X_WALK = 0.006;
 const BOB_AMP_Y_WALK = 0.008;
 const BOB_SPEED_IDLE = 1.2;
 const BOB_AMP_Y_IDLE = 0.002;
 
-const RECOIL_KICK_Z = -0.20;      // was -0.12 — pronounced muzzle push
-const RECOIL_KICK_ROT = -0.14;    // was -0.08 — visible barrel rise
-const RECOIL_DURATION = 0.11;     // was 0.07  — brief hang at peak
-const PUMP_DURATION = 0.40;       // was 0.28  — slow deliberate pump action
+// ── Grenade throw ────────────────────────────────────────────────────────────
+const THROW_DURATION = 0.32;
+const THROW_Z = 0.14;
+const THROW_ROT_Z = 0.35;
+
+// ── Staff cast ────────────────────────────────────────────────────────────────
+const CAST_DURATION = 0.28;
+const CAST_Z = 0.10;
+const CAST_ROT_X = -0.12;
+
+// ── Shotgun recoil / pump ────────────────────────────────────────────────────
+const RECOIL_KICK_Z = -0.20;
+const RECOIL_KICK_ROT = -0.14;
+const RECOIL_DURATION = 0.11;
+const PUMP_DURATION = 0.40;
 const PUMP_SLIDE_Z = -0.08;
+
+// ── Sword swing ───────────────────────────────────────────────────────────────
+const SWING_DURATION = 0.40;
+const THRUST_Z     =  0.62;   // hard lunge forward
+const THRUST_Y     = -0.04;   // slight dip
+const THRUST_ROT_X =  0;      // no screen-tilt — lunge is pure translation
 
 function configureImportedMaterial(material) {
   if (!material) return;
@@ -234,19 +262,19 @@ async function loadShotgunModel(scene, parent) {
   };
 }
 
-async function loadArmsModel(scene, parent) {
-  const modelRoot = new TransformNode("viewmodel-arms-glb", scene);
+async function loadSwordModel(scene, parent) {
+  const modelRoot = new TransformNode("viewmodel-sword-glb", scene);
   modelRoot.parent = parent;
-  modelRoot.position.copyFrom(ARMS_MODEL_OFFSET);
-  // Negative X scale mirrors the model so right hand → screen right (correct FPS
-  // orientation) while keeping front normals facing the camera.
-  modelRoot.scaling.set(-ARMS_MODEL_SCALE, ARMS_MODEL_SCALE, ARMS_MODEL_SCALE);
-  modelRoot.rotationQuaternion = ARMS_MODEL_ROTATION.clone();
+  modelRoot.position.copyFrom(SWORD_MODEL_OFFSET);
+  modelRoot.scaling.setAll(SWORD_MODEL_SCALE);
+  modelRoot.rotationQuaternion = SWORD_MODEL_ROTATION.clone();
+  // Hidden by default — shotgun is the starting weapon.
+  modelRoot.setEnabled(false);
 
-  // Load via direct URL (not blob) so BabylonJS's internal dynamic imports for
-  // skeletal animation modules resolve correctly against the page origin.
-  const rootUrl = window.location.origin + "/models/";
-  const result = await SceneLoader.ImportMeshAsync("", rootUrl, "arms_fp.glb", scene);
+  // Load via direct origin URL so dynamic-import paths resolve against the page.
+  const result = await SceneLoader.ImportMeshAsync(
+    "", window.location.origin + "/models/", "sword_test.glb", scene,
+  );
 
   result.materials?.forEach((material) => configureImportedMaterial(material));
   const meshSet = new Set(result.meshes);
@@ -264,19 +292,8 @@ async function loadArmsModel(scene, parent) {
     mesh.alwaysSelectAsActiveMesh = true;
   });
 
-  // BabylonJS auto-starts the first animation group on GLB import.
-  // Stop everything, then play the combat-ready idle so the hands rest
-  // in a natural weapon-holding pose.
-  result.animationGroups?.forEach((g) => g.stop());
-  const idleAnim = result.animationGroups?.find((g) => g.name === "Combat_idle_loop")
-    ?? result.animationGroups?.find((g) => g.name === "Relax_hands_idle_loop")
-    ?? result.animationGroups?.[0];
-  idleAnim?.start(true, 1.0, idleAnim.from, idleAnim.to, false);
-
   return {
-    animationGroups: result.animationGroups ?? [],
     dispose() {
-      result.animationGroups?.forEach((g) => g.stop());
       modelRoot.dispose();
       result.meshes.forEach((mesh) => mesh.dispose());
     },
@@ -284,56 +301,48 @@ async function loadArmsModel(scene, parent) {
   };
 }
 
-// ── Procedural PSX-style hands ───────────────────────────────────────────────
-// Positions derived from live bounding-box: gun in vmRoot-local space at
-// X(0.18-0.25), Y(-0.10 to 0.17), Z(-0.39 to 1.19).
-// Right hand wraps the grip (~Z 0.15-0.35), left hand supports the pump (~Z 0.65-0.85).
-function buildHands(scene, parent) {
-  const mat = new StandardMaterial("hand-mat", scene);
-  // Quake-brown — dark tanned leather/skin, PSX low-light palette.
-  mat.diffuseColor  = new Color3(0.46, 0.31, 0.18);
-  mat.emissiveColor = new Color3(0.10, 0.06, 0.03);
-  mat.specularColor = Color3.Black();
-  mat.backFaceCulling = false;
+async function loadGrenadeModel(scene, parent) {
+  const modelRoot = new TransformNode("viewmodel-grenade-glb", scene);
+  modelRoot.parent = parent;
+  modelRoot.position.copyFrom(GRENADE_MODEL_OFFSET);
+  modelRoot.scaling.setAll(GRENADE_MODEL_SCALE);
+  modelRoot.rotationQuaternion = GRENADE_MODEL_ROTATION.clone();
+  modelRoot.setEnabled(false);
 
-  function box(name, w, h, d, x, y, z) {
-    const m = MeshBuilder.CreateBox(name, { width: w, height: h, depth: d }, scene);
-    m.position.set(x, y, z);
-    m.material = mat;
-    m.parent = parent;
-    m.renderingGroupId = 1;
-    m.isPickable = false;
-    m.receiveShadows = false;
-    m.alwaysSelectAsActiveMesh = true;
-    return m;
-  }
+  const result = await SceneLoader.ImportMeshAsync("", window.location.origin + "/models/Items%20&%20Weapons/", "frag_grenade.glb", scene);
+  result.materials?.forEach((m) => configureImportedMaterial(m));
+  const meshSet = new Set(result.meshes);
+  result.meshes.filter((m) => !m.parent || !meshSet.has(m.parent)).forEach((m) => { m.parent = modelRoot; });
+  result.meshes.forEach((mesh) => {
+    configureImportedMaterial(mesh.material);
+    mesh.isPickable = false;
+    mesh.receiveShadows = false;
+    mesh.renderingGroupId = 1;
+    mesh.alwaysSelectAsActiveMesh = true;
+  });
+  return { root: modelRoot };
+}
 
-  const meshes = [];
+async function loadStaffModel(scene, parent) {
+  const modelRoot = new TransformNode("viewmodel-staff-glb", scene);
+  modelRoot.parent = parent;
+  modelRoot.position.copyFrom(STAFF_MODEL_OFFSET);
+  modelRoot.scaling.setAll(STAFF_MODEL_SCALE);
+  modelRoot.rotationQuaternion = STAFF_MODEL_ROTATION.clone();
+  modelRoot.setEnabled(false);
 
-  function tracked(name, w, h, d, x, y, z) {
-    const m = box(name, w, h, d, x, y, z);
-    meshes.push(m);
-    return m;
-  }
-
-  // ── Right hand (dominant — trigger / grip) ───────────────────────────────
-  tracked("hand-r-palm",    0.090, 0.060, 0.110,  0.19, -0.185, 0.270);
-  tracked("hand-r-knuckle", 0.080, 0.032, 0.048,  0.18, -0.138, 0.305);
-  tracked("hand-r-arm",     0.082, 0.130, 0.085,  0.19, -0.295, 0.200);
-
-  // ── Left hand (support — under pump / forestock) ─────────────────────────
-  tracked("hand-l-palm",    0.090, 0.058, 0.110,  0.20, -0.185, 0.775);
-  tracked("hand-l-knuckle", 0.080, 0.030, 0.048,  0.19, -0.138, 0.810);
-  tracked("hand-l-arm",     0.082, 0.130, 0.085,  0.20, -0.295, 0.705);
-
-  mat.freeze();
-
-  return {
-    dispose() {
-      meshes.forEach((m) => m.dispose());
-      mat.dispose();
-    },
-  };
+  const result = await SceneLoader.ImportMeshAsync("", window.location.origin + "/models/Items%20&%20Weapons/", "ice_mace_staff.glb", scene);
+  result.materials?.forEach((m) => configureImportedMaterial(m));
+  const meshSet = new Set(result.meshes);
+  result.meshes.filter((m) => !m.parent || !meshSet.has(m.parent)).forEach((m) => { m.parent = modelRoot; });
+  result.meshes.forEach((mesh) => {
+    configureImportedMaterial(mesh.material);
+    mesh.isPickable = false;
+    mesh.receiveShadows = false;
+    mesh.renderingGroupId = 1;
+    mesh.alwaysSelectAsActiveMesh = true;
+  });
+  return { root: modelRoot };
 }
 
 // Flash is parented directly to the camera and pinned at the crosshair centre.
@@ -365,42 +374,143 @@ export function createViewModel(scene, camera) {
   root.parent = camera;
   root.position.copyFrom(VM_OFFSET);
 
+  // Small fill light so the held weapon is always visible in dark areas.
+  // Short range so it doesn't bleed into the world geometry.
+  const vmLight = new PointLight("viewmodel-light", new Vector3(0.1, 0.0, 0.5), scene);
+  vmLight.parent = camera;
+  vmLight.diffuse = new Color3(0.85, 0.85, 0.9);
+  vmLight.specular = new Color3(0.2, 0.2, 0.22);
+  vmLight.intensity = 4.0;
+  vmLight.range = 3.5;
+
+  // ── Shotgun slot (fallback geometry until GLB loads) ──────────────────────
   const fallback = buildFallbackShotgun(scene, root);
-  const fallbackHands = buildHands(scene, root);
   const flash = createMuzzleFlash(scene, camera);
   let activePump = fallback.pump;
-  let prevCamPos = camera.position.clone();
-  let bobPhase = 0;
-  let recoilTimer = -1;
-  let pumpTimer = -1;
   const pumpRestZ = fallback.pump.position.z;
+
+  // Track loaded mesh roots for toggling visibility on weapon switch.
+  let activeWeapon = "shotgun";
+  let shotgunMeshRoot = null;
+  let swordMeshRoot = null;
+  let grenadeMeshRoot = null;
+  let staffMeshRoot = null;
+  let fallbackActive = true;
 
   loadShotgunModel(scene, root)
     .then((model) => {
       fallback.root.dispose();
+      fallbackActive = false;
       activePump = null;
-      return model;
+      shotgunMeshRoot = model.root;
+      // If the player already switched away, stay hidden.
+      shotgunMeshRoot.setEnabled(activeWeapon === "shotgun");
     })
     .catch((error) => {
       console.warn("Failed to load shotgun GLB viewmodel, using fallback mesh.", error);
     });
 
-  // Load PSX first-person arms, replacing the procedural box hands on success.
-  loadArmsModel(scene, root)
-    .then(() => {
-      fallbackHands.dispose();
+  loadSwordModel(scene, root)
+    .then((model) => {
+      swordMeshRoot = model.root;
+      swordMeshRoot.setEnabled(activeWeapon === "sword");
     })
     .catch((error) => {
-      console.warn("Failed to load arms GLB viewmodel, keeping fallback hands.", error);
+      console.warn("Failed to load sword GLB viewmodel.", error);
     });
 
+  loadGrenadeModel(scene, root)
+    .then((model) => {
+      grenadeMeshRoot = model.root;
+      grenadeMeshRoot.setEnabled(activeWeapon === "grenade");
+    })
+    .catch((error) => {
+      console.warn("Failed to load grenade GLB viewmodel.", error);
+    });
+
+  loadStaffModel(scene, root)
+    .then((model) => {
+      staffMeshRoot = model.root;
+      staffMeshRoot.setEnabled(activeWeapon === "staff");
+    })
+    .catch((error) => {
+      console.warn("Failed to load staff GLB viewmodel.", error);
+    });
+
+  // ── Animation state ───────────────────────────────────────────────────────
+  let prevCamPos = camera.position.clone();
+  let bobPhase = 0;
+  let recoilTimer = -1;
+  let pumpTimer = -1;
+  let swingTimer = -1;
+  let throwTimer = -1;   // grenade throw
+  let castTimer = -1;    // staff cast
+  let swayX = 0;         // mouse sway accumulators
+  let swayY = 0;
+  let strafeTilt = 0;    // current strafe roll (radians)
+
+  // ── Public API ─────────────────────────────────────────────────────────────
+  function setWeapon(weapon) {
+    if (weapon === activeWeapon) return;
+    activeWeapon = weapon;
+
+    // Toggle shotgun (GLB or fallback geometry).
+    const shotgunOn = weapon === "shotgun";
+    if (shotgunMeshRoot) shotgunMeshRoot.setEnabled(shotgunOn);
+    else if (fallbackActive) fallback.root.setEnabled(shotgunOn);
+    flash.mesh.isVisible = false;
+
+    if (swordMeshRoot) swordMeshRoot.setEnabled(weapon === "sword");
+    if (grenadeMeshRoot) grenadeMeshRoot.setEnabled(weapon === "grenade");
+    if (staffMeshRoot) staffMeshRoot.setEnabled(weapon === "staff");
+
+    // Reset pending animations so they don't bleed across weapons.
+    recoilTimer = -1;
+    pumpTimer = -1;
+    swingTimer = -1;
+    throwTimer = -1;
+    castTimer = -1;
+    root.rotation.set(0, 0, 0);
+  }
+
   function fire() {
+    if (activeWeapon !== "shotgun") return;
     recoilTimer = RECOIL_DURATION;
     pumpTimer = PUMP_DURATION;
     flash.restart();
   }
 
-  function update(dt) {
+  function swingMelee() {
+    if (activeWeapon !== "sword") return;
+    swingTimer = SWING_DURATION;
+  }
+
+  function throwGrenade() {
+    if (activeWeapon !== "grenade") return;
+    throwTimer = THROW_DURATION;
+  }
+
+  function castStaff() {
+    if (activeWeapon !== "staff") return;
+    castTimer = CAST_DURATION;
+  }
+
+  function update(dt, lookDelta = null, lateralInput = 0) {
+    // ── Mouse sway ────────────────────────────────────────────────────────
+    if (lookDelta) {
+      // Accumulate opposite to look direction so weapon appears to lag behind
+      swayX = Math.max(-SWAY_MAX, Math.min(SWAY_MAX, swayX - lookDelta.x * SWAY_SCALE_X));
+      swayY = Math.max(-SWAY_MAX, Math.min(SWAY_MAX, swayY - lookDelta.y * SWAY_SCALE_Y));
+    }
+    const decay = Math.min(1, SWAY_LERP * dt);
+    swayX -= swayX * decay;
+    swayY -= swayY * decay;
+
+    // ── Strafe tilt ───────────────────────────────────────────────────────
+    const targetTilt = STRAFE_TILT * lateralInput;
+    strafeTilt += (targetTilt - strafeTilt) * Math.min(1, STRAFE_TILT_LERP * dt);
+
+    // ── Viewmodel bob (shared across weapons) ─────────────────────────────
     const camPos = camera.position;
     const dx = camPos.x - prevCamPos.x;
     const dz = camPos.z - prevCamPos.z;
@@ -408,14 +518,11 @@ export function createViewModel(scene, camera) {
     prevCamPos.copyFrom(camPos);
 
     const isMoving = speed > 5;
-    const bobSpeed = isMoving ? BOB_SPEED_WALK : BOB_SPEED_IDLE;
-    const bobAmpX = isMoving ? BOB_AMP_X_WALK : 0;
-    const bobAmpY = isMoving ? BOB_AMP_Y_WALK : BOB_AMP_Y_IDLE;
-    bobPhase += dt * bobSpeed;
+    bobPhase += dt * (isMoving ? BOB_SPEED_WALK : BOB_SPEED_IDLE);
+    const bobX = Math.sin(bobPhase) * (isMoving ? BOB_AMP_X_WALK : 0);
+    const bobY = Math.sin(bobPhase * 2) * (isMoving ? BOB_AMP_Y_WALK : BOB_AMP_Y_IDLE);
 
-    const bobX = Math.sin(bobPhase) * bobAmpX;
-    const bobY = Math.sin(bobPhase * 2) * bobAmpY;
-
+    // ── Shotgun recoil + pump ────────────────────────────────────────────
     let recoilZ = 0;
     let recoilRot = 0;
 
@@ -441,13 +548,47 @@ export function createViewModel(scene, camera) {
       flash.mesh.isVisible = false;
     }
 
+    // ── Sword thrust ─────────────────────────────────────────────────────
+    let swingY = 0, swingZ = 0, swingRotX = 0;
+
+    if (swingTimer > 0) {
+      swingTimer -= dt;
+      const t   = 1 - swingTimer / SWING_DURATION;
+      const env = Math.sin(t * Math.PI);
+      swingZ    = THRUST_Z     * env;
+      swingY    = THRUST_Y     * env;
+      swingRotX = THRUST_ROT_X * env;
+    }
+
+    // ── Grenade throw ─────────────────────────────────────────────────────
+    let throwZ = 0, throwRotZ = 0;
+    if (throwTimer > 0) {
+      throwTimer -= dt;
+      const t   = 1 - throwTimer / THROW_DURATION;
+      const env = Math.sin(t * Math.PI);
+      throwZ    = THROW_Z     * env;
+      throwRotZ = THROW_ROT_Z * env;
+    }
+
+    // ── Staff cast ────────────────────────────────────────────────────────
+    let castZ = 0, castRotX = 0;
+    if (castTimer > 0) {
+      castTimer -= dt;
+      const t   = 1 - castTimer / CAST_DURATION;
+      const env = Math.sin(t * Math.PI);
+      castZ    = CAST_Z     * env;
+      castRotX = CAST_ROT_X * env;
+    }
+
+    // ── Apply combined offsets ────────────────────────────────────────────
     root.position.set(
-      VM_OFFSET.x + bobX,
-      VM_OFFSET.y + bobY,
-      VM_OFFSET.z + recoilZ,
+      VM_OFFSET.x + bobX + swayX,
+      VM_OFFSET.y + bobY + swingY + swayY,
+      VM_OFFSET.z + recoilZ + swingZ + throwZ + castZ,
     );
-    root.rotation.x = recoilRot;
+    root.rotation.x = 0;
+    root.rotation.z = strafeTilt;
   }
 
-  return { fire, update, root };
+  return { fire, swingMelee, throwGrenade, castStaff, setWeapon, update, root };
 }

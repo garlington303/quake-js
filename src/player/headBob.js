@@ -17,11 +17,15 @@ const LAND_DIP_MIN    = -0.03;  // minimum dip even for gentle drops
 const LAND_FALL_REF   = 380;    // fall speed (units/sec) that gives max dip
 const LAND_RECOVER    = 13.0;   // spring-back coefficient
 
+const DAMAGE_KICK_PITCH = -0.06; // radians — downward flinch on hit
+const DAMAGE_KICK_RECOVER = 10;  // spring-back speed
+
 export function createHeadBob(camera, scene) {
   let phase         = 0;
   let prevGrounded  = false;
   let lastAirVVel   = 0;   // vertical velocity captured while airborne
   let landDip       = 0;
+  let damageKickX   = 0;   // pitch offset from taking damage
 
   return {
     update(dt) {
@@ -59,8 +63,21 @@ export function createHeadBob(camera, scene) {
       const bobY    = Math.sin(phase * 2) * ampY;
       const bobRoll = Math.sin(phase)     * ampRoll;
 
+      // Damage kick spring recovery.
+      if (damageKickX !== 0) {
+        damageKickX += (0 - damageKickX) * Math.min(1, dt * DAMAGE_KICK_RECOVER);
+        if (Math.abs(damageKickX) < 0.001) damageKickX = 0;
+      }
+
       camera.position.y += bobY + landDip;
+      camera.rotation.x += damageKickX;
       camera.rotation.z  = bobRoll;
+    },
+
+    // Trigger a damage view-punch (downward flinch, springs back).
+    damageKick(damage) {
+      const strength = Math.min(1.0, damage / 40);
+      damageKickX = DAMAGE_KICK_PITCH * strength;
     },
 
     // Call on respawn so the phase doesn't carry over.
@@ -69,6 +86,7 @@ export function createHeadBob(camera, scene) {
       prevGrounded = false;
       lastAirVVel  = 0;
       landDip      = 0;
+      damageKickX  = 0;
       camera.rotation.z = 0;
     },
   };

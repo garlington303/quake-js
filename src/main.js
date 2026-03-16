@@ -60,6 +60,10 @@ const engine = new Engine(canvas, true, {
   preserveDrawingBuffer: true,
   stencil: true,
 });
+// Disable UBOs to stay within GL_MAX_VERTEX_UNIFORM_BUFFERS (WebGL2 min = 12).
+// 3 scene lights + flashlight + up to 8 map torches pushes Babylon 8.x over limit;
+// classic uniforms are a safe fallback.
+engine.disableUniformBuffers = true;
 
 const scene = createScene(engine, canvas);
 const camera = setupCamera(scene, canvas);
@@ -104,11 +108,14 @@ const mapDebugOptions = {
 
 if (retroEnabled) {
   applyRetroPipeline(scene, camera, {
-    scanlineIntensity: 0.24,
-    noiseIntensity: 0.035,
-    vignette: 0,
+    scanlineIntensity: 0.12,
+    noiseIntensity: 0.025,
+    vignette: 0.55,
     curvature: 0,
     ditherScale: 1.0,
+    chromaticAberration: 0.0025,
+    bloomStrength: 0.4,
+    colorTint: 1.0,
   });
 }
 
@@ -116,18 +123,39 @@ canvas.addEventListener("click", () => {
   audio.resume();
 });
 
-// Shotgun fire rate — deliberate one shot per ~0.85 s
-const FIRE_COOLDOWN = 0.85;
+// Weapon constants
+const SHOTGUN_FIRE_COOLDOWN  = 0.85;
+const SWORD_SWING_COOLDOWN   = 0.42;
+const GRENADE_THROW_COOLDOWN = 0.80;
+const STAFF_CAST_COOLDOWN    = 0.50;
+const MELEE_RANGE            = 128;
+const MELEE_DAMAGE           = 50;
+const STAFF_RANGE            = 900;
+const STAFF_DAMAGE           = 35;
+const GRENADE_RADIUS         = 180;
+const GRENADE_DAMAGE         = 80;
+
+// Weapon order for scroll cycling
+const WEAPON_ORDER = ["shotgun", "sword", "grenade", "staff"];
 
 let playerHealth = 100;
 let playerArmor = 0;
 let ammoShells = 25;
+let grenadeCount = 5;
 let lastEnemyAttackAt = 0;
-let shotsFired = 0;
+let lastEnemyAggroAt  = 0;
 let kills = 0;
-let fireCooldownTimer = 0;
+let fireCooldownTimer   = 0;
+let meleeCooldownTimer  = 0;
+let throwCooldownTimer  = 0;
+let castCooldownTimer   = 0;
+let activeWeapon = "shotgun";
 let mapStatusText = "Loading map...";
-const GOD_MODE = true;
+const GOD_MODE = false;
+
+// Landing detection state
+let prevGrounded = true;
+let peakFallSpeed = 0;
 
 // Death / respawn state
 const RESPAWN_DELAY = 3.0;
@@ -155,7 +183,7 @@ try {
     enemySystem,
     itemSystem,
     playerCollider,
-    url: "/maps/test.map",
+    url: "/maps/comprehensive.map",
   });
   const meshCount = mapResult?.mapGeometry?.meshes?.length ?? 0;
   window.__trenchfps.mapDebug = mapResult?.mapGeometry?.debugInfo ?? null;
@@ -224,50 +252,179 @@ engine.runRenderLoop(() => {
       health: 0, armor: playerArmor, ammoText: "0",
       enemies: scene.metadata?.enemyCount ?? 0,
       pointerLocked: input.state.pointerLocked,
-      shotsFired, kills, statusText: mapStatusText,
+      kills, statusText: mapStatusText,
+      activeWeapon,
     });
     scene.render();
     return;
   }
 
-  playerController.update(deltaTimeSeconds);
+  const lookDelta = input.consumeLookDelta();
+  playerController.update(deltaTimeSeconds, lookDelta);
   headBob.update(deltaTimeSeconds);
-  audio.update(deltaTimeSeconds, scene.metadata?.player ?? {});
+
+  // ── Landing detection ─────────────────────────────────────────────────────
+  const playerMeta = scene.metadata?.player ?? {};
+  if (!playerMeta.grounded) {
+    peakFallSpeed = Math.max(peakFallSpeed, -(playerMeta.verticalVelocity ?? 0));
+  }
+  if (!prevGrounded && playerMeta.grounded && peakFallSpeed > 80) {
+    audio.playLand(peakFallSpeed);
+    peakFallSpeed = 0;
+  }
+  if (playerMeta.grounded) peakFallSpeed = 0;
+  prevGrounded = playerMeta.grounded ?? true;
+
+  audio.update(deltaTimeSeconds, playerMeta);
 
   if (input.consumeFlashlightToggle()) {
     const flashlightOn = flashlight.toggle();
     viewModel.root.setEnabled(!flashlightOn);
   }
 
-  // ── Weapon fire ───────────────────────────────────────────────────────────
-  fireCooldownTimer = Math.max(0, fireCooldownTimer - deltaTimeSeconds);
-  const wantsFire = input.consumePrimaryFire();
+  // ── Weapon select (keys 1 / 2, or scroll wheel) ───────────────────────────
+  const weaponSelect = input.consumeWeaponSelect();
+  const weaponScroll = input.consumeWeaponScroll();
 
-  if (wantsFire && fireCooldownTimer === 0 && ammoShells > 0 && !flashlight.isOn) {
-    fireCooldownTimer = FIRE_COOLDOWN;
-    ammoShells -= 1;
+  let nextWeapon = weaponSelect;
 
-    const hit = enemySystem.handlePrimaryFire(camera);
-    shotsFired += 1;
-    audio.playShoot();
-    if (lightsEnabled) lightSystem.spawnMuzzleFlash(camera);
-
-    if (hit?.type === "enemy") {
-      hud.notifyHit();
-      audio.playHit();
-      if (hit.enemyDown) kills += 1;
-    }
-
-    if (hit?.type === "world" || hit?.type === "enemy") {
-      const isEnemy = hit.type === "enemy";
-      impactSystem.spawnImpact(hit.position, { isEnemy });
-      if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, isEnemy);
-    }
-
-    viewModel.fire();
+  if (!nextWeapon && weaponScroll !== 0) {
+    const currentIdx = WEAPON_ORDER.indexOf(activeWeapon);
+    const nextIdx = (currentIdx + weaponScroll + WEAPON_ORDER.length) % WEAPON_ORDER.length;
+    nextWeapon = WEAPON_ORDER[nextIdx];
   }
 
-  viewModel.update(deltaTimeSeconds);
+  if (nextWeapon && nextWeapon !== activeWeapon) {
+    activeWeapon = nextWeapon;
+    viewModel.setWeapon(activeWeapon);
+    hud.notifyWeaponSwitch(activeWeapon);
+    audio.playWeaponSwitch();
+  }
+
+  // ── Weapon fire / melee ───────────────────────────────────────────────────
+  fireCooldownTimer  = Math.max(0, fireCooldownTimer  - deltaTimeSeconds);
+  meleeCooldownTimer = Math.max(0, meleeCooldownTimer - deltaTimeSeconds);
+  throwCooldownTimer = Math.max(0, throwCooldownTimer - deltaTimeSeconds);
+  castCooldownTimer  = Math.max(0, castCooldownTimer  - deltaTimeSeconds);
+  const wantsFire = input.consumePrimaryFire();
+
+  if (wantsFire && !flashlight.isOn) {
+    if (activeWeapon === "shotgun" && fireCooldownTimer === 0) {
+      if (ammoShells <= 0) {
+        audio.playDryFire();
+        fireCooldownTimer = 0.3;
+      } else {
+      ammoShells -= 1;
+      fireCooldownTimer = SHOTGUN_FIRE_COOLDOWN;
+
+      const hit = enemySystem.handlePrimaryFire(camera);
+      audio.playShoot();
+      if (lightsEnabled) lightSystem.spawnMuzzleFlash(camera);
+
+      if (hit?.type === "enemy") {
+        hud.notifyHit();
+        audio.playHit();
+        if (hit.enemyDown) { kills += 1; audio.playEnemyDeath(); }
+        else               { audio.playEnemyHurt(); }
+      }
+
+      if (hit?.type === "world" || hit?.type === "enemy") {
+        const isEnemy = hit.type === "enemy";
+        impactSystem.spawnImpact(hit.position, { isEnemy });
+        if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, isEnemy);
+      }
+
+      viewModel.fire();
+      }
+
+    } else if (activeWeapon === "sword" && meleeCooldownTimer === 0) {
+      meleeCooldownTimer = SWORD_SWING_COOLDOWN;
+
+      const hit = enemySystem.handleMeleeAttack(camera, MELEE_RANGE, MELEE_DAMAGE);
+      audio.playSwing();
+
+      if (hit?.type === "enemy") {
+        hud.notifyHit();
+        audio.playHit();
+        if (hit.enemyDown) { kills += 1; audio.playEnemyDeath(); }
+        else               { audio.playEnemyHurt(); }
+      }
+
+      if (hit?.type === "world" || hit?.type === "enemy") {
+        const isEnemy = hit.type === "enemy";
+        impactSystem.spawnImpact(hit.position, { isEnemy, size: isEnemy ? 2.0 : 1.2 });
+        if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, isEnemy);
+      }
+
+      viewModel.swingMelee();
+
+    } else if (activeWeapon === "grenade" && throwCooldownTimer === 0) {
+      if (grenadeCount <= 0) {
+        audio.playDryFire();
+        throwCooldownTimer = 0.3;
+      } else {
+        grenadeCount -= 1;
+        throwCooldownTimer = GRENADE_THROW_COOLDOWN;
+        audio.playGrenadeThrow();
+        viewModel.throwGrenade();
+
+        const forward = camera.getForwardRay().direction.normalize();
+        const spawnPos = camera.position.add(forward.scale(8));
+        projectileSystem.spawnGrenade({
+          origin: spawnPos,
+          direction: forward,
+          throwSpeed: 340,
+          upwardKick: 100,
+          fuseTime: 2.4,
+          onBounce() {
+            audio.playBounce();
+          },
+          onExplode(pos) {
+            audio.playExplosion();
+            if (lightsEnabled) lightSystem.spawnImpactLight(pos, false);
+            impactSystem.spawnImpact(pos, { size: 4.0 });
+            const hits = enemySystem.handleExplosionDamage(pos, GRENADE_RADIUS, GRENADE_DAMAGE);
+            for (const h of hits) {
+              kills += h.enemyDown ? 1 : 0;
+              if (h.enemyDown) audio.playEnemyDeath();
+              else audio.playEnemyHurt();
+            }
+            if (hits.length > 0) hud.notifyHit();
+          },
+        });
+      }
+
+    } else if (activeWeapon === "staff" && castCooldownTimer === 0) {
+      castCooldownTimer = STAFF_CAST_COOLDOWN;
+      audio.playCastSpell();
+      viewModel.castStaff();
+
+      // Instant damage at range, visual bolt flies to hit point
+      const hit = enemySystem.handleMeleeAttack(camera, STAFF_RANGE, STAFF_DAMAGE);
+      const targetPos = hit?.position ?? camera.position.add(camera.getForwardRay().direction.scale(STAFF_RANGE));
+
+      projectileSystem.spawnBolt({
+        origin: camera.position.add(camera.getForwardRay().direction.scale(3)),
+        target: targetPos,
+        speed: 650,
+        size: 1.2,
+        onArrive(pos) {
+          impactSystem.spawnImpact(pos, { isEnemy: hit?.type === "enemy", size: 1.8 });
+          if (lightsEnabled) lightSystem.spawnImpactLight(pos, hit?.type === "enemy");
+        },
+      });
+
+      if (hit?.type === "enemy") {
+        hud.notifyHit();
+        audio.playHit();
+        if (hit.enemyDown) { kills += 1; audio.playEnemyDeath(); }
+        else               { audio.playEnemyHurt(); }
+      }
+    }
+  }
+
+  const lateralInput = input.state.right ? 1 : input.state.left ? -1 : 0;
+  viewModel.update(deltaTimeSeconds, lookDelta, lateralInput);
   flashlight.update(deltaTimeSeconds);
   impactSystem.update(deltaTimeSeconds);
   projectileSystem.update(deltaTimeSeconds);
@@ -296,6 +453,8 @@ engine.runRenderLoop(() => {
 
     playerHealth = Math.max(0, playerHealth - damage);
     audio.playHurt();
+    hud.notifyPlayerHurt();
+    headBob.damageKick(damage);
 
     if (playerHealth <= 0 && !isDead) {
       isDead = true;
@@ -307,15 +466,25 @@ engine.runRenderLoop(() => {
 
   enemySystem.update(deltaTimeSeconds, { playerPosition: camera.position });
 
+  // ─── Enemy aggro alert ────────────────────────────────────────────────────
+  const aggroAt = scene.metadata?.lastEnemyAggro?.at ?? 0;
+  if (aggroAt > lastEnemyAggroAt) {
+    lastEnemyAggroAt = aggroAt;
+    audio.playEnemyAggro();
+  }
+
   hud.update(deltaTimeSeconds, {
     health: playerHealth,
     armor: playerArmor,
-    ammoText: String(ammoShells),
+    ammoText: activeWeapon === "shotgun"  ? String(ammoShells)
+            : activeWeapon === "grenade" ? String(grenadeCount)
+            : activeWeapon === "staff"   ? "∞"
+            : "⚔",
     enemies: scene.metadata?.enemyCount ?? 0,
     pointerLocked: input.state.pointerLocked,
-    shotsFired,
     kills,
     statusText: mapStatusText,
+    activeWeapon,
   });
   scene.render();
 });

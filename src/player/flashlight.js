@@ -1,5 +1,6 @@
 import { Color3 } from "@babylonjs/core/Maths/math.color.js";
 import { Quaternion, Vector3 } from "@babylonjs/core/Maths/math.vector.js";
+import { PointLight } from "@babylonjs/core/Lights/pointLight.js";
 import { SpotLight } from "@babylonjs/core/Lights/spotLight.js";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js";
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader.js";
@@ -21,7 +22,11 @@ const BOB_AMP_Y_IDLE = 0.0015;
 // Subtle beam flicker
 const FLICKER_SPEED = 7;
 const FLICKER_AMOUNT = 0.06;
-const BASE_INTENSITY = 12;
+const BASE_INTENSITY = 22;
+
+// Radial ambient glow from the flashlight body
+const GLOW_INTENSITY = 6.0;
+const GLOW_RANGE = 120;
 
 export function createFlashlight(scene, camera) {
   const root = new TransformNode("flashlight-root", scene);
@@ -40,10 +45,19 @@ export function createFlashlight(scene, camera) {
   spotLight.diffuse = new Color3(1, 0.95, 0.85);
   spotLight.specular = new Color3(0.3, 0.3, 0.25);
   spotLight.intensity = BASE_INTENSITY;
-  spotLight.range = 150;
+  spotLight.range = 220;
   spotLight.shadowMinZ = 0.1;
   spotLight.parent = camera;
   spotLight.setEnabled(false);
+
+  // Radial ambient glow — lights up the area around the player softly
+  const pointLight = new PointLight("flashlight-glow", new Vector3(0, 0, 0.5), scene);
+  pointLight.diffuse = new Color3(0.9, 0.85, 0.7);
+  pointLight.specular = new Color3(0.1, 0.1, 0.08);
+  pointLight.intensity = GLOW_INTENSITY;
+  pointLight.range = GLOW_RANGE;
+  pointLight.parent = camera;
+  pointLight.setEnabled(false);
 
   let isOn = false;
   let bobPhase = 0;
@@ -60,6 +74,7 @@ export function createFlashlight(scene, camera) {
   function toggle() {
     isOn = !isOn;
     spotLight.setEnabled(isOn);
+    pointLight.setEnabled(isOn);
     root.setEnabled(isOn);
     return isOn;
   }
@@ -89,6 +104,7 @@ export function createFlashlight(scene, camera) {
     // Subtle beam flicker
     const flicker = 1 - FLICKER_AMOUNT * 0.5 + Math.sin(performance.now() * 0.001 * FLICKER_SPEED) * FLICKER_AMOUNT * 0.5;
     spotLight.intensity = BASE_INTENSITY * flicker;
+    pointLight.intensity = GLOW_INTENSITY * flicker;
   }
 
   return { toggle, update, get isOn() { return isOn; } };

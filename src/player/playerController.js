@@ -21,6 +21,9 @@ const GROUNDED_DISTANCE_THRESHOLD = 1.8;
 const FLOOR_SPRING = 120;
 const STOP_SPEED = 80;
 
+// Prevent looking past straight up/down — avoids gimbal flip.
+const PITCH_LIMIT = Math.PI / 2 - 0.01;
+
 function getYawBasis(camera) {
   const yaw = camera.rotation.y;
   const forward = new Vector3(Math.sin(yaw), 0, Math.cos(yaw));
@@ -129,13 +132,16 @@ export function createPlayerController(scene, camera, input, collider = null) {
       camera.position.copyFrom(spawnPosition);
     },
 
-    update(deltaTimeSeconds) {
+    update(deltaTimeSeconds, preconsumedLookDelta = null) {
       const { state } = input;
-      const lookDelta = input.consumeLookDelta();
+      const lookDelta = preconsumedLookDelta ?? input.consumeLookDelta();
 
       if (state.pointerLocked) {
         camera.rotation.y += lookDelta.x * LOOK_SENSITIVITY;
-        camera.rotation.x += lookDelta.y * LOOK_SENSITIVITY;
+        camera.rotation.x = Math.max(
+          -PITCH_LIMIT,
+          Math.min(PITCH_LIMIT, camera.rotation.x + lookDelta.y * LOOK_SENSITIVITY),
+        );
       }
 
       const groundResult = checkGround(scene, body);

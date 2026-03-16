@@ -53,10 +53,10 @@ export function createLightSystem(scene) {
       .add(right.scale(0.06));
     spawnLight(position, {
       color: new Color3(1, 0.85, 0.6),
-      intensity: 2.2,
-      radius: 8,
-      duration: 0.08,
-      fadeOut: 0.4,
+      intensity: 12.0,
+      radius: 18,
+      duration: 0.1,
+      fadeOut: 0.5,
       flicker: 1,
     });
   }
@@ -64,9 +64,9 @@ export function createLightSystem(scene) {
   function spawnImpactLight(position, isEnemy) {
     spawnLight(position, {
       color: isEnemy ? new Color3(1, 0.35, 0.35) : new Color3(1, 0.75, 0.35),
-      intensity: 1.4,
-      radius: 5,
-      duration: 0.15,
+      intensity: 8.0,
+      radius: 12,
+      duration: 0.2,
       fadeOut: 0.5,
     });
   }

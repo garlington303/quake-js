@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -212,7 +212,12 @@
         margin-bottom: 0;
       }
 
+      /* Status text — appears near top-centre for map load messages */
       .hud-status {
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
         color: rgba(190, 160, 100, 0.85);
         background: rgba(8, 6, 4, 0.82);
         border: 1px solid rgba(140, 90, 30, 0.45);
@@ -223,6 +228,7 @@
         text-transform: uppercase;
         text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.9);
         white-space: nowrap;
+        display: none;
       }
 
       .crosshair {
@@ -242,6 +248,61 @@
       .crosshair.hit {
         opacity: 1;
         filter: drop-shadow(0 0 6px rgba(255, 80, 80, 0.8));
+      }
+
+      /* ── Click-to-play overlay ───────────────────────────────────────── */
+      #start-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.72);
+        z-index: 100;
+        cursor: pointer;
+        transition: opacity 0.35s ease;
+      }
+
+      #start-overlay.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .start-title {
+        font-family: monospace;
+        font-size: 38px;
+        letter-spacing: 8px;
+        color: #e8dfc0;
+        text-transform: uppercase;
+        text-shadow: 0 0 28px rgba(210, 130, 30, 0.8), 1px 1px 0 #000;
+        margin-bottom: 24px;
+      }
+
+      .start-prompt {
+        font-family: monospace;
+        font-size: 13px;
+        letter-spacing: 0.3em;
+        color: rgba(200, 170, 100, 0.8);
+        text-transform: uppercase;
+        text-shadow: 1px 1px 0 rgba(0,0,0,0.9);
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+
+      .start-controls {
+        font-family: monospace;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        color: rgba(160, 140, 100, 0.55);
+        text-transform: uppercase;
+        margin-top: 32px;
+        text-align: center;
+        line-height: 2;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 0.6; }
+        50%       { opacity: 1.0; }
       }
     </style>
   </head>
@@ -269,6 +330,9 @@
           </div>
         </div>
 
+        <!-- Top-centre: status text (map load, errors) -->
+        <div id="hud-status" class="hud-status"></div>
+
         <!-- Bottom-centre: Ammo + Combat -->
         <div class="hud-taskbar">
           <div class="hud-ammo-panel">
@@ -278,12 +342,39 @@
           <div class="hud-combat">
             <div class="hud-stat-inline"><span class="hud-label">Enemies</span><span class="hud-value" id="hud-enemies">0</span></div>
             <div class="hud-stat-inline"><span class="hud-label">Kills</span><span class="hud-value" id="hud-kills">0</span></div>
-            <div class="hud-stat-inline"><span class="hud-label">Shots</span><span class="hud-value" id="hud-shots">0</span></div>
           </div>
         </div>
 
       </div>
+
+      <!-- Click-to-play splash — removed after first pointer-lock -->
+      <div id="start-overlay" role="button" aria-label="Click to start game" tabindex="0">
+        <div class="start-prompt">Click to play</div>
+        <div class="start-controls">
+          WASD — Move &nbsp;|&nbsp; Mouse — Look &nbsp;|&nbsp; Click — Shoot<br>
+          1 / 2 or Scroll — Weapon &nbsp;|&nbsp; Space — Jump &nbsp;|&nbsp; F — Flashlight
+        </div>
+      </div>
     </div>
     <script type="module" src="/src/main.js"></script>
+    <script>
+      // Clicking the overlay requests pointer lock on the canvas.
+      // Once pointer lock is granted the overlay fades out and removes itself.
+      (function () {
+        const overlay = document.getElementById('start-overlay');
+        const canvas  = document.getElementById('renderCanvas');
+
+        overlay.addEventListener('click', () => {
+          canvas.requestPointerLock();
+        });
+
+        document.addEventListener('pointerlockchange', () => {
+          if (document.pointerLockElement === canvas) {
+            overlay.classList.add('fade-out');
+            setTimeout(() => overlay.remove(), 400);
+          }
+        });
+      })();
+    </script>
   </body>
   </html>
