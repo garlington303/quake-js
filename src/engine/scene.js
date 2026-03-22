@@ -70,34 +70,38 @@ export function createScene(engine, canvas) {
 
   // ── Minimal ambient — dark but geometry always readable ─────────────────
   const keyLight = new DirectionalLight("key-light", new Vector3(-0.35, -1, -0.25), scene);
-  keyLight.intensity = 0.45;
-  keyLight.diffuse = new Color3(0.28, 0.28, 0.35);
-  keyLight.specular = new Color3(0.06, 0.06, 0.08);
+  keyLight.intensity = 0.38;
+  keyLight.diffuse = new Color3(0.24, 0.24, 0.28);
+  keyLight.specular = new Color3(0.03, 0.03, 0.04);
 
   const light = new HemisphericLight("sky-light", new Vector3(0.2, 1, 0.1), scene);
-  light.intensity = 0.3;
-  light.diffuse = new Color3(0.18, 0.18, 0.24);
-  light.groundColor = new Color3(0.06, 0.06, 0.1);
+  light.intensity = 0.2;
+  light.diffuse = new Color3(0.13, 0.13, 0.16);
+  light.groundColor = new Color3(0.05, 0.05, 0.06);
   light.specular = Color3.Black();
 
-  scene.ambientColor = new Color3(0.1, 0.1, 0.12);
+  scene.ambientColor = new Color3(0.06, 0.06, 0.07);
 
-  // ── Fog — exponential depth haze ────────────────────────────────────────
+  // Keep fog subtle and neutral. Lighting should shape the space; fog should
+  // only soften distant depth, not repaint the whole room.
   scene.fogMode = Scene.FOGMODE_EXP2;
-  scene.fogDensity = 0.0015;
-  scene.fogColor = new Color3(0.01, 0.01, 0.02);
+  scene.fogDensity = 0.00035;
+  scene.fogColor = new Color3(0.05, 0.045, 0.04);
+  scene.metadata ??= {};
+  scene.metadata.baseFogDensity = scene.fogDensity;
+  scene.metadata.baseFogColor = scene.fogColor.clone();
 
   // ── Glow layer — bloom on emissive surfaces (torches, muzzle flash) ────
   const glowLayer = new GlowLayer("glow", scene, {
     mainTextureFixedSize: 512,
-    blurKernelSize: 64,
+    blurKernelSize: 32,
   });
-  glowLayer.intensity = 1.1;
+  glowLayer.intensity = 0.28;
 
-  // ── Cinematic color grading ─────────────────────────────────────────────
+  // Conservative grade: preserve headroom so lights do not clip to white.
   const imageProcessing = scene.imageProcessingConfiguration;
-  imageProcessing.exposure = 2.2;
-  imageProcessing.contrast = 1.4;
+  imageProcessing.exposure = 1.2;
+  imageProcessing.contrast = 1.12;
   imageProcessing.toneMappingEnabled = true;
   imageProcessing.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
 

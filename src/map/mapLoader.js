@@ -171,9 +171,16 @@ function parseLightColor(entity) {
 }
 
 function parseLightIntensity(entity) {
-  const raw = Number(entity.properties.intensity ?? entity.properties.light ?? entity.properties._light);
-  if (!Number.isFinite(raw)) return null;
-  return raw;
+  const rawValue = entity.properties.intensity ?? entity.properties.light ?? entity.properties._light;
+  if (rawValue == null) return null;
+  if (typeof rawValue === "number" && Number.isFinite(rawValue)) return rawValue;
+
+  const text = String(rawValue).trim();
+  if (!text) return null;
+  const parts = text.split(/\s+/).map(Number).filter((v) => Number.isFinite(v));
+  if (!parts.length) return null;
+  // Handles both "300" and Quake-style "_light" variants like "300 255 255 255".
+  return parts[0];
 }
 
 function parseLightRadius(entity) {
@@ -189,7 +196,7 @@ function computeLightIntensity(raw) {
   return (raw / 100) * 10;
 }
 
-const MAX_TORCH_LIGHTS = 8;  // UBOs disabled, classic uniforms handle more lights safely
+const MAX_TORCH_LIGHTS = 64;  // Keep most authored lights active.
 
 // Prop classname substrings that indicate the prop emits light when its
 // name ends with "_on".  Matches ceiling fans with lights, lamps, lanterns, etc.
@@ -225,9 +232,9 @@ function applyLights(scene, entities) {
 
   // Minimal ambient — just enough to hint at geometry in unlit areas
   const mapLight = new HemisphericLight("map-light", new Vector3(0, 1, 0), scene);
-  mapLight.intensity = 0.35;
-  mapLight.diffuse = avgColor.scale(0.5);
-  mapLight.groundColor = avgColor.scale(0.15);
+  mapLight.intensity = 0.24;
+  mapLight.diffuse = avgColor.scale(0.36);
+  mapLight.groundColor = avgColor.scale(0.1);
   mapLight.specular = Color3.Black();
 
   // Place brightest map light entities as torch point lights — primary illumination
@@ -243,10 +250,17 @@ function applyLights(scene, entities) {
     const position = parseOrigin(entity.properties.origin) ?? new Vector3(0, 8, 0);
     const torch = new PointLight(`torch-${index}`, position, scene);
     const color = parseLightColor(entity) ?? new Color3(1, 0.75, 0.4);
+    const rawRadius = parseLightRadius(entity);
+    const wait = Number(entity.properties.wait ?? 1);
+    const waitMultiplier = Number.isFinite(wait) ? Math.max(0.3, wait) : 1;
+    const baseIntensity = computeLightIntensity(rawIntensity ?? 120);
+    const torchRange = rawRadius != null
+      ? Math.max(120, rawRadius * 1.4)
+      : Math.max(180, (rawIntensity ?? 180) * 2.2);
     torch.diffuse = color;
-    torch.specular = color.scale(0.5);
-    torch.intensity = 18.0;
-    torch.range = rawIntensity != null ? Math.max(120, rawIntensity * 4) : 320;
+    torch.specular = color.scale(0.25);
+    torch.intensity = Math.min(16, Math.max(3, baseIntensity * 0.45 * waitMultiplier));
+    torch.range = torchRange;
   });
 
   // Prop light emitters (ceiling lamps, sconces, etc.)
@@ -259,10 +273,13 @@ function applyLights(scene, entities) {
 
     const propLight = new PointLight(`prop-light-${index}`, lightPos, scene);
     propLight.diffuse  = new Color3(0.95, 0.98, 1.0);
-    propLight.specular = new Color3(0.4,  0.42, 0.45);
-    propLight.intensity = 8.0;
-    propLight.range = 140;
+    propLight.specular = new Color3(0.12, 0.12, 0.14);
+    propLight.intensity = 4.2;
+    propLight.range = 120;
   });
+
+  scene.metadata ??= {};
+  scene.metadata.mapFogZones = [];
 
   return lightEntities.length + propLightEntities.length;
 }

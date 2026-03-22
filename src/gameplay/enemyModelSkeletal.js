@@ -23,7 +23,7 @@ import "@babylonjs/loaders/glTF";
 function splitUrl(url) {
   const i = url.lastIndexOf("/");
   return {
-    rootUrl:  url.substring(0, i + 1),
+    rootUrl:  window.location.origin + url.substring(0, i + 1),
     filename: url.substring(i + 1),
   };
 }

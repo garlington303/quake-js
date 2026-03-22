@@ -111,7 +111,7 @@ export const ENEMY_DEFINITIONS = {
       walk:   4,   // shambling walk
       attack: 6,   // toss arm
       pain:   5,   // slow collapse / knockdown fall
-      death:  4,   // cruc_ crucifixion frames
+      death:  6,   // zdie_ falling over
     },
     modelFootLift: 10,
     knockdownCount: 1,
@@ -234,6 +234,7 @@ export const ENEMY_DEFINITIONS = {
     size: 40,
     speed: 64,
     modelAnimRates: { idle: 10, walk: 16, attack: 18, pain: 12, death: 10 },
+    modelFootLift: 20, // Lift dog character above its bounding box floor
     spriteSheetUrl: SKULL_SHEET_URL,
     modelUrl: "/models/enemies/dog.glb",
   },

@@ -4,6 +4,7 @@ const KEY_BINDINGS = {
   KeyA: "left",
   KeyD: "right",
   Space: "jump",
+  KeyE: "use",
 };
 
 export function attachInput(canvas) {
@@ -13,10 +14,12 @@ export function attachInput(canvas) {
     left: false,
     right: false,
     jump: false,
+    use: false,
     jumpQueued: false,
+    useQueued: false,
     primaryFireQueued: false,
     flashlightToggled: false,
-    weaponSelectQueued: null, // null | "shotgun" | "sword"
+    weaponSelectQueued: null, // null | weapon id
     weaponScrollDelta: 0,     // +1 = scroll down (next), -1 = scroll up (prev)
     pointerLocked: false,
     lookDeltaX: 0,
@@ -39,6 +42,9 @@ export function attachInput(canvas) {
     if (!event.repeat && event.code === "Space") {
       state.jumpQueued = true;
     }
+    if (!event.repeat && event.code === "KeyE") {
+      state.useQueued = true;
+    }
     if (!event.repeat && event.code === "KeyF") {
       state.flashlightToggled = true;
     }
@@ -46,10 +52,10 @@ export function attachInput(canvas) {
       state.weaponSelectQueued = "shotgun";
     }
     if (!event.repeat && event.code === "Digit2") {
-      state.weaponSelectQueued = "sword";
+      state.weaponSelectQueued = "pistol";
     }
     if (!event.repeat && event.code === "Digit3") {
-      state.weaponSelectQueued = "grenade";
+      state.weaponSelectQueued = "sword";
     }
     if (!event.repeat && event.code === "Digit4") {
       state.weaponSelectQueued = "staff";
@@ -112,6 +118,11 @@ export function attachInput(canvas) {
     consumeJump() {
       const queued = state.jumpQueued;
       state.jumpQueued = false;
+      return queued;
+    },
+    consumeUse() {
+      const queued = state.useQueued;
+      state.useQueued = false;
       return queued;
     },
     consumePrimaryFire() {

@@ -24,4 +24,4 @@ export const WEAPONS = {
   },
 };
 
-export const WEAPON_ORDER = ["shotgun", "sword", "grenade", "staff"];
+export const WEAPON_ORDER = ["shotgun", "pistol", "sword", "staff"];

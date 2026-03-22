@@ -40,11 +40,11 @@ const ANIM_PREFIXES = [
       "jump", "leap",
     ] },
   { name: "pain",   prefixes: ["pain", "zpain", "kpain", "opain"] },
-  // death: cruc covers zombie's cruc_1-6; exp covers tarbaby explosion
+  // death: exp covers tarbaby explosion
   { name: "death",  prefixes: [
       "deth", "death", "die",
       "zdie", "bdeath", "rdeath", "crumpl", "chunk",
-      "cruc", "exp",
+      "exp",
     ] },
   { name: "extra",  prefixes: [] }, // catch-all
 ];
@@ -111,7 +111,7 @@ function groupFrames(morphTargetManager) {
 
 export async function loadEnemyModel(scene, modelUrl, position, options = {}) {
   const lastSlash = modelUrl.lastIndexOf("/");
-  const rootUrl = modelUrl.substring(0, lastSlash + 1);
+  const rootUrl = window.location.origin + modelUrl.substring(0, lastSlash + 1);
   const filename = modelUrl.substring(lastSlash + 1);
 
   console.log(`[enemyModel3D] loading ${modelUrl}`);
