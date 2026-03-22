@@ -1,19 +1,11 @@
 import { Color3 } from "@babylonjs/core/Maths/math.color.js";
 import { PointLight } from "@babylonjs/core/Lights/pointLight.js";
-import { Ray } from "@babylonjs/core/Culling/ray.js";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial.js";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder.js";
-import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
-import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader.js";
-import "@babylonjs/loaders/glTF";
 import { createPixelSpriteEffect } from "./pixelSpriteEffect.js";
 
 const DEFAULT_SPEED = 1400;
-const GRENADE_GRAVITY = 800;
-// World-space scale — native GLB is ~11 units tall; 0.40 gives ~4.5 Quake-unit grenade
-const GRENADE_WORLD_SCALE = 0.40;
-const MAX_BOUNCES = 4;
 
 const DEFAULT_PROJECTILE_EFFECT = {
   frameCount: 24,
@@ -22,52 +14,40 @@ const DEFAULT_PROJECTILE_EFFECT = {
   textureUrl: "/gfx/Pixel%20VFX/Fire%20Spells%20Pixel%20VFX/Fire%20Spells/Lavaball.png",
 };
 
-// ── Grenade GLB cache (loaded once, reused per throw) ─────────────────────────
-let _grenadeBuffer = null;
-async function _fetchGrenadeBuffer() {
-  if (_grenadeBuffer) return _grenadeBuffer;
-  try {
-    const res = await fetch(window.location.origin + "/models/Items%20&%20Weapons/frag_grenade.glb");
-    if (res.ok) _grenadeBuffer = await res.arrayBuffer();
-  } catch (_) { /* fallback to sphere */ }
-  return _grenadeBuffer;
-}
+function spawnSphereProjectileVisual(scene, options) {
+  const diameter = options.diameter ?? 0.2;
+  const mesh = MeshBuilder.CreateSphere(`proj-sphere-${performance.now()}-${Math.random()}`, {
+    diameter,
+    segments: options.segments ?? 6,
+  }, scene);
+  const material = new StandardMaterial(`proj-sphere-mat-${performance.now()}-${Math.random()}`, scene);
+  const color = options.color ?? new Color3(1, 0.75, 0.3);
+  material.diffuseColor = color.scale(0.85);
+  material.emissiveColor = color;
+  material.specularColor = color.scale(0.08);
+  material.disableLighting = false;
+  mesh.material = material;
+  mesh.isPickable = false;
+  mesh.checkCollisions = false;
+  mesh.renderingGroupId = 1;
+  mesh.position.copyFrom(options.origin);
 
-async function _instantiateGrenadeModel(scene, origin) {
-  const buf = await _fetchGrenadeBuffer();
-  if (!buf) return null;
-  try {
-    const blob = new Blob([buf], { type: "model/gltf-binary" });
-    const blobUrl = URL.createObjectURL(blob);
-    const result = await SceneLoader.ImportMeshAsync("", "", blobUrl, scene, undefined, ".glb");
-    URL.revokeObjectURL(blobUrl);
-
-    const root = new TransformNode("grenade-world-prop", scene);
-    root.scaling.setAll(GRENADE_WORLD_SCALE);
-    root.position.copyFrom(origin);
-
-    const meshSet = new Set(result.meshes);
-    result.meshes
-      .filter((m) => !m.parent || !meshSet.has(m.parent))
-      .forEach((m) => { m.parent = root; });
-    result.meshes.forEach((m) => {
-      m.isPickable = false;
-      m.renderingGroupId = 0;
-    });
-
-    return { root, meshes: result.meshes };
-  } catch (_) {
-    return null;
+  let light = null;
+  if ((options.lightIntensity ?? 0) > 0) {
+    light = new PointLight(`proj-sphere-light-${performance.now()}`, options.origin.clone(), scene);
+    light.diffuse = color;
+    light.specular = color.scale(0.5);
+    light.intensity = options.lightIntensity;
+    light.range = options.lightRange ?? 8;
   }
+
+  return { mesh, material, light };
 }
 
 export function createProjectileSystem(scene) {
   const projectiles = [];
 
-  // Kick off grenade buffer preload immediately
-  _fetchGrenadeBuffer();
-
-  // Legacy target-based projectile (enemy AI use)
+  // ── Legacy target-based projectile (enemy AI use) ─────────────────────────
   function spawnProjectile(options) {
     const origin = options.origin;
     const target = options.target;
@@ -100,7 +80,7 @@ export function createProjectileSystem(scene) {
     });
   }
 
-  // Visual magic bolt — travels to pre-computed target, triggers onArrive
+  // ── Generic visual bolt (enemy AI / non-staff use) ─────────────────────────
   function spawnBolt(options) {
     const color = options.color ?? new Color3(0.4, 0.3, 1.0);
     const target = options.target.clone();
@@ -136,69 +116,108 @@ export function createProjectileSystem(scene) {
     });
   }
 
-  // Physics grenade — arc + bounce, GLB model loaded async
-  function spawnGrenade(options) {
-    const velocity = options.direction.clone().normalize().scale(options.throwSpeed ?? 320);
-    velocity.y += options.upwardKick ?? 110;
+  function spawnSphereProjectile(options) {
+    const origin = options.origin.clone();
+    const direction = options.direction.clone().normalize();
+    const speed = options.speed ?? DEFAULT_SPEED;
+    const velocity = direction.scale(speed);
+    const { mesh, material, light } = spawnSphereProjectileVisual(scene, {
+      color: options.color,
+      diameter: options.diameter,
+      lightIntensity: options.lightIntensity,
+      lightRange: options.lightRange,
+      origin,
+      segments: options.segments,
+    });
 
-    // Immediate sphere proxy (visible until GLB loads)
-    const sphere = MeshBuilder.CreateSphere(`grenade-sphere-${performance.now()}`, { diameter: 4, segments: 8 }, scene);
-    const mat = new StandardMaterial(`grenade-mat-${performance.now()}`, scene);
-    mat.diffuseColor = new Color3(0.22, 0.28, 0.18);
-    mat.specularColor = new Color3(0.45, 0.45, 0.35);
-    mat.specularPower = 32;
-    sphere.material = mat;
-    sphere.position.copyFrom(options.origin);
-    sphere.isPickable = false;
-
-    // Pulsing fuse light — warm orange, speeds up as fuse burns down
-    const fuseLight = new PointLight(`grenade-fuse-${performance.now()}`, options.origin.clone(), scene);
-    fuseLight.diffuse = new Color3(1.0, 0.45, 0.05);
-    fuseLight.specular = new Color3(1.0, 0.55, 0.0);
-    fuseLight.intensity = 0;
-    fuseLight.range = 24;
-
-    const initialFuseTime = options.fuseTime ?? 2.4;
-
-    const entry = {
-      type: "grenade",
-      sphere,
-      fuseLight,
-      modelRoot: null,   // set when GLB loads
+    projectiles.push({
+      type: "sphere",
+      gravity: options.gravity ?? 0,
+      lifeRemaining: options.lifeSeconds ?? 1.5,
+      light,
+      material,
+      mesh,
+      onExpire: options.onExpire ?? null,
+      onHit: options.onHit ?? null,
+      resolveHit: options.resolveHit ?? null,
       velocity,
-      position: options.origin.clone(),
-      rotation: new Vector3(0, 0, 0),
-      fuseTimer: initialFuseTime,
-      initialFuseTime,
-      bounceCount: 0,
-      exploded: false,
-      onExplode: options.onExplode ?? null,
-      onBounce:  options.onBounce  ?? null,
-    };
-    projectiles.push(entry);
-
-    // Load GLB model, swap in when ready
-    _instantiateGrenadeModel(scene, options.origin).then((model) => {
-      if (!model) return;
-      if (entry.exploded || !projectiles.includes(entry)) {
-        // Already exploded — discard loaded model
-        model.root.dispose();
-        return;
-      }
-      entry.modelRoot = model.root;
-      entry.sphere.isVisible = false;
-      model.root.position.copyFrom(entry.position);
     });
   }
 
-  function _disposeGrenade(entry) {
-    entry.exploded = true;
-    entry.sphere.dispose();
-    entry.fuseLight?.dispose();
-    entry.modelRoot?.dispose();
+  // ── Staff ice bolt ─────────────────────────────────────────────────────────
+  // Frostball.png + Frostball_Hit.png — both 192×128 (6 cols × 4 rows = 24 frames)
+  const ICE_COLOR       = new Color3(0.35, 0.85, 1.0); // bright cyan-ice
+  const ICE_LIGHT_BASE  = 7.0;
+  const ICE_LIGHT_RANGE = 40;
+
+  // Standalone impact effects — ticked independently until animation ends
+  const impacts = [];
+
+  function spawnStaffBolt(options) {
+    const origin = options.origin.clone();
+    const target = options.target.clone();
+    const travel = target.subtract(origin);
+    const distance = travel.length();
+    const direction = distance > 0 ? travel.scale(1 / distance) : new Vector3(0, 0, 1);
+
+    // Frostball sprite — loops while in flight
+    const effect = createPixelSpriteEffect(scene, {
+      columns: 6,
+      rows: 4,
+      frameCount: 24,
+      frameRate: 18,
+      size: options.size ?? 1.3,
+      textureUrl: "/gfx/Pixel%20VFX/Ice%20Spells%20Pixel%20VFX/Ice%20Spells/Frostball.png",
+      emissiveColor: ICE_COLOR,
+    });
+    effect.setPosition(origin);
+
+    // Pulsing ice-blue point light that rides with the bolt
+    const light = new PointLight(`staff-bolt-light-${performance.now()}`, origin.clone(), scene);
+    light.diffuse    = ICE_COLOR;
+    light.specular   = ICE_COLOR;
+    light.intensity  = ICE_LIGHT_BASE;
+    light.range      = ICE_LIGHT_RANGE;
+
+    projectiles.push({
+      type: "staffBolt",
+      direction,
+      distance,
+      traveled: 0,
+      speed: options.speed ?? 750,
+      effect,
+      light,
+      pulsePhase: 0,
+      onArrive: options.onArrive ?? null,
+    });
+  }
+
+  // Spawn a one-shot Frostball_Hit impact burst at the given world position.
+  function spawnStaffImpact(position) {
+    const effect = createPixelSpriteEffect(scene, {
+      columns: 6,
+      rows: 4,
+      frameCount: 24,
+      frameRate: 22,
+      size: 2.2,
+      textureUrl: "/gfx/Pixel%20VFX/Ice%20Spells%20Pixel%20VFX/Ice%20Spells/Frostball_Hit.png",
+      emissiveColor: ICE_COLOR,
+    });
+    effect.setPosition(position);
+
+    // Brief flash at impact
+    const light = new PointLight(`staff-impact-light-${performance.now()}`, position.clone(), scene);
+    light.diffuse   = ICE_COLOR;
+    light.specular  = ICE_COLOR;
+    light.intensity = 12.0;
+    light.range     = 50;
+
+    const duration = 24 / 22; // seconds to play all 24 frames at 22 fps
+    impacts.push({ effect, light, elapsed: 0, duration });
   }
 
   function update(deltaTimeSeconds) {
+    // ── Projectiles ──────────────────────────────────────────────────────────
     for (let i = projectiles.length - 1; i >= 0; i--) {
       const p = projectiles[i];
 
@@ -232,93 +251,77 @@ export function createProjectileSystem(scene) {
         }
         p.light.intensity = 6.0 * (1 - (p.traveled / p.distance) * 0.5);
 
-      } else if (p.type === "grenade") {
-        // ── Gravity ─────────────────────────────────────────────────────────
-        p.velocity.y -= GRENADE_GRAVITY * deltaTimeSeconds;
-        const move = p.velocity.scale(deltaTimeSeconds);
-        const moveLen = move.length();
-        let bounced = false;
+      } else if (p.type === "staffBolt") {
+        const step = p.speed * deltaTimeSeconds;
+        p.traveled += step;
+        p.effect.update(deltaTimeSeconds, true);
+        p.effect.mesh.position.addInPlace(p.direction.scale(step));
+        p.light.position.copyFrom(p.effect.mesh.position);
 
-        // ── Collision / bounce ────────────────────────────────────────────
-        if (moveLen > 0.01) {
-          const ray = new Ray(p.position, move.clone().normalize(), moveLen + 2);
-          const pick = scene.pickWithRay(ray, (m) => m.checkCollisions && m.name !== "player-collider");
+        // Shimmer pulse
+        p.pulsePhase += deltaTimeSeconds * 8;
+        const pulse = 0.85 + 0.15 * Math.sin(p.pulsePhase);
+        p.light.intensity = ICE_LIGHT_BASE * pulse;
 
-          if (pick?.hit && pick.distance <= moveLen + 2) {
-            if (p.bounceCount < MAX_BOUNCES) {
-              const normal = pick.getNormal(true) ?? new Vector3(0, 1, 0);
-              const dot = Vector3.Dot(p.velocity, normal);
-              if (dot < 0) {
-                // Reflect: v' = v - 2(v·n)n, with energy loss
-                p.velocity.subtractInPlace(normal.scale(2 * dot));
-                p.velocity.scaleInPlace(0.48);
-                p.bounceCount++;
-                bounced = true;
-                // Snap to contact point + small normal offset to avoid re-penetration
-                if (pick.pickedPoint) {
-                  p.position.copyFrom(pick.pickedPoint).addInPlace(normal.scale(2));
-                }
-                if (p.onBounce) p.onBounce();
-              }
-            } else {
-              // Max bounces reached — detonate
-              p.fuseTimer = 0;
-            }
-          }
-        }
-
-        // ── Ground friction when rolling ──────────────────────────────────
-        if (p.bounceCount >= 1) {
-          const groundRay = new Ray(p.position, new Vector3(0, -1, 0), 4);
-          const ground = scene.pickWithRay(groundRay, (m) => m.checkCollisions && m.name !== "player-collider");
-          if (ground?.hit && ground.distance < 4) {
-            const drag = 1 - deltaTimeSeconds * 2.5;
-            p.velocity.x *= drag;
-            p.velocity.z *= drag;
-          }
-        }
-
-        // ── Fuse light pulse (orange strobe, accelerates toward 0) ────────
-        if (p.fuseLight) {
-          const fuseProgress = 1 - Math.max(0, p.fuseTimer / p.initialFuseTime);
-          const pulseFreq = (2 + fuseProgress * 10) * Math.PI;
-          const pulse = Math.max(0, Math.sin(performance.now() * 0.001 * pulseFreq));
-          p.fuseLight.intensity = pulse * 3.8;
-          p.fuseLight.position.copyFrom(p.position);
-        }
-
-        // ── Fuse countdown ────────────────────────────────────────────────
-        p.fuseTimer -= deltaTimeSeconds;
-        if (p.fuseTimer <= 0) {
-          const explodePos = p.position.clone();
-          _disposeGrenade(p);
+        if (p.traveled >= p.distance) {
+          const arrivePos = p.effect.mesh.position.clone();
+          p.effect.dispose();
+          p.light.dispose();
           projectiles.splice(i, 1);
-          if (p.onExplode) p.onExplode(explodePos);
+          if (p.onArrive) p.onArrive(arrivePos);
+          continue;
+        }
+      } else if (p.type === "sphere") {
+        p.lifeRemaining -= deltaTimeSeconds;
+        if (p.lifeRemaining <= 0) {
+          const expirePos = p.mesh.position.clone();
+          p.mesh.dispose();
+          p.material.dispose();
+          p.light?.dispose();
+          projectiles.splice(i, 1);
+          if (p.onExpire) p.onExpire(expirePos);
           continue;
         }
 
-        // ── Position update ───────────────────────────────────────────────
-        if (!bounced) p.position.addInPlace(move);
+        if (p.gravity !== 0) {
+          p.velocity.y -= p.gravity * deltaTimeSeconds;
+        }
 
-        p.sphere.position.copyFrom(p.position);
-        if (p.modelRoot) p.modelRoot.position.copyFrom(p.position);
+        const start = p.mesh.position.clone();
+        const displacement = p.velocity.scale(deltaTimeSeconds);
+        const distance = displacement.length();
 
-        // ── Rolling rotation based on velocity ────────────────────────────
-        const speed = p.velocity.length();
-        if (speed > 5) {
-          const velNorm = p.velocity.clone().normalize();
-          const rollAxis = Vector3.Cross(velNorm, Vector3.Up());
-          const rollLen = rollAxis.length();
-          if (rollLen > 0.01) {
-            rollAxis.scaleInPlace(1 / rollLen);
-            const rollAngle = speed * 0.012 * deltaTimeSeconds;
-            p.rotation.x += rollAxis.x * rollAngle;
-            p.rotation.z += rollAxis.z * rollAngle;
+        if (distance > 0.0001 && p.resolveHit) {
+          const direction = displacement.scale(1 / distance);
+          const hit = p.resolveHit(start, direction, distance);
+          if (hit && hit.type !== "miss") {
+            p.mesh.position.copyFrom(hit.position);
+            p.light?.position.copyFrom(hit.position);
+            p.mesh.dispose();
+            p.material.dispose();
+            p.light?.dispose();
+            projectiles.splice(i, 1);
+            if (p.onHit) p.onHit(hit);
+            continue;
           }
         }
 
-        p.sphere.rotation.copyFrom(p.rotation);
-        if (p.modelRoot) p.modelRoot.rotation.copyFrom(p.rotation);
+        p.mesh.position.addInPlace(displacement);
+        p.light?.position.copyFrom(p.mesh.position);
+      }
+    }
+
+    // ── Impact effects ───────────────────────────────────────────────────────
+    for (let i = impacts.length - 1; i >= 0; i--) {
+      const imp = impacts[i];
+      imp.elapsed += deltaTimeSeconds;
+      imp.effect.update(deltaTimeSeconds, false);
+      // Fade the flash light out over the animation duration
+      imp.light.intensity = 12.0 * Math.max(0, 1 - imp.elapsed / imp.duration);
+      if (imp.elapsed >= imp.duration) {
+        imp.effect.dispose();
+        imp.light.dispose();
+        impacts.splice(i, 1);
       }
     }
   }
@@ -326,7 +329,9 @@ export function createProjectileSystem(scene) {
   return {
     spawnProjectile,
     spawnBolt,
-    spawnGrenade,
+    spawnSphereProjectile,
+    spawnStaffBolt,
+    spawnStaffImpact,
     update,
   };
 }

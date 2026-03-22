@@ -1,4 +1,6 @@
-﻿/**
+import { ProceduralSoundtrack } from "./proceduralSoundtrack.js";
+
+/**
  * audioSystem.js
  * Uses audio files from /public/sounds with synth fallbacks.
  * AudioContext is created lazily on first call so it follows user gestures.
@@ -7,25 +9,36 @@
 let ctx = null;
 let masterGain = null;
 let preloadStarted = false;
+let soundtrack = null;
 
 const MASTER_GAIN = 0.85;
 const SOUND_LIBRARY = {
-  shoot:   { files: ["SHOTGUN16.WAV"], volume: 0.9 },
-  hit:     { files: ["PUNCH1.WAV", "PUNCH3.WAV", "PUNCH5.WAV"], volume: 0.6 },
-  pickup:  { files: ["ITEM1.WAV", "ITEM2.WAV", "ITEM5.WAV"], volume: 0.7 },
-  hurt:    { files: ["PUNCH6.WAV", "PUNCH4.WAV"], volume: 0.8 },
-  death:   { files: ["EXPLODE10.WAV", "EXPLODE14.WAV"], volume: 0.9 },
-  footstep:{ files: ["STEP1.WAV"], volume: 0.35, pitchVariation: 0.2 },
+  shoot:       { files: ["SHOTGUN16.WAV"], volume: 0.9 },
+  pistolShot:  { files: ["pistol4.mp3"], volume: 0.85, pitchVariation: 0.1 },
+  hit:         { files: ["PUNCH1.WAV", "PUNCH3.WAV", "PUNCH5.WAV"], volume: 0.6 },
+  pickup:      { files: ["ITEM1.WAV", "ITEM2.WAV", "ITEM5.WAV"], volume: 0.7 },
+  hurt:        { files: ["PUNCH6.WAV", "PUNCH4.WAV"], volume: 0.8 },
+  death:       { files: ["EXPLODE10.WAV", "EXPLODE14.WAV"], volume: 0.9 },
+  footstep:    { files: ["STEP1.WAV"], volume: 0.35, pitchVariation: 0.2 },
+  staffCast:   { files: ["PLASMA17.WAV"], volume: 0.75, pitchVariation: 0.08 },
+  staffImpact: { files: ["FIREBALL2.WAV", "FIREBALL3.WAV"], volume: 0.85, pitchVariation: 0.1 },
+  doorOpen:    { files: ["OPEN.WAV", "OPEN1.WAV"], volume: 0.70, pitchVariation: 0.05 },
+  doorClose:   { files: ["CLOSE1.WAV"], volume: 0.65, pitchVariation: 0.05 },
 };
 
 const buffers = new Map();
 
 function getCtx() {
   if (!ctx) {
-    ctx = new AudioContext();
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    ctx = new AC();
     masterGain = ctx.createGain();
     masterGain.gain.value = MASTER_GAIN;
     masterGain.connect(ctx.destination);
+    
+    soundtrack = new ProceduralSoundtrack(ctx);
+    soundtrack.connect(masterGain);
   }
   if (ctx.state === "suspended") ctx.resume();
   return ctx;
@@ -67,7 +80,7 @@ function pickRandom(list) {
 
 async function playSample(key) {
   const entry = SOUND_LIBRARY[key];
-  if (!entry) return false;
+  if (!entry || !ctx) return false;
   const fileName = pickRandom(entry.files);
 
   try {
@@ -89,7 +102,7 @@ async function playSample(key) {
 }
 
 function preloadAll() {
-  if (preloadStarted) return;
+  if (preloadStarted || !ctx) return;
   preloadStarted = true;
   const files = Object.values(SOUND_LIBRARY).flatMap((entry) => entry.files);
   files.forEach((file) => {
@@ -101,6 +114,7 @@ function preloadAll() {
 
 function playShootSynth() {
   const c = getCtx();
+  if (!c) return;
 
   // White noise burst — shotgun body
   const noise = c.createBufferSource();
@@ -129,6 +143,7 @@ function playShootSynth() {
 
 function playHitSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   const gain = c.createGain();
   osc.type = "square";
@@ -143,6 +158,7 @@ function playHitSynth() {
 
 function playPickupSynth() {
   const c = getCtx();
+  if (!c) return;
   // Two-tone ascending chirp
   [380, 620].forEach((freq, i) => {
     const osc = c.createOscillator();
@@ -162,6 +178,7 @@ function playPickupSynth() {
 
 function playHurtSynth() {
   const c = getCtx();
+  if (!c) return;
   const noise = c.createBufferSource();
   noise.buffer = noiseBuffer(c, 0.22);
   const lpf = c.createBiquadFilter();
@@ -177,6 +194,7 @@ function playHurtSynth() {
 
 function playDeathSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   const gain = c.createGain();
   osc.type = "sawtooth";
@@ -191,6 +209,7 @@ function playDeathSynth() {
 
 function playFootstepSynth() {
   const c = getCtx();
+  if (!c) return;
   const noise = c.createBufferSource();
   noise.buffer = noiseBuffer(c, 0.06);
   const bpf = c.createBiquadFilter();
@@ -208,6 +227,7 @@ function playFootstepSynth() {
 // Sword swoosh — filtered noise burst with a pitch-descending body
 function playSwingSynth() {
   const c = getCtx();
+  if (!c) return;
 
   // High-frequency air-cut noise
   const noise = c.createBufferSource();
@@ -243,6 +263,7 @@ function playSwingSynth() {
 // Enemy pain grunt — short low organic thud + pitch-drop
 function playEnemyHurtSynth() {
   const c = getCtx();
+  if (!c) return;
   // Noise body — body-impact thud
   const noise = c.createBufferSource();
   noise.buffer = noiseBuffer(c, 0.12);
@@ -271,6 +292,7 @@ function playEnemyHurtSynth() {
 // Enemy death scream — descending shriek + thud on landing
 function playEnemyDeathSynth() {
   const c = getCtx();
+  if (!c) return;
   // Shriek — fast descending oscillator
   const shriek = c.createOscillator();
   const shriekGain = c.createGain();
@@ -299,6 +321,7 @@ function playEnemyDeathSynth() {
 // Enemy aggro alert — rising warble when enemy first spots player
 function playEnemyAggroSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   const gain = c.createGain();
   osc.type = "square";
@@ -316,6 +339,7 @@ function playEnemyAggroSynth() {
 // Landing thud — low-pass noise burst, volume scales with fall speed
 function playLandSynth(speed) {
   const c = getCtx();
+  if (!c) return;
   const vol = Math.min(0.65, 0.2 + (speed / 600) * 0.45);
   const noise = c.createBufferSource();
   noise.buffer = noiseBuffer(c, 0.12);
@@ -333,6 +357,7 @@ function playLandSynth(speed) {
 // Weapon switch click — short triangle-wave descending blip
 function playWeaponSwitchSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   const gain = c.createGain();
   osc.type = "triangle";
@@ -349,6 +374,7 @@ function playWeaponSwitchSynth() {
 // Dry fire click — sharp metallic tick when trigger is pulled on empty chamber
 function playDryFireSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   const gain = c.createGain();
   osc.type = "square";
@@ -362,10 +388,11 @@ function playDryFireSynth() {
   osc.stop(c.currentTime + 0.035);
 }
 
-// Grenade throw — short air-whoosh, low thud
-function playGrenadeThrowSynth() {
+// Door open — low groaning bass sweep
+function playDoorOpenSynth() {
   const c = getCtx();
-  // Whoosh: noise through a high-pass ramping to low-pass
+  if (!c) return;
+  // Whoosh: noise through a bandpass ramping low
   const buf = noiseBuffer(c, 0.15);
   const src = c.createBufferSource();
   src.buffer = buf;
@@ -384,9 +411,27 @@ function playGrenadeThrowSynth() {
   src.stop(c.currentTime + 0.15);
 }
 
+// Door close — heavy thud
+function playDoorCloseSynth() {
+  const c = getCtx();
+  const noise = c.createBufferSource();
+  noise.buffer = noiseBuffer(c, 0.1);
+  const lpf = c.createBiquadFilter();
+  lpf.type = "lowpass";
+  lpf.frequency.value = 200;
+  const gain = c.createGain();
+  gain.gain.setValueAtTime(0.5, c.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.1);
+  noise.connect(lpf);
+  lpf.connect(gain);
+  gain.connect(masterGain ?? c.destination);
+  noise.start();
+}
+
 // Grenade bounce clunk — dull metallic thud with short ring
 function playBounceClunkSynth() {
   const c = getCtx();
+  if (!c) return;
   // Low-pass noise thud
   const buf = noiseBuffer(c, 0.09);
   const src = c.createBufferSource();
@@ -396,7 +441,7 @@ function playBounceClunkSynth() {
   lpf.frequency.setValueAtTime(900, c.currentTime);
   lpf.frequency.exponentialRampToValueAtTime(180, c.currentTime + 0.09);
   const ng = c.createGain();
-  ng.gain.setValueAtTime(0.38, c.currentTime);
+  ng.gain.setValueAtTime(0.45, c.currentTime);
   ng.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.09);
   src.connect(lpf);
   lpf.connect(ng);
@@ -417,9 +462,42 @@ function playBounceClunkSynth() {
   osc.stop(c.currentTime + 0.18);
 }
 
+// Staff impact boom — low thud + high crackle
+function playStaffImpactSynth() {
+  const c = getCtx();
+  // Low boom
+  const boom = c.createOscillator();
+  const boomGain = c.createGain();
+  boom.type = "sine";
+  boom.frequency.setValueAtTime(180, c.currentTime);
+  boom.frequency.exponentialRampToValueAtTime(30, c.currentTime + 0.35);
+  boomGain.gain.setValueAtTime(0.0001, c.currentTime);
+  boomGain.gain.linearRampToValueAtTime(0.5, c.currentTime + 0.02);
+  boomGain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.35);
+  boom.connect(boomGain);
+  boomGain.connect(masterGain ?? c.destination);
+  boom.start();
+  boom.stop(c.currentTime + 0.36);
+  // Crackle burst
+  const noise = c.createBufferSource();
+  noise.buffer = noiseBuffer(c, 0.12);
+  const bpf = c.createBiquadFilter();
+  bpf.type = "bandpass";
+  bpf.frequency.value = 2800;
+  bpf.Q.value = 0.5;
+  const ng = c.createGain();
+  ng.gain.setValueAtTime(0.45, c.currentTime);
+  ng.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + 0.12);
+  noise.connect(bpf);
+  bpf.connect(ng);
+  ng.connect(masterGain ?? c.destination);
+  noise.start();
+}
+
 // Explosion — sub-bass punch, noise decay
 function playExplosionSynth() {
   const c = getCtx();
+  if (!c) return;
   // Sub-bass thud
   const osc = c.createOscillator();
   osc.type = "sine";
@@ -450,9 +528,11 @@ function playExplosionSynth() {
   src.stop(c.currentTime + 0.5);
 }
 
+
 // Staff cast — magical crystalline charge-and-release
 function playCastSpellSynth() {
   const c = getCtx();
+  if (!c) return;
   const osc = c.createOscillator();
   osc.type = "sine";
   osc.frequency.setValueAtTime(280, c.currentTime);
@@ -481,6 +561,34 @@ function playCastSpellSynth() {
   osc2.stop(c.currentTime + 0.18);
 }
 
+function playPistolShotSynth() {
+  const c = getCtx();
+  // Sharp crack — higher-pitched than shotgun, fast transient
+  const noise = c.createBufferSource();
+  noise.buffer = noiseBuffer(c, 0.08);
+  const bpf = c.createBiquadFilter();
+  bpf.type = "bandpass";
+  bpf.frequency.value = 3200;
+  bpf.Q.value = 0.7;
+  const noiseGain = c.createGain();
+  ramp(noiseGain.gain, 0.7, 0.001, 0.08);
+  noise.connect(bpf);
+  bpf.connect(noiseGain);
+  noiseGain.connect(masterGain ?? c.destination);
+  noise.start();
+
+  // Tight punch tone
+  const kick = c.createOscillator();
+  const kickGain = c.createGain();
+  kick.frequency.setValueAtTime(220, c.currentTime);
+  kick.frequency.exponentialRampToValueAtTime(40, c.currentTime + 0.10);
+  ramp(kickGain.gain, 0.6, 0.001, 0.10);
+  kick.connect(kickGain);
+  kickGain.connect(masterGain ?? c.destination);
+  kick.start();
+  kick.stop(c.currentTime + 0.10);
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export function createAudioSystem() {
@@ -490,7 +598,14 @@ export function createAudioSystem() {
 
   const playShoot = () => {
     getCtx();
+    if (soundtrack) soundtrack.triggerShootStab();
     playSample("shoot").then((ok) => { if (!ok) playShootSynth(); });
+  };
+
+  const playPistolShot = () => {
+    getCtx();
+    if (soundtrack) soundtrack.triggerShootStab();
+    playSample("pistolShot").then((ok) => { if (!ok) playPistolShotSynth(); });
   };
 
   const playHit = () => {
@@ -521,6 +636,7 @@ export function createAudioSystem() {
   // Sword swing — synth only (no WAV file needed)
   const playSwing = () => {
     getCtx();
+    if (soundtrack) soundtrack.triggerShootStab();
     playSwingSynth();
   };
 
@@ -530,13 +646,27 @@ export function createAudioSystem() {
   const playLand = (speed = 200) => { getCtx(); playLandSynth(speed); };
   const playWeaponSwitch = () => { getCtx(); playWeaponSwitchSynth(); };
   const playDryFire = () => { getCtx(); playDryFireSynth(); };
-  const playGrenadeThrow = () => { getCtx(); playGrenadeThrowSynth(); };
-  const playBounce = () => { getCtx(); playBounceClunkSynth(); };
-  const playExplosion = () => { getCtx(); playExplosionSynth(); };
-  const playCastSpell = () => { getCtx(); playCastSpellSynth(); };
+  const playCastSpell = () => {
+    getCtx();
+    playSample("staffCast").then((ok) => { if (!ok) playCastSpellSynth(); });
+  };
+
+  const playStaffImpact = () => {
+    getCtx();
+    playSample("staffImpact").then((ok) => { if (!ok) playStaffImpactSynth(); });
+  };
+
+  const playDoorOpen  = () => { getCtx(); playSample("doorOpen").then((ok)  => { if (!ok) playDoorOpenSynth();  }); };
+  const playDoorClose = () => { getCtx(); playSample("doorClose").then((ok) => { if (!ok) playDoorCloseSynth(); }); };
 
   return {
+    get soundtrack() {
+      // Ensure AudioContext and soundtrack are created
+      getCtx();
+      return soundtrack;
+    },
     playShoot,
+    playPistolShot,
     playHit,
     playPickup,
     playHurt,
@@ -549,10 +679,19 @@ export function createAudioSystem() {
     playLand,
     playWeaponSwitch,
     playDryFire,
-    playGrenadeThrow,
-    playBounce,
-    playExplosion,
     playCastSpell,
+    playStaffImpact,
+    playDoorOpen,
+    playDoorClose,
+    setMoving: (state) => {
+      getCtx();
+      if (soundtrack) {
+        if (state && !soundtrack.isPlaying) {
+          soundtrack.start();
+        }
+        soundtrack.setMoving(state);
+      }
+    },
     resume: () => {
       getCtx();
       preloadAll();

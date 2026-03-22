@@ -691,8 +691,11 @@ const NO_COLLISION_CLASSNAMES = new Set([
   "trigger_relay",
 ]);
 
-// Classnames that should not even render (pure-volume trigger brushes)
+// Classnames that should not even render (pure-volume trigger brushes, or
+// brush entities that build their own meshes via buildBrushEntityMesh).
 const INVISIBLE_CLASSNAMES = new Set([
+  "func_door",
+  "func_button",
   "trigger_once",
   "trigger_multiple",
   "trigger_secret",
@@ -722,7 +725,7 @@ export function buildBrushEntityMesh(scene, entity, options = {}) {
         geom,
         material,
         `entity-mesh-${brushIndex}-${texName}`,
-        false, // no per-mesh collision — door system handles it separately
+        true, // collision enabled so doors block the player and move with them
       );
       if (mesh) {
         mesh.metadata = { classname: entity.classname, source: "brush-entity" };

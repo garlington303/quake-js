@@ -509,6 +509,129 @@ export function createEnemySystem(scene) {
   const managers = new Map(); // sprite managers, keyed by type
   const enemies = [];
 
+  function getEnemyById(enemyId) {
+    return enemies.find((enemy) => enemy.id === enemyId) ?? null;
+  }
+
+  function findClosestEnemyHit(origin, direction, maxDistance) {
+    let closestHit = null;
+
+    enemies.forEach((enemy) => {
+      if (enemy.isDead) return;
+      const hit = intersectRayEnemy(origin, direction, enemy, maxDistance);
+      if (!hit) return;
+      if (!closestHit || hit.distance < closestHit.distance) {
+        closestHit = { ...hit, enemy };
+      }
+    });
+
+    return closestHit;
+  }
+
+  function findWorldHit(origin, direction, maxDistance) {
+    const worldPick = scene.pickWithRay(
+      new Ray(origin, direction, maxDistance),
+      (mesh) => Boolean(mesh?.checkCollisions),
+    );
+
+    return worldPick?.hit
+      ? {
+          distance: worldPick.distance,
+          position: worldPick.pickedPoint,
+          normal: worldPick.getNormal(true) ?? direction.scale(-1),
+          meshName: worldPick.pickedMesh?.name ?? null,
+        }
+      : null;
+  }
+
+  function traceHit(origin, direction, maxDistance) {
+    const closestEnemyHit = findClosestEnemyHit(origin, direction, maxDistance);
+    const worldHit = findWorldHit(origin, direction, maxDistance);
+    const enemyDist = closestEnemyHit?.distance ?? Infinity;
+    const worldDist = worldHit?.distance ?? Infinity;
+
+    if (!closestEnemyHit && !worldHit) {
+      return {
+        type: "miss",
+        distance: maxDistance,
+        position: origin.add(direction.scale(maxDistance)),
+      };
+    }
+
+    if (enemyDist <= worldDist) {
+      return {
+        type: "enemy",
+        enemyId: closestEnemyHit.enemy.id,
+        distance: enemyDist,
+        position: closestEnemyHit.point,
+      };
+    }
+
+    return {
+      type: "world",
+      distance: worldDist,
+      position: worldHit.position,
+      normal: worldHit.normal,
+      meshName: worldHit.meshName,
+    };
+  }
+
+  function applyDamageToEnemy(enemy, damage) {
+    enemy.currentHealth -= damage;
+    enemy.hitFlashRemaining = HIT_FLASH_MS;
+
+    scene.metadata ??= {};
+    scene.metadata.lastPlayerHit = {
+      at: performance.now(),
+      enemyId: enemy.id,
+      remainingHealth: enemy.currentHealth,
+    };
+
+    if (enemy.currentHealth <= 0) {
+      if ((enemy.kind === "model3d" || enemy.kind === "skeletal") && enemy.model) {
+        if (enemy._knockdownsLeft > 0 &&
+            enemy._animState !== "knockdown" && enemy._animState !== "rising") {
+          enemy._knockdownsLeft--;
+          enemy.currentHealth = 1;
+          const fallAnim = enemy.model.hasAnimation("pain") ? "pain" : null;
+          if (fallAnim) enemy.model.playAnimation(fallAnim, false, animRate(enemy, "pain") ?? 6);
+          enemy._animState = "knockdown";
+          enemy._walking = false;
+        } else {
+          enemy.isDead = true;
+          enemy.deathTimer = 3.5;
+          enemy._animState = "death";
+          const isKnockdownType = (enemy.definition.knockdownCount ?? 0) > 0;
+          const deathAnim = enemy.model.hasAnimation("death") ? "death"
+                          : (!isKnockdownType && enemy.model.hasAnimation("pain")) ? "pain"
+                          : null;
+          if (deathAnim) {
+            const deathRate = animRate(enemy, "death") ?? (deathAnim === "death" ? null : 10);
+            enemy.model.playAnimation(deathAnim, false, deathRate);
+          }
+        }
+      } else {
+        enemy.dispose();
+        const idx = enemies.indexOf(enemy);
+        if (idx >= 0) enemies.splice(idx, 1);
+      }
+    } else if ((enemy.kind === "model3d" || enemy.kind === "skeletal") && enemy.model &&
+               enemy.model.hasAnimation("pain") &&
+               (enemy.definition.knockdownCount ?? 0) === 0 &&
+               enemy._animState !== "pain" && enemy._animState !== "death" &&
+               enemy._animState !== "knockdown" && enemy._animState !== "rising") {
+      enemy.model.playAnimation("pain", false, animRate(enemy, "pain"));
+      enemy._animState = "pain";
+      enemy._walking = false;
+    }
+
+    return {
+      enemyId: enemy.id,
+      enemyDown: enemy.currentHealth <= 0,
+      remainingHealth: enemy.currentHealth,
+    };
+  }
+
   return {
     spawnEnemy({ id, position, type }) {
       const definition = getEnemyDefinition(type);
@@ -684,108 +807,26 @@ export function createEnemySystem(scene) {
     handlePrimaryFire(camera) {
       const origin = cloneVector3(camera.position);
       const direction = camera.getForwardRay().direction.normalize();
-      let closestHit = null;
-
-      enemies.forEach((enemy) => {
-        if (enemy.isDead) return;
-        const hit = intersectRayEnemy(origin, direction, enemy, FIRE_RANGE);
-        if (!hit) return;
-        if (!closestHit || hit.distance < closestHit.distance) {
-          closestHit = { ...hit, enemy };
-        }
-      });
-
-      const worldPick = scene.pickWithRay(
-        new Ray(origin, direction, FIRE_RANGE),
-        (mesh) => Boolean(mesh?.checkCollisions),
-      );
-      const worldHit = worldPick?.hit
-        ? { distance: worldPick.distance, position: worldPick.pickedPoint }
-        : null;
-
       scene.metadata ??= {};
       scene.metadata.lastPlayerShotAt = performance.now();
+      const hit = traceHit(origin, direction, FIRE_RANGE);
 
-      if (!closestHit && !worldHit) {
+      if (hit.type === "miss") {
         scene.metadata.lastPlayerHit = null;
-        return {
-          type: "miss",
-          distance: FIRE_RANGE,
-          position: origin.add(direction.scale(FIRE_RANGE)),
-        };
+        return hit;
       }
 
-      const enemyDist = closestHit?.distance ?? Infinity;
-      const worldDist = worldHit?.distance ?? Infinity;
-
-      if (enemyDist <= worldDist) {
-        const enemy = closestHit.enemy;
-        enemy.currentHealth -= 10;
-        enemy.hitFlashRemaining = HIT_FLASH_MS;
-
-        scene.metadata.lastPlayerHit = {
-          at: performance.now(),
-          enemyId: enemy.id,
-          remainingHealth: enemy.currentHealth,
-        };
-
-        if (enemy.currentHealth <= 0) {
-          if ((enemy.kind === "model3d" || enemy.kind === "skeletal") && enemy.model) {
-            // Knockdown intercept: zombie-like enemies rise after the first kill blow
-            if (enemy._knockdownsLeft > 0 &&
-                enemy._animState !== "knockdown" && enemy._animState !== "rising") {
-              enemy._knockdownsLeft--;
-              enemy.currentHealth = 1; // survive this hit
-              const fallAnim = enemy.model.hasAnimation("pain") ? "pain" : null;
-              if (fallAnim) enemy.model.playAnimation(fallAnim, false, animRate(enemy, "pain") ?? 6);
-              enemy._animState = "knockdown";
-              enemy._walking = false;
-            } else {
-              enemy.isDead = true;
-              enemy.deathTimer = 3.5;
-              enemy._animState = "death";
-              // Never fall back to the pain/fall anim for death if this is a knockdown-type
-              // enemy — it would look like a second knockdown fall.
-              const isKnockdownType = (enemy.definition.knockdownCount ?? 0) > 0;
-              const deathAnim = enemy.model.hasAnimation("death") ? "death"
-                              : (!isKnockdownType && enemy.model.hasAnimation("pain")) ? "pain"
-                              : null;
-              if (deathAnim) {
-                const deathRate = animRate(enemy, "death") ?? (deathAnim === "death" ? null : 10);
-                enemy.model.playAnimation(deathAnim, false, deathRate);
-              }
-            }
-          } else {
-            enemy.dispose();
-            const idx = enemies.indexOf(enemy);
-            if (idx >= 0) enemies.splice(idx, 1);
-          }
-        } else if ((enemy.kind === "model3d" || enemy.kind === "skeletal") && enemy.model &&
-                   enemy.model.hasAnimation("pain") &&
-                   (enemy.definition.knockdownCount ?? 0) === 0 && // skip for knockdown-type enemies — pain IS their fall anim
-                   enemy._animState !== "pain" && enemy._animState !== "death" &&
-                   enemy._animState !== "knockdown" && enemy._animState !== "rising") {
-          // Still alive — play pain reaction
-          enemy.model.playAnimation("pain", false, animRate(enemy, "pain"));
-          enemy._animState = "pain";
-          enemy._walking = false;
+      if (hit.type === "enemy") {
+        const enemy = getEnemyById(hit.enemyId);
+        if (!enemy) {
+          scene.metadata.lastPlayerHit = null;
+          return { type: "miss", distance: FIRE_RANGE, position: hit.position };
         }
-
-        return {
-          type: "enemy",
-          enemyId: enemy.id,
-          distance: enemyDist,
-          position: closestHit.point,
-          enemyDown: enemy.currentHealth <= 0,
-        };
+        return { ...hit, ...applyDamageToEnemy(enemy, 10) };
       }
 
       scene.metadata.lastPlayerHit = null;
-      return {
-        type: "world",
-        distance: worldDist,
-        position: worldHit.position,
-      };
+      return hit;
     },
 
     // Short-range melee attack — same ray logic as handlePrimaryFire but with
@@ -793,97 +834,36 @@ export function createEnemySystem(scene) {
     handleMeleeAttack(camera, range = 128, damage = 50) {
       const origin = cloneVector3(camera.position);
       const direction = camera.getForwardRay().direction.normalize();
-      let closestHit = null;
-
-      enemies.forEach((enemy) => {
-        if (enemy.isDead) return;
-        const hit = intersectRayEnemy(origin, direction, enemy, range);
-        if (!hit) return;
-        if (!closestHit || hit.distance < closestHit.distance) {
-          closestHit = { ...hit, enemy };
-        }
-      });
-
-      const worldPick = scene.pickWithRay(
-        new Ray(origin, direction, range),
-        (mesh) => Boolean(mesh?.checkCollisions),
-      );
-      const worldHit = worldPick?.hit
-        ? { distance: worldPick.distance, position: worldPick.pickedPoint }
-        : null;
-
       scene.metadata ??= {};
       scene.metadata.lastPlayerShotAt = performance.now();
+      const hit = traceHit(origin, direction, range);
 
-      if (!closestHit && !worldHit) {
-        return { type: "miss", distance: range, position: origin.add(direction.scale(range)) };
-      }
-
-      const enemyDist = closestHit?.distance ?? Infinity;
-      const worldDist = worldHit?.distance ?? Infinity;
-
-      if (enemyDist <= worldDist) {
-        const enemy = closestHit.enemy;
-        enemy.currentHealth -= damage;
-        enemy.hitFlashRemaining = HIT_FLASH_MS;
-
-        scene.metadata.lastPlayerHit = {
-          at: performance.now(),
-          enemyId: enemy.id,
-          remainingHealth: enemy.currentHealth,
-        };
-
-        if (enemy.currentHealth <= 0) {
-          if ((enemy.kind === "model3d" || enemy.kind === "skeletal") && enemy.model) {
-            if (enemy._knockdownsLeft > 0 &&
-                enemy._animState !== "knockdown" && enemy._animState !== "rising") {
-              enemy._knockdownsLeft--;
-              enemy.currentHealth = 1;
-              const fallAnim = enemy.model.hasAnimation("pain") ? "pain" : null;
-              if (fallAnim) enemy.model.playAnimation(fallAnim, false, animRate(enemy, "pain") ?? 6);
-              enemy._animState = "knockdown";
-              enemy._walking = false;
-            } else {
-              enemy.isDead = true;
-              enemy.deathTimer = 3.5;
-              enemy._animState = "death";
-              // Never fall back to the pain/fall anim for death if this is a knockdown-type
-              // enemy — it would look like a second knockdown fall.
-              const isKnockdownType = (enemy.definition.knockdownCount ?? 0) > 0;
-              const deathAnim = enemy.model.hasAnimation("death") ? "death"
-                              : (!isKnockdownType && enemy.model.hasAnimation("pain")) ? "pain"
-                              : null;
-              if (deathAnim) {
-                const deathRate = animRate(enemy, "death") ?? (deathAnim === "death" ? null : 10);
-                enemy.model.playAnimation(deathAnim, false, deathRate);
-              }
-            }
-          } else {
-            enemy.dispose();
-            const idx = enemies.indexOf(enemy);
-            if (idx >= 0) enemies.splice(idx, 1);
-          }
-        } else if ((enemy.kind === "model3d" || enemy.kind === "skeletal") && enemy.model &&
-                   enemy.model.hasAnimation("pain") &&
-                   (enemy.definition.knockdownCount ?? 0) === 0 && // skip for knockdown-type enemies — pain IS their fall anim
-                   enemy._animState !== "pain" && enemy._animState !== "death" &&
-                   enemy._animState !== "knockdown" && enemy._animState !== "rising") {
-          enemy.model.playAnimation("pain", false, animRate(enemy, "pain"));
-          enemy._animState = "pain";
-          enemy._walking = false;
+      if (hit.type === "enemy") {
+        const enemy = getEnemyById(hit.enemyId);
+        if (!enemy) {
+          scene.metadata.lastPlayerHit = null;
+          return { type: "miss", distance: range, position: hit.position };
         }
-
-        return {
-          type: "enemy",
-          enemyId: enemy.id,
-          distance: enemyDist,
-          position: closestHit.point,
-          enemyDown: enemy.currentHealth <= 0,
-        };
+        return { ...hit, ...applyDamageToEnemy(enemy, damage) };
       }
 
-      scene.metadata.lastPlayerHit = null;
-      return { type: "world", distance: worldDist, position: worldHit.position };
+      if (hit.type === "world") {
+        scene.metadata.lastPlayerHit = null;
+      }
+
+      return hit;
+    },
+
+    traceProjectile(origin, direction, maxDistance = FIRE_RANGE) {
+      return traceHit(origin, direction, maxDistance);
+    },
+
+    applyProjectileDamage(enemyId, damage) {
+      const enemy = getEnemyById(enemyId);
+      if (!enemy || enemy.isDead) {
+        return null;
+      }
+      return applyDamageToEnemy(enemy, damage);
     },
 
     handleExplosionDamage(position, radius, damage) {

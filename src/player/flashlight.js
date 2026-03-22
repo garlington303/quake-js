@@ -1,5 +1,6 @@
 import { Color3 } from "@babylonjs/core/Maths/math.color.js";
 import { Quaternion, Vector3 } from "@babylonjs/core/Maths/math.vector.js";
+import { Light } from "@babylonjs/core/Lights/light.js";
 import { PointLight } from "@babylonjs/core/Lights/pointLight.js";
 import { SpotLight } from "@babylonjs/core/Lights/spotLight.js";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js";
@@ -22,11 +23,11 @@ const BOB_AMP_Y_IDLE = 0.0015;
 // Subtle beam flicker
 const FLICKER_SPEED = 7;
 const FLICKER_AMOUNT = 0.06;
-const BASE_INTENSITY = 22;
+const BASE_INTENSITY = 14;
 
 // Radial ambient glow from the flashlight body
-const GLOW_INTENSITY = 6.0;
-const GLOW_RANGE = 120;
+const GLOW_INTENSITY = 2.1;
+const GLOW_RANGE = 72;
 
 export function createFlashlight(scene, camera) {
   const root = new TransformNode("flashlight-root", scene);
@@ -38,13 +39,18 @@ export function createFlashlight(scene, camera) {
     "flashlight-spot",
     new Vector3(0.25, -0.15, 0.8),
     new Vector3(0, 0, 1),
-    Math.PI / 3,
-    2,
+    Math.PI / 2.9,
+    0.9,
     scene,
   );
-  spotLight.diffuse = new Color3(1, 0.95, 0.85);
-  spotLight.specular = new Color3(0.3, 0.3, 0.25);
+  spotLight.diffuse = new Color3(1, 0.94, 0.86);
+  spotLight.specular = new Color3(0.2, 0.2, 0.16);
   spotLight.intensity = BASE_INTENSITY;
+  spotLight.falloffType = Light.FALLOFF_PHYSICAL;
+  // A non-zero radius gives softer highlights and less "laser-point" response.
+  spotLight.radius = 0.5;
+  // Inner/outer cone separation creates a soft penumbra edge.
+  spotLight.innerAngle = Math.PI / 5;
   spotLight.range = 220;
   spotLight.shadowMinZ = 0.1;
   spotLight.parent = camera;
@@ -55,6 +61,8 @@ export function createFlashlight(scene, camera) {
   pointLight.diffuse = new Color3(0.9, 0.85, 0.7);
   pointLight.specular = new Color3(0.1, 0.1, 0.08);
   pointLight.intensity = GLOW_INTENSITY;
+  pointLight.falloffType = Light.FALLOFF_PHYSICAL;
+  pointLight.radius = 0.75;
   pointLight.range = GLOW_RANGE;
   pointLight.parent = camera;
   pointLight.setEnabled(false);

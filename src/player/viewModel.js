@@ -1,7 +1,6 @@
 ﻿import { Color3, Mesh, MeshBuilder, PointLight, Quaternion, StandardMaterial, TransformNode, Vector3 } from "@babylonjs/core";
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader.js";
 import "@babylonjs/loaders/glTF";
-import { createPixelSpriteEffect } from "../gameplay/pixelSpriteEffect.js";
 
 const VM_OFFSET = new Vector3(0, -0.36, 0.72);
 const PROCEDURAL_VM_SCALE = 0.045;
@@ -24,18 +23,26 @@ const STAFF_MODEL_OFFSET = new Vector3(0.16, -0.32, 0.50);
 const STAFF_MODEL_SCALE = 0.85;
 const STAFF_MODEL_ROTATION = Quaternion.FromEulerAngles(Math.PI / 2, 0.15, 0.10);
 
-// ── Sword ─────────────────────────────────────────────────────────────────────
+// ── Pistol ──────────────────────────────────────────────────────────────────
+const PISTOL_GLB_URL = "/models/Items%20&%20Weapons/pistol_mp_1_3.glb";
+const PISTOL_MODEL_OFFSET = new Vector3(0.12, -0.20, 0.52);
+const PISTOL_MODEL_SCALE  = 3.12;
+const PISTOL_MODEL_ROTATION = Quaternion.FromEulerAngles(0, Math.PI / 2, 0);
+
+// ── Pistol recoil ───────────────────────────────────────────────────────────
+const PISTOL_RECOIL_Z   = -0.12;
+const PISTOL_RECOIL_ROT = -0.18;
+const PISTOL_RECOIL_DUR = 0.14;
 // sword_test.glb: single mesh, no rig, bbox min[-0.11,-0.95,-0.04] max[0.11,0.95,0.04].
 // The blade runs along the Y-axis.  We tilt it ~40 ° counter-clockwise in Z so it
 // reads as a diagonal one-handed slash weapon held in the lower-right.
 const SWORD_GLB_URL = "/models/sword_test.glb";
-// Handle off-screen at lower-right; blade runs forward into the scene and angles
-// inward toward screen center — identical grammar to the shotgun barrel.
-const SWORD_MODEL_OFFSET = new Vector3(0.18, -0.08, 0.10);
+// Held upright at the side — "at the ready" rather than pointing forward.
+const SWORD_MODEL_OFFSET = new Vector3(0.24, -0.05, 0.15);
 const SWORD_MODEL_SCALE = 0.70;
-// x: +PI/2 maps blade Y → +Z (forward),  y: -0.20 yaws tip toward screen center,
-// z: slight clockwise roll for right-hand grip.
-const SWORD_MODEL_ROTATION = Quaternion.FromEulerAngles(Math.PI / 2, -0.20, 0.12);
+// x: slight forward tilt (not flat forward), y: yaw tip toward center,
+// z: roll for natural grip.
+const SWORD_MODEL_ROTATION = Quaternion.FromEulerAngles(0.22, -0.35, 0.18);
 
 // ── Mouse sway (weapon inertia) ───────────────────────────────────────────────
 const SWAY_SCALE_X = 0.0018;   // horizontal mouse → weapon offset (opposite dir)
@@ -345,28 +352,26 @@ async function loadStaffModel(scene, parent) {
   return { root: modelRoot };
 }
 
-// Flash is parented directly to the camera and pinned at the crosshair centre.
-// Z distance is close enough to always appear in front of the gun but far enough
-// not to clip with the near plane.
-const MUZZLE_FLASH_Z = 0.9;
-const MUZZLE_FLASH_SIZE = 0.28;
+async function loadPistolModel(scene, parent) {
+  const modelRoot = new TransformNode("viewmodel-pistol-glb", scene);
+  modelRoot.parent = parent;
+  modelRoot.position.copyFrom(PISTOL_MODEL_OFFSET);
+  modelRoot.scaling.setAll(PISTOL_MODEL_SCALE);
+  modelRoot.rotationQuaternion = PISTOL_MODEL_ROTATION.clone();
+  modelRoot.setEnabled(false);
 
-function createMuzzleFlash(scene, camera) {
-  const flash = createPixelSpriteEffect(scene, {
-    billboardMode: Mesh.BILLBOARDMODE_ALL,
-    columns: 6,
-    rows: 1,
-    frameCount: 6,
-    frameRate: 20,
-    parent: camera,
-    renderGroupId: 2,
-    size: MUZZLE_FLASH_SIZE,
-    textureUrl: "/ui/muzzle_flash.png?v=2",
+  const result = await SceneLoader.ImportMeshAsync("", window.location.origin + "/models/Items%20&%20Weapons/", "pistol_mp_1_3.glb", scene);
+  result.materials?.forEach((m) => configureImportedMaterial(m));
+  const meshSet = new Set(result.meshes);
+  result.meshes.filter((m) => !m.parent || !meshSet.has(m.parent)).forEach((m) => { m.parent = modelRoot; });
+  result.meshes.forEach((mesh) => {
+    configureImportedMaterial(mesh.material);
+    mesh.isPickable = false;
+    mesh.receiveShadows = false;
+    mesh.renderingGroupId = 1;
+    mesh.alwaysSelectAsActiveMesh = true;
   });
-  // Crosshair centre — (0, 0, Z) in camera-local space is always dead-centre.
-  flash.mesh.position.set(0, 0, MUZZLE_FLASH_Z);
-  flash.mesh.isVisible = false;
-  return flash;
+  return { root: modelRoot };
 }
 
 export function createViewModel(scene, camera) {
@@ -385,7 +390,6 @@ export function createViewModel(scene, camera) {
 
   // ── Shotgun slot (fallback geometry until GLB loads) ──────────────────────
   const fallback = buildFallbackShotgun(scene, root);
-  const flash = createMuzzleFlash(scene, camera);
   let activePump = fallback.pump;
   const pumpRestZ = fallback.pump.position.z;
 
@@ -395,6 +399,7 @@ export function createViewModel(scene, camera) {
   let swordMeshRoot = null;
   let grenadeMeshRoot = null;
   let staffMeshRoot = null;
+  let pistolMeshRoot = null;
   let fallbackActive = true;
 
   loadShotgunModel(scene, root)
@@ -437,6 +442,15 @@ export function createViewModel(scene, camera) {
       console.warn("Failed to load staff GLB viewmodel.", error);
     });
 
+  loadPistolModel(scene, root)
+    .then((model) => {
+      pistolMeshRoot = model.root;
+      pistolMeshRoot.setEnabled(activeWeapon === "pistol");
+    })
+    .catch((error) => {
+      console.warn("Failed to load pistol GLB viewmodel.", error);
+    });
+
   // ── Animation state ───────────────────────────────────────────────────────
   let prevCamPos = camera.position.clone();
   let bobPhase = 0;
@@ -445,6 +459,7 @@ export function createViewModel(scene, camera) {
   let swingTimer = -1;
   let throwTimer = -1;   // grenade throw
   let castTimer = -1;    // staff cast
+  let pistolRecoilTimer = -1;
   let swayX = 0;         // mouse sway accumulators
   let swayY = 0;
   let strafeTilt = 0;    // current strafe roll (radians)
@@ -458,11 +473,11 @@ export function createViewModel(scene, camera) {
     const shotgunOn = weapon === "shotgun";
     if (shotgunMeshRoot) shotgunMeshRoot.setEnabled(shotgunOn);
     else if (fallbackActive) fallback.root.setEnabled(shotgunOn);
-    flash.mesh.isVisible = false;
 
     if (swordMeshRoot) swordMeshRoot.setEnabled(weapon === "sword");
     if (grenadeMeshRoot) grenadeMeshRoot.setEnabled(weapon === "grenade");
     if (staffMeshRoot) staffMeshRoot.setEnabled(weapon === "staff");
+    if (pistolMeshRoot) pistolMeshRoot.setEnabled(weapon === "pistol");
 
     // Reset pending animations so they don't bleed across weapons.
     recoilTimer = -1;
@@ -470,6 +485,7 @@ export function createViewModel(scene, camera) {
     swingTimer = -1;
     throwTimer = -1;
     castTimer = -1;
+    pistolRecoilTimer = -1;
     root.rotation.set(0, 0, 0);
   }
 
@@ -477,7 +493,6 @@ export function createViewModel(scene, camera) {
     if (activeWeapon !== "shotgun") return;
     recoilTimer = RECOIL_DURATION;
     pumpTimer = PUMP_DURATION;
-    flash.restart();
   }
 
   function swingMelee() {
@@ -493,6 +508,12 @@ export function createViewModel(scene, camera) {
   function castStaff() {
     if (activeWeapon !== "staff") return;
     castTimer = CAST_DURATION;
+  }
+
+  
+  function firePistol() {
+    if (activeWeapon !== "pistol") return;
+    pistolRecoilTimer = PISTOL_RECOIL_DUR;
   }
 
   function update(dt, lookDelta = null, lateralInput = 0) {
@@ -544,20 +565,25 @@ export function createViewModel(scene, camera) {
       activePump.position.z = pumpRestZ;
     }
 
-    if (flash.mesh.isVisible && flash.update(dt, false)) {
-      flash.mesh.isVisible = false;
-    }
 
     // ── Sword thrust ─────────────────────────────────────────────────────
-    let swingY = 0, swingZ = 0, swingRotX = 0;
+    let swingX = 0, swingY = 0, swingZ = 0, swingRotX = 0, swingRotY = 0, swingRotZ = 0;
 
     if (swingTimer > 0) {
       swingTimer -= dt;
-      const t   = 1 - swingTimer / SWING_DURATION;
-      const env = Math.sin(t * Math.PI);
-      swingZ    = THRUST_Z     * env;
-      swingY    = THRUST_Y     * env;
-      swingRotX = THRUST_ROT_X * env;
+      const t = Math.max(0, 1 - swingTimer / SWING_DURATION);
+      
+      const isStrike = t < 0.3;
+      const env = isStrike 
+        ? Math.sin((t / 0.3) * (Math.PI / 2)) 
+        : Math.cos(((t - 0.3) / 0.7) * (Math.PI / 2));
+
+      // Downward overhead slash
+      swingX    = -0.10 * env;
+      swingY    = -0.40 * env;
+      swingZ    =  0.40 * env;
+      swingRotX =  0.60 * env;
+      swingRotZ =  0.20 * env;
     }
 
     // ── Grenade throw ─────────────────────────────────────────────────────
@@ -580,15 +606,25 @@ export function createViewModel(scene, camera) {
       castRotX = CAST_ROT_X * env;
     }
 
+    // ── Pistol recoil ───────────────────────────────────────────────────
+    let pistolZ = 0, pistolRot = 0;
+    if (pistolRecoilTimer > 0) {
+      pistolRecoilTimer -= dt;
+      const normalized = Math.max(0, pistolRecoilTimer / PISTOL_RECOIL_DUR);
+      pistolZ   = PISTOL_RECOIL_Z   * normalized;
+      pistolRot = PISTOL_RECOIL_ROT * normalized;
+    }
+
     // ── Apply combined offsets ────────────────────────────────────────────
     root.position.set(
-      VM_OFFSET.x + bobX + swayX,
+      VM_OFFSET.x + bobX + swayX + swingX,
       VM_OFFSET.y + bobY + swingY + swayY,
-      VM_OFFSET.z + recoilZ + swingZ + throwZ + castZ,
+      VM_OFFSET.z + recoilZ + swingZ + throwZ + castZ + pistolZ,
     );
-    root.rotation.x = 0;
-    root.rotation.z = strafeTilt;
+    root.rotation.x = swingRotX + pistolRot;
+    root.rotation.y = swingRotY;
+    root.rotation.z = strafeTilt + swingRotZ;
   }
 
-  return { fire, swingMelee, throwGrenade, castStaff, setWeapon, update, root };
+  return { fire, swingMelee, throwGrenade, castStaff, setWeapon, update, root, firePistol };
 }

@@ -23,9 +23,9 @@ function parseMoveDirection(angle) {
     if (angle === -2) return new Vector3(0, -1, 0);
 
     // Convert compass degrees to Babylon direction.
-    // Quake 0° is north (+Z in Babylon), angles increase clockwise when viewed from above.
+    // Quake: 0 = East (+X), 90 = North (+Y in Quake, +Z in Babylon).
     const rad = (angle * Math.PI) / 180;
-    return new Vector3(Math.sin(rad), 0, Math.cos(rad));
+    return new Vector3(Math.cos(rad), 0, Math.sin(rad));
 }
 
 /**
@@ -81,7 +81,7 @@ export function createDoorSystem(scene) {
      * @param {{ min: Vector3, max: Vector3 }} bounds    AABB in Babylon space
      * @returns {DoorRecord}
      */
-    function registerDoor(entity, meshes, bounds) {
+    function registerDoor(entity, meshes, bounds, existingRoot) {
         const props = entity.properties || {};
 
         const targetname = props.targetname || "";
@@ -93,13 +93,14 @@ export function createDoorSystem(scene) {
         const moveDir    = parseMoveDirection(angle);
         const travelDist = computeTravelDistance(bounds, moveDir, lip);
 
-        // Create a TransformNode to act as a sliding parent for all door meshes.
-        const root = new TransformNode(`door_root_${targetname || allDoors.length}`, scene);
+        // Use the existing root provided by buildBrushEntityMesh
+        const root = existingRoot;
+        root.name = `door_root_${targetname || allDoors.length}`;
 
-        // Re-parent all meshes under the door root, preserving world positions.
-        for (const mesh of meshes) {
-            mesh.setParent(root);
-        }
+        // Centre of the door AABB in world space — stable reference for
+        // distance checks regardless of where the root TransformNode sits.
+        const center = bounds.min.add(bounds.max).scale(0.5);
+        console.log(`Registered door ${root.name}: center=${center}, dist=${travelDist}, min=${bounds.min}, max=${bounds.max}`);
 
         /** @type {DoorRecord} */
         const door = {
@@ -108,6 +109,8 @@ export function createDoorSystem(scene) {
             speed,
             wait,
             travelDist,
+            center,
+            bounds,
             root,
             state:     "closed",
             traveled:  0,
@@ -157,9 +160,11 @@ export function createDoorSystem(scene) {
      * Advance all door animations.  Call once per frame.
      *
      * @param {number} dt  Delta time in seconds
+     * @param {{ onOpen?: () => void, onClose?: () => void }} [callbacks]
      */
-    function update(dt) {
+    function update(dt, callbacks = {}) {
         for (const door of allDoors) {
+            const prevState = door.state;
             switch (door.state) {
                 case "opening": {
                     const step = door.speed * dt;
@@ -201,6 +206,12 @@ export function createDoorSystem(scene) {
                 default:
                     break;
             }
+
+            // Fire audio callbacks on state entry
+            if (door.state !== prevState) {
+                if (door.state === "opening" && callbacks.onOpen)  callbacks.onOpen();
+                if (door.state === "closing" && callbacks.onClose) callbacks.onClose();
+            }
         }
     }
 
@@ -211,22 +222,74 @@ export function createDoorSystem(scene) {
      * @param {Vector3} playerPos
      * @param {number}  [radius=80]
      */
-    function checkProximityTrigger(playerPos, radius = 80) {
+    function checkProximityTrigger(playerPos, radius = 120) {
         for (const door of allDoors) {
             // Only self-triggering doors respond to proximity.
             if (door.targetname) continue;
 
-            // Compare against the door's closed-origin world position.
-            // door.root.position reflects the current slide offset; the pivot
-            // (closed origin) is at the node's absolute position minus that offset.
-            const closedOrigin = door.root.getAbsolutePosition().subtract(
-                door.moveDir.scale(door.traveled)
-            );
+            const dx = playerPos.x - door.center.x;
+            const dz = playerPos.z - door.center.z;
+            const dist = Math.hypot(dx, dz);
+            
+            // Check vertical distance loosely (allow +/- 120 units from center)
+            const dy = Math.abs(playerPos.y - door.center.y);
 
-            const dist = Vector3.Distance(playerPos, closedOrigin);
-            if (dist <= radius && door.state === "closed") {
+            if (dist <= radius && dy <= 160 && door.state === "closed") {
                 door.state = "opening";
             }
+        }
+    }
+
+    /**
+     * Activate any door within reach when the player presses USE (E).
+     * Works for both named and unnamed doors.
+     *
+     * @param {Vector3} playerPos   Player eye / camera position
+     * @param {Vector3} forward     Unit forward vector in Babylon space
+     * @param {number}  [maxDist=120]  Max reach distance in Babylon units
+     */
+    function activateByUse(playerPos, forward, maxDist = 400) {
+        let activated = 0;
+        for (const door of allDoors) {
+            // Use the stored AABB centre.
+            const toDoor = door.center.subtract(playerPos);
+            // Ignore Y-axis vertical difference for the reach check
+            // so tall doors don't fail just because their center is high.
+            const horizontalDist = Math.hypot(toDoor.x, toDoor.z);
+            if (horizontalDist > maxDist) continue;
+
+            let dot = 0;
+            const toDoorNorm = toDoor.clone();
+            toDoorNorm.y = 0; // Flatten for dot product
+            if (toDoorNorm.lengthSquared() > 0.001) {
+                toDoorNorm.normalize();
+                const forwardFlat = forward.clone();
+                forwardFlat.y = 0;
+                forwardFlat.normalize();
+                
+                dot = Vector3.Dot(forwardFlat, toDoorNorm);
+                // Door must be somewhere in the forward 180 degrees.
+                if (dot < 0.0) continue;
+            }
+
+            if (door.state === "open") {
+                // Reset close timer so it stays open after the player uses it again.
+                door.waitTimer = door.wait;
+                activated++;
+                console.debug(`[door] USE reset timer on open door (dist=${horizontalDist.toFixed(1)})`);
+                continue;
+            }
+            if (door.state === "opening") {
+                activated++;
+                continue;
+            }
+
+            door.state = "opening";
+            activated++;
+            console.debug(`[door] USE activated door (dist=${horizontalDist.toFixed(1)}, dot=${dot.toFixed(2)}, travel=${door.travelDist.toFixed(1)}, dir=${JSON.stringify(door.moveDir)})`);
+        }
+        if (activated === 0) {
+            console.debug(`[door] USE pressed but no door in range (checked ${allDoors.length} doors)`);
         }
     }
 
@@ -240,5 +303,5 @@ export function createDoorSystem(scene) {
         return doorsByTargetname.get(name);
     }
 
-    return { registerDoor, activate, update, checkProximityTrigger, getDoorByTargetname };
+    return { registerDoor, activate, update, checkProximityTrigger, activateByUse, getDoorByTargetname };
 }

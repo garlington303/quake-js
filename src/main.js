@@ -1,5 +1,6 @@
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder.js";
+import { Color3 } from "@babylonjs/core/Maths/math.color.js";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js";
 import { createEnemySystem } from "./gameplay/enemySystem.js";
 import { createItemSystem } from "./gameplay/itemSystem.js";
@@ -14,21 +15,104 @@ import { createPlayerController } from "./player/playerController.js";
 import { createViewModel } from "./player/viewModel.js";
 import { createAudioSystem } from "./engine/audioSystem.js";
 import { createHud } from "./ui/hud.js";
+import { createPauseMenu } from "./ui/pauseMenu.js";
 import { applyRetroPipeline } from "./engine/retroPipeline.js";
 import { createLightSystem } from "./engine/lightSystem.js";
 import { createFlashlight } from "./player/flashlight.js";
 import { createHeadBob } from "./player/headBob.js";
+import { WEAPONS, WEAPON_ORDER } from "./gameConstants.js";
 
 function parseFlag(value) {
   return ["1", "true", "yes", "on"].includes((value ?? "").toLowerCase());
 }
 
-function inspectForwardHit(scene, camera, maxDistance = 512) {
+function clamp01(value) {
+  return Math.min(1, Math.max(0, value));
+}
+
+function lerpColor(a, b, t) {
+  return new Color3(
+    a.r + (b.r - a.r) * t,
+    a.g + (b.g - a.g) * t,
+    a.b + (b.b - a.b) * t,
+  );
+}
+
+function getProjectileBasis(camera) {
+  const forward = camera.getForwardRay().direction.normalize();
+  let right = Vector3.Cross(Vector3.Up(), forward);
+  if (right.lengthSquared() < 0.0001) {
+    right = new Vector3(1, 0, 0);
+  } else {
+    right.normalize();
+  }
+  const up = Vector3.Cross(forward, right).normalize();
+  return { forward, right, up };
+}
+
+function getWeaponProjectileOrigin(camera, weapon) {
+  const { forward, right, up } = getProjectileBasis(camera);
+  const side = weapon === "pistol" ? 0.16 : 0.11;
+  const down = weapon === "pistol" ? -0.1 : -0.14;
+  const forwardOffset = weapon === "pistol" ? 1.1 : 1.0;
+  return {
+    forward,
+    right,
+    up,
+    origin: camera.position
+      .add(forward.scale(forwardOffset))
+      .add(right.scale(side))
+      .add(up.scale(down)),
+  };
+}
+
+function applySpread(forward, right, up, horizontalSpread, verticalSpread) {
+  return forward
+    .add(right.scale(horizontalSpread))
+    .add(up.scale(verticalSpread))
+    .normalize();
+}
+
+function updateFogZoning(scene, camera, deltaTimeSeconds) {
+  const zones = scene.metadata?.mapFogZones;
+  const baseFogColor = scene.metadata?.baseFogColor;
+  const baseFogDensity = scene.metadata?.baseFogDensity;
+
+  if (!zones?.length || !baseFogColor || !Number.isFinite(baseFogDensity)) {
+    return;
+  }
+
+  let weightTotal = 0;
+  let densityTarget = baseFogDensity;
+  let colorAccumulator = new Color3(0, 0, 0);
+
+  for (const zone of zones) {
+    const radius = Math.max(1, zone.radius ?? 1);
+    const distance = Vector3.Distance(camera.position, zone.position);
+    if (distance >= radius) continue;
+
+    const t = 1 - distance / radius;
+    const weight = t * t;
+    weightTotal += weight;
+    densityTarget += (zone.densityBoost ?? 0) * weight;
+    colorAccumulator = colorAccumulator.add(zone.color.scale(weight));
+  }
+
+  const blend = clamp01(weightTotal * 0.8);
+  const zoneColor = weightTotal > 0 ? colorAccumulator.scale(1 / weightTotal) : baseFogColor;
+  const colorTarget = lerpColor(baseFogColor, zoneColor, blend);
+  const smoothing = clamp01(deltaTimeSeconds * 2.8);
+
+  scene.fogDensity += (densityTarget - scene.fogDensity) * smoothing;
+  scene.fogColor = lerpColor(scene.fogColor, colorTarget, smoothing);
+}
+
+function inspectForwardHit(scene, camera, maxDistance = 512, debug = false) {
   const pick = scene.pickWithRay(camera.getForwardRay(maxDistance), () => true);
 
   if (!pick?.hit) {
     const result = { hit: false, maxDistance };
-    console.log("[map-debug] forward inspect", result);
+    if (debug) console.log("[map-debug] forward inspect", result);
     return result;
   }
 
@@ -46,7 +130,7 @@ function inspectForwardHit(scene, camera, maxDistance = 512) {
       : null,
   };
 
-  console.log("[map-debug] forward inspect", result);
+  if (debug) console.log("[map-debug] forward inspect", result);
   return result;
 }
 
@@ -93,6 +177,7 @@ const impactSystem = createImpactSystem(scene);
 const projectileSystem = createProjectileSystem(scene);
 const hud = createHud();
 const audio = createAudioSystem();
+const pauseMenu = createPauseMenu(audio);
 const lightSystem = createLightSystem(scene);
 const flashlight = createFlashlight(scene, camera);
 const headBob = createHeadBob(camera, scene);
@@ -106,56 +191,80 @@ const mapDebugOptions = {
   showCollisionMesh: debugCollisionExplicit ? parseFlag(queryParams.get("debugCollision")) : debugMapEnabled,
 };
 
-if (retroEnabled) {
-  applyRetroPipeline(scene, camera, {
-    scanlineIntensity: 0.12,
-    noiseIntensity: 0.025,
-    vignette: 0.55,
+const retroFx = retroEnabled
+  ? applyRetroPipeline(scene, camera, {
+    scanlineIntensity: 0.06,
+    noiseIntensity: 0.006,
+    vignette: 0.08,
     curvature: 0,
     ditherScale: 1.0,
-    chromaticAberration: 0.0025,
-    bloomStrength: 0.4,
-    colorTint: 1.0,
-  });
-}
+    chromaticAberration: 0.0,
+    bloomStrength: 0.06,
+    colorTint: 0.2,
+  })
+  : null;
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Escape") {
+    if (pauseMenu.isPaused) {
+      document.dispatchEvent(new Event("resumeGame"));
+    } else {
+      pauseMenu.isPaused = true;
+      if (document.pointerLockElement) {
+        document.exitPointerLock();
+      }
+    }
+  }
+});
+
+document.addEventListener("resumeGame", () => {
+  pauseMenu.isPaused = false;
+  canvas.requestPointerLock();
+});
 
 canvas.addEventListener("click", () => {
   audio.resume();
+  if (!pauseMenu.isPaused) {
+    canvas.requestPointerLock();
+  }
 });
 
-// Weapon constants
-const SHOTGUN_FIRE_COOLDOWN  = 0.85;
-const SWORD_SWING_COOLDOWN   = 0.42;
-const GRENADE_THROW_COOLDOWN = 0.80;
-const STAFF_CAST_COOLDOWN    = 0.50;
-const MELEE_RANGE            = 128;
-const MELEE_DAMAGE           = 50;
-const STAFF_RANGE            = 900;
-const STAFF_DAMAGE           = 35;
-const GRENADE_RADIUS         = 180;
-const GRENADE_DAMAGE         = 80;
+// Destructure weapon constants from centralised config
+const { shotgun: W_SHOTGUN, sword: W_SWORD, grenade: W_GRENADE, staff: W_STAFF } = WEAPONS;
 
-// Weapon order for scroll cycling
-const WEAPON_ORDER = ["shotgun", "sword", "grenade", "staff"];
+// Projectile tuning — pellet and pistol stats not yet in gameConstants
+const PISTOL_FIRE_COOLDOWN     = 0.15;
+const PISTOL_PROJECTILE_SPEED  = 1400;
+const PISTOL_PROJECTILE_DAMAGE = 24;
+const PISTOL_PROJECTILE_LIFE   = 1.4;
+const SHOTGUN_PELLET_COUNT     = 8;
+const SHOTGUN_PELLET_DAMAGE    = 4;
+const SHOTGUN_PELLET_SPEED     = 980;
+const SHOTGUN_PELLET_LIFE      = 0.7;
+const SHOTGUN_PELLET_SPREAD    = 0.045;
 
 let playerHealth = 100;
 let playerArmor = 0;
 let ammoShells = 25;
-let grenadeCount = 5;
+let ammoNails = 36;
 let lastEnemyAttackAt = 0;
 let lastEnemyAggroAt  = 0;
+let lastProjectileHitSoundAt = 0;
+let lastProjectileHurtSoundAt = 0;
 let kills = 0;
 let fireCooldownTimer   = 0;
 let meleeCooldownTimer  = 0;
-let throwCooldownTimer  = 0;
 let castCooldownTimer   = 0;
 let activeWeapon = "shotgun";
 let mapStatusText = "Loading map...";
-const GOD_MODE = false;
+const GOD_MODE = parseFlag(queryParams.get("godMode"));
 
 // Landing detection state
 let prevGrounded = true;
 let peakFallSpeed = 0;
+
+// Door system reference — populated after map loads, used by USE key
+let activeDoorSystem = null;
 
 // Death / respawn state
 const RESPAWN_DELAY = 3.0;
@@ -174,21 +283,27 @@ window.__trenchfps = {
   input,
   playerCollider,
   scene,
+  getDoorSystem: () => activeDoorSystem,
 };
 
 try {
   const mapResult = await loadMap(scene, {
     camera,
     debug: mapDebugOptions,
+    doorCallbacks: {
+      onOpen:  () => audio.playDoorOpen(),
+      onClose: () => audio.playDoorClose(),
+    },
     enemySystem,
     itemSystem,
     playerCollider,
     url: "/maps/comprehensive.map",
   });
+  activeDoorSystem = mapResult?.doorSystem ?? null;
   const meshCount = mapResult?.mapGeometry?.meshes?.length ?? 0;
   window.__trenchfps.mapDebug = mapResult?.mapGeometry?.debugInfo ?? null;
   window.__trenchfps.mapGeometry = mapResult?.mapGeometry ?? null;
-  window.__trenchfps.inspectForward = (maxDistance = 512) => inspectForwardHit(scene, camera, maxDistance);
+  window.__trenchfps.inspectForward = (maxDistance = 512) => inspectForwardHit(scene, camera, maxDistance, mapDebugOptions.enabled);
   window.__trenchfps.playerColliderState = () => ({
     checkCollisions: playerCollider.checkCollisions,
     ellipsoid: playerCollider.ellipsoid?.clone?.() ?? playerCollider.ellipsoid,
@@ -234,6 +349,21 @@ try {
 
 engine.runRenderLoop(() => {
   const deltaTimeSeconds = engine.getDeltaTime() / 1000;
+  const now = performance.now();
+
+  if (pauseMenu.isPaused) {
+    // Optionally update HUD to show pointer locked false
+    hud.update(0, {
+      health: playerHealth, armor: playerArmor, 
+      ammoText: activeWeapon === "shotgun" ? ammoShells : activeWeapon === "pistol" ? ammoNails : "∞",
+      enemies: scene.metadata?.enemyCount ?? 0,
+      pointerLocked: false,
+      kills, statusText: "PAUSED",
+      activeWeapon,
+    });
+    scene.render();
+    return;
+  }
 
   // ── Death / respawn ────────────────────────────────────────────────────────
   if (isDead) {
@@ -243,6 +373,7 @@ engine.runRenderLoop(() => {
       playerHealth = 100;
       playerArmor = 0;
       ammoShells = 25;
+      ammoNails = 36;
       camera.rotation.y = playerSpawnYaw;
       playerController.reset(playerSpawnPosition);
       headBob.reset();
@@ -263,6 +394,12 @@ engine.runRenderLoop(() => {
   playerController.update(deltaTimeSeconds, lookDelta);
   headBob.update(deltaTimeSeconds);
 
+  // ── Moving state for soundtrack ───────────────────────────────────────────
+  const playerSpeed = scene.metadata?.player?.horizontalSpeed ?? 0;
+  const isMoving = playerSpeed > 10; // Threshold to count as 'moving'
+  audio.setMoving(isMoving);
+  retroFx?.setSprintAmount(clamp01((playerSpeed - 190) / 160));
+
   // ── Landing detection ─────────────────────────────────────────────────────
   const playerMeta = scene.metadata?.player ?? {};
   if (!playerMeta.grounded) {
@@ -280,6 +417,18 @@ engine.runRenderLoop(() => {
   if (input.consumeFlashlightToggle()) {
     const flashlightOn = flashlight.toggle();
     viewModel.root.setEnabled(!flashlightOn);
+  }
+
+  // ── USE key (E) — open doors in front of the player ──────────────────────
+  if (input.consumeUse() && activeDoorSystem) {
+    const yaw = camera.rotation.y;
+    const pitch = camera.rotation.x;
+    const forward = new Vector3(
+      Math.sin(yaw) * Math.cos(pitch),
+      -Math.sin(pitch),
+      Math.cos(yaw) * Math.cos(pitch),
+    );
+    activeDoorSystem.activateByUse(camera.position, forward);
   }
 
   // ── Weapon select (keys 1 / 2, or scroll wheel) ───────────────────────────
@@ -304,7 +453,6 @@ engine.runRenderLoop(() => {
   // ── Weapon fire / melee ───────────────────────────────────────────────────
   fireCooldownTimer  = Math.max(0, fireCooldownTimer  - deltaTimeSeconds);
   meleeCooldownTimer = Math.max(0, meleeCooldownTimer - deltaTimeSeconds);
-  throwCooldownTimer = Math.max(0, throwCooldownTimer - deltaTimeSeconds);
   castCooldownTimer  = Math.max(0, castCooldownTimer  - deltaTimeSeconds);
   const wantsFire = input.consumePrimaryFire();
 
@@ -312,35 +460,113 @@ engine.runRenderLoop(() => {
     if (activeWeapon === "shotgun" && fireCooldownTimer === 0) {
       if (ammoShells <= 0) {
         audio.playDryFire();
-        fireCooldownTimer = 0.3;
+        fireCooldownTimer = W_SHOTGUN.dryFireCooldown;
       } else {
-      ammoShells -= 1;
-      fireCooldownTimer = SHOTGUN_FIRE_COOLDOWN;
+        ammoShells -= 1;
+        fireCooldownTimer = W_SHOTGUN.cooldown;
+        scene.metadata ??= {};
+        scene.metadata.lastPlayerShotAt = performance.now();
+        audio.playShoot();
+        if (lightsEnabled) lightSystem.spawnMuzzleFlash(camera);
+        const { origin, forward, right, up } = getWeaponProjectileOrigin(camera, "shotgun");
 
-      const hit = enemySystem.handlePrimaryFire(camera);
-      audio.playShoot();
-      if (lightsEnabled) lightSystem.spawnMuzzleFlash(camera);
+        for (let pelletIndex = 0; pelletIndex < SHOTGUN_PELLET_COUNT; pelletIndex += 1) {
+          const spreadX = (Math.random() * 2 - 1) * SHOTGUN_PELLET_SPREAD;
+          const spreadY = (Math.random() * 2 - 1) * SHOTGUN_PELLET_SPREAD;
+          const pelletDirection = applySpread(forward, right, up, spreadX, spreadY);
 
-      if (hit?.type === "enemy") {
-        hud.notifyHit();
-        audio.playHit();
-        if (hit.enemyDown) { kills += 1; audio.playEnemyDeath(); }
-        else               { audio.playEnemyHurt(); }
+          projectileSystem.spawnSphereProjectile({
+            color: new Color3(1.0, 0.78, 0.32),
+            diameter: 0.11,
+            direction: pelletDirection,
+            lifeSeconds: SHOTGUN_PELLET_LIFE,
+            origin,
+            resolveHit(from, direction, distance) {
+              return enemySystem.traceProjectile(from, direction, distance);
+            },
+            speed: SHOTGUN_PELLET_SPEED,
+            onHit(hit) {
+              if (hit.type === "enemy") {
+                const result = enemySystem.applyProjectileDamage(hit.enemyId, SHOTGUN_PELLET_DAMAGE);
+                if (!result) return;
+                hud.notifyHit();
+                if (performance.now() - lastProjectileHitSoundAt > 40) {
+                  audio.playHit();
+                  lastProjectileHitSoundAt = performance.now();
+                }
+                if (result.enemyDown) {
+                  kills += 1;
+                  audio.playEnemyDeath();
+                } else if (performance.now() - lastProjectileHurtSoundAt > 75) {
+                  audio.playEnemyHurt();
+                  lastProjectileHurtSoundAt = performance.now();
+                }
+                impactSystem.spawnImpact(hit.position, { isEnemy: true, size: 1.15 });
+                if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, true);
+              } else if (hit.type === "world") {
+                impactSystem.spawnImpact(hit.position, { isEnemy: false, normal: hit.normal, size: 0.65 });
+                if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, false);
+              }
+            },
+          });
+        }
+
+        viewModel.fire();
       }
 
-      if (hit?.type === "world" || hit?.type === "enemy") {
-        const isEnemy = hit.type === "enemy";
-        impactSystem.spawnImpact(hit.position, { isEnemy });
-        if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, isEnemy);
-      }
+    } else if (activeWeapon === "pistol" && fireCooldownTimer === 0) {
+      if (ammoNails <= 0) {
+        audio.playDryFire();
+        fireCooldownTimer = 0.2;
+      } else {
+        ammoNails -= 1;
+        fireCooldownTimer = PISTOL_FIRE_COOLDOWN;
+        scene.metadata ??= {};
+        scene.metadata.lastPlayerShotAt = performance.now();
+        audio.playPistolShot();
+        if (lightsEnabled) lightSystem.spawnMuzzleFlash(camera);
+        const { origin, forward } = getWeaponProjectileOrigin(camera, "pistol");
 
-      viewModel.fire();
+        projectileSystem.spawnSphereProjectile({
+          color: new Color3(1.0, 0.84, 0.4),
+          diameter: 0.14,
+          direction: forward,
+          lifeSeconds: PISTOL_PROJECTILE_LIFE,
+          lightIntensity: 1.8,
+          lightRange: 10,
+          origin,
+          resolveHit(from, direction, distance) {
+            return enemySystem.traceProjectile(from, direction, distance);
+          },
+          speed: PISTOL_PROJECTILE_SPEED,
+          onHit(hit) {
+            if (hit.type === "enemy") {
+              const result = enemySystem.applyProjectileDamage(hit.enemyId, PISTOL_PROJECTILE_DAMAGE);
+              if (!result) return;
+              hud.notifyHit();
+              audio.playHit();
+              if (result.enemyDown) {
+                kills += 1;
+                audio.playEnemyDeath();
+              } else {
+                audio.playEnemyHurt();
+              }
+              impactSystem.spawnImpact(hit.position, { isEnemy: true, size: 1.35 });
+              if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, true);
+            } else if (hit.type === "world") {
+              impactSystem.spawnImpact(hit.position, { isEnemy: false, normal: hit.normal, size: 0.95 });
+              if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, false);
+            }
+          },
+        });
+
+        viewModel.firePistol();
       }
 
     } else if (activeWeapon === "sword" && meleeCooldownTimer === 0) {
-      meleeCooldownTimer = SWORD_SWING_COOLDOWN;
+      meleeCooldownTimer = W_SWORD.cooldown;
 
-      const hit = enemySystem.handleMeleeAttack(camera, MELEE_RANGE, MELEE_DAMAGE);
+      const hit = enemySystem.handleMeleeAttack(camera, W_SWORD.range, W_SWORD.damage);
       audio.playSwing();
 
       if (hit?.type === "enemy") {
@@ -352,65 +578,36 @@ engine.runRenderLoop(() => {
 
       if (hit?.type === "world" || hit?.type === "enemy") {
         const isEnemy = hit.type === "enemy";
-        impactSystem.spawnImpact(hit.position, { isEnemy, size: isEnemy ? 2.0 : 1.2 });
+        impactSystem.spawnImpact(hit.position, { isEnemy, normal: hit.normal, size: isEnemy ? 2.0 : 1.2 });
         if (lightsEnabled) lightSystem.spawnImpactLight(hit.position, isEnemy);
       }
 
       viewModel.swingMelee();
 
-    } else if (activeWeapon === "grenade" && throwCooldownTimer === 0) {
-      if (grenadeCount <= 0) {
-        audio.playDryFire();
-        throwCooldownTimer = 0.3;
-      } else {
-        grenadeCount -= 1;
-        throwCooldownTimer = GRENADE_THROW_COOLDOWN;
-        audio.playGrenadeThrow();
-        viewModel.throwGrenade();
-
-        const forward = camera.getForwardRay().direction.normalize();
-        const spawnPos = camera.position.add(forward.scale(8));
-        projectileSystem.spawnGrenade({
-          origin: spawnPos,
-          direction: forward,
-          throwSpeed: 340,
-          upwardKick: 100,
-          fuseTime: 2.4,
-          onBounce() {
-            audio.playBounce();
-          },
-          onExplode(pos) {
-            audio.playExplosion();
-            if (lightsEnabled) lightSystem.spawnImpactLight(pos, false);
-            impactSystem.spawnImpact(pos, { size: 4.0 });
-            const hits = enemySystem.handleExplosionDamage(pos, GRENADE_RADIUS, GRENADE_DAMAGE);
-            for (const h of hits) {
-              kills += h.enemyDown ? 1 : 0;
-              if (h.enemyDown) audio.playEnemyDeath();
-              else audio.playEnemyHurt();
-            }
-            if (hits.length > 0) hud.notifyHit();
-          },
-        });
-      }
-
     } else if (activeWeapon === "staff" && castCooldownTimer === 0) {
-      castCooldownTimer = STAFF_CAST_COOLDOWN;
+      castCooldownTimer = W_STAFF.cooldown;
       audio.playCastSpell();
       viewModel.castStaff();
 
-      // Instant damage at range, visual bolt flies to hit point
-      const hit = enemySystem.handleMeleeAttack(camera, STAFF_RANGE, STAFF_DAMAGE);
-      const targetPos = hit?.position ?? camera.position.add(camera.getForwardRay().direction.scale(STAFF_RANGE));
+      // Instant damage at range — the bolt is cosmetic, damage is pre-computed
+      const hit = enemySystem.handleMeleeAttack(camera, W_STAFF.range, W_STAFF.damage);
+      const forwardDir = camera.getForwardRay().direction;
+      const targetPos  = hit?.position ?? camera.position.add(forwardDir.scale(W_STAFF.range));
 
-      projectileSystem.spawnBolt({
-        origin: camera.position.add(camera.getForwardRay().direction.scale(3)),
+      projectileSystem.spawnStaffBolt({
+        origin: camera.position.add(forwardDir.scale(3)),
         target: targetPos,
-        speed: 650,
-        size: 1.2,
+        speed: 750,
+        size: 1.3,
         onArrive(pos) {
-          impactSystem.spawnImpact(pos, { isEnemy: hit?.type === "enemy", size: 1.8 });
-          if (lightsEnabled) lightSystem.spawnImpactLight(pos, hit?.type === "enemy");
+          // Ice-specific hit VFX (Frostball_Hit sprite + flash light)
+          projectileSystem.spawnStaffImpact(pos);
+          // Impact explosion sound
+          audio.playStaffImpact();
+          // Generic world impact decal / enemy flash (kept for consistency)
+          if (hit?.type === "world") {
+            impactSystem.spawnImpact(pos, { isEnemy: false, normal: hit.normal, size: 0.8 });
+          }
         },
       });
 
@@ -429,6 +626,7 @@ engine.runRenderLoop(() => {
   impactSystem.update(deltaTimeSeconds);
   projectileSystem.update(deltaTimeSeconds);
   if (lightsEnabled) lightSystem.update(deltaTimeSeconds);
+  updateFogZoning(scene, camera, deltaTimeSeconds);
 
   // ── Item pickups ──────────────────────────────────────────────────────────
   const collectedItems = itemSystem.update(deltaTimeSeconds, camera.position);
@@ -436,6 +634,7 @@ engine.runRenderLoop(() => {
     if (item.health)      playerHealth = Math.min(100, playerHealth + item.health);
     if (item.armor)       playerArmor  = Math.min(200, playerArmor  + item.armor);
     if (item.ammo_shells) ammoShells  += item.ammo_shells;
+    if (item.ammo_nails)  ammoNails   += item.ammo_nails;
     audio.playPickup();
   }
 
@@ -454,6 +653,7 @@ engine.runRenderLoop(() => {
     playerHealth = Math.max(0, playerHealth - damage);
     audio.playHurt();
     hud.notifyPlayerHurt();
+    retroFx?.triggerDamagePulse(clamp01(0.28 + damage / 65));
     headBob.damageKick(damage);
 
     if (playerHealth <= 0 && !isDead) {
@@ -477,7 +677,7 @@ engine.runRenderLoop(() => {
     health: playerHealth,
     armor: playerArmor,
     ammoText: activeWeapon === "shotgun"  ? String(ammoShells)
-            : activeWeapon === "grenade" ? String(grenadeCount)
+            : activeWeapon === "pistol" ? String(ammoNails)
             : activeWeapon === "staff"   ? "∞"
             : "⚔",
     enemies: scene.metadata?.enemyCount ?? 0,

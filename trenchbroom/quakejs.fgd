@@ -185,13 +185,21 @@
 // BRUSH ENTITIES - MOVERS
 // ============================================================
 
-@SolidClass color(255 128 0) = func_door : "A sliding door brush entity."
+@SolidClass color(0 200 255) = func_door : "A sliding door brush entity. Press E or walk near to open."
 [
-    targetname(string) : "Name of this entity for targeting"
-    angle(angle) : "Direction the door slides open" : 0
+    targetname(string) : "Name of this entity for targeting (leave blank for proximity/USE trigger)"
+    angle(choices) : "Direction the door slides open" : -1 =
+    [
+        -1 : "Up (default)"
+        -2 : "Down"
+        0  : "North (+Z)"
+        90 : "East (+X)"
+        180: "South (-Z)"
+        270: "West (-X)"
+    ]
     speed(float) : "Movement speed in units per second" : 100
-    wait(float) : "Seconds to stay open before closing (-1 = stay open)" : 3
-    lip(integer) : "Lip amount — units left overlapping frame when open" : 8
+    wait(float) : "Seconds to stay open before closing (-1 = stay open forever)" : 3
+    lip(integer) : "Lip amount — units the door overlaps its frame when fully open" : 8
     dmg(integer) : "Damage dealt to blocking entities" : 2
 ]
 
@@ -199,7 +207,15 @@
 [
     targetname(string) : "Name of this entity for targeting"
     target(string) : "Entity targetname to activate when pressed"
-    angle(angle) : "Direction the button moves when pressed" : 0
+    angle(choices) : "Direction the button moves when pressed" : -1 =
+    [
+        -1 : "Up (default)"
+        -2 : "Down"
+        0  : "North (+Z)"
+        90 : "East (+X)"
+        180: "South (-Z)"
+        270: "West (-X)"
+    ]
     speed(float) : "Movement speed when depressing" : 40
     wait(float) : "Seconds before button resets (-1 = stay pressed)" : 1
 ]

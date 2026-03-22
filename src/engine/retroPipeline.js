@@ -17,6 +17,8 @@ uniform float ditherScale;
 uniform float chromaticAberration;
 uniform float bloomStrength;
 uniform float colorTint;
+uniform float damagePulse;
+uniform float sprintAmount;
 
 float rand(vec2 co) {
   return fract(sin(dot(co.xy, vec2(12.9898, 78.233)) + time) * 43758.5453);
@@ -50,8 +52,15 @@ void main(void) {
   uv = mix(uvWarped, uv, edge);
   uv = clamp(uv, vec2(0.0), vec2(1.0));
 
-  // Chromatic aberration — offset R and B channels
-  vec2 caOffset = (uv - 0.5) * chromaticAberration;
+  // Sprint warp: subtle tunnel distortion toward the center while moving fast.
+  float sprintWarp = sprintAmount * 0.012;
+  vec2 sprintDir = normalize(centered + vec2(0.0001));
+  uv -= sprintDir * sprintWarp * smoothstep(0.15, 0.95, length(centered));
+  uv = clamp(uv, vec2(0.0), vec2(1.0));
+
+  // Base aberration should stay near-zero. Gameplay pulses add a little more.
+  float caStrength = chromaticAberration + sprintAmount * 0.0012 + damagePulse * 0.0018;
+  vec2 caOffset = (uv - 0.5) * caStrength;
   float cr = texture2D(textureSampler, uv + caOffset).r;
   float cg = texture2D(textureSampler, uv).g;
   float cb = texture2D(textureSampler, uv - caOffset).b;
@@ -77,12 +86,22 @@ void main(void) {
 
   // Dither
   vec2 pixel = floor(uv * screenSize / max(ditherScale, 1.0));
-  float dither = (rand(pixel) - 0.5) * 0.035;
+  float dither = (rand(pixel) - 0.5) * 0.018;
   color += dither;
 
   // Film grain
   float noise = (rand(uv * screenSize * 0.25) - 0.5) * noiseIntensity;
   color += noise;
+
+  // Damage pulse: red vignette + slight desaturation kick.
+  if (damagePulse > 0.001) {
+    float edgeMask = smoothstep(0.2, 0.95, dist);
+    vec3 hurtTint = vec3(0.95, 0.08, 0.05);
+    float tintStrength = damagePulse * edgeMask * 0.65;
+    color = mix(color, color + hurtTint * 0.6, tintStrength);
+    float luma = dot(color, vec3(0.299, 0.587, 0.114));
+    color = mix(color, vec3(luma), damagePulse * 0.28);
+  }
 
   gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
 }
@@ -90,32 +109,40 @@ void main(void) {
 
 export function applyRetroPipeline(scene, camera, options = {}) {
   const settings = {
-    scanlineIntensity: 0.15,
-    noiseIntensity: 0.02,
-    vignette: 0.15,
-    curvature: 0.12,
+    scanlineIntensity: 0.07,
+    noiseIntensity: 0.008,
+    vignette: 0.08,
+    curvature: 0.02,
     ditherScale: 1.0,
-    chromaticAberration: 0.003,
-    bloomStrength: 0.35,
-    colorTint: 1.0,
+    chromaticAberration: 0.0,
+    bloomStrength: 0.08,
+    colorTint: 0.25,
     ...options,
   };
+  let sprintAmount = 0;
+  let damagePulse = 0;
+  let lastApplyTimeSeconds = performance.now() / 1000;
 
   const postProcess = new PostProcess(
     "retro-crt",
     SHADER_NAME,
-    ["screenSize", "time", "scanlineIntensity", "noiseIntensity", "vignette", "curvature", "ditherScale", "chromaticAberration", "bloomStrength", "colorTint"],
+    ["screenSize", "time", "scanlineIntensity", "noiseIntensity", "vignette", "curvature", "ditherScale", "chromaticAberration", "bloomStrength", "colorTint", "damagePulse", "sprintAmount"],
     null,
     1.0,
     camera,
   );
 
   postProcess.onApply = (effect) => {
+    const nowSeconds = performance.now() / 1000;
+    const dt = Math.max(0, nowSeconds - lastApplyTimeSeconds);
+    lastApplyTimeSeconds = nowSeconds;
+    damagePulse = Math.max(0, damagePulse - dt * 1.6);
+
     const engine = scene.getEngine();
     const width = engine.getRenderWidth(true);
     const height = engine.getRenderHeight(true);
     effect.setFloat2("screenSize", width, height);
-    effect.setFloat("time", performance.now() / 1000);
+    effect.setFloat("time", nowSeconds);
     effect.setFloat("scanlineIntensity", settings.scanlineIntensity);
     effect.setFloat("noiseIntensity", settings.noiseIntensity);
     effect.setFloat("vignette", settings.vignette);
@@ -124,7 +151,19 @@ export function applyRetroPipeline(scene, camera, options = {}) {
     effect.setFloat("chromaticAberration", settings.chromaticAberration);
     effect.setFloat("bloomStrength", settings.bloomStrength);
     effect.setFloat("colorTint", settings.colorTint);
+    effect.setFloat("damagePulse", damagePulse);
+    effect.setFloat("sprintAmount", sprintAmount);
   };
 
-  return postProcess;
+  return {
+    postProcess,
+    setSprintAmount(value) {
+      const next = Number.isFinite(value) ? value : 0;
+      sprintAmount = Math.min(1, Math.max(0, next));
+    },
+    triggerDamagePulse(amount = 1) {
+      const boost = Number.isFinite(amount) ? amount : 0;
+      damagePulse = Math.min(1, damagePulse + boost);
+    },
+  };
 }

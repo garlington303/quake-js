@@ -3,7 +3,9 @@ const WEAPON_TOAST_DURATION = 1.4; // seconds the weapon name stays visible
 
 const WEAPON_LABELS = {
   shotgun: "SHOTGUN",
+  pistol: "PISTOL",
   sword:   "SWORD",
+  staff:   "STAFF",
 };
 
 function getOrCreateDeathOverlay() {

@@ -21,11 +21,12 @@ const DAMAGE_KICK_PITCH = -0.06; // radians — downward flinch on hit
 const DAMAGE_KICK_RECOVER = 10;  // spring-back speed
 
 export function createHeadBob(camera, scene) {
-  let phase         = 0;
-  let prevGrounded  = false;
-  let lastAirVVel   = 0;   // vertical velocity captured while airborne
-  let landDip       = 0;
-  let damageKickX   = 0;   // pitch offset from taking damage
+  let phase           = 0;
+  let prevGrounded    = false;
+  let lastAirVVel     = 0;   // vertical velocity captured while airborne
+  let landDip         = 0;
+  let damageKickX     = 0;   // pitch offset from taking damage
+  let prevDamageKickX = 0;   // offset applied last frame — used to avoid accumulation
 
   return {
     update(dt) {
@@ -70,8 +71,14 @@ export function createHeadBob(camera, scene) {
       }
 
       camera.position.y += bobY + landDip;
-      camera.rotation.x += damageKickX;
-      camera.rotation.z  = bobRoll;
+
+      // Apply only the DELTA of damageKickX so it doesn't accumulate on top of
+      // the pitch that playerController already wrote this frame.
+      camera.rotation.x += damageKickX - prevDamageKickX;
+      prevDamageKickX = damageKickX;
+
+      // Camera roll removed — it caused visible screen tilt during movement/turning.
+      // The viewmodel already has its own strafe tilt for the same feel.
     },
 
     // Trigger a damage view-punch (downward flinch, springs back).
@@ -82,12 +89,12 @@ export function createHeadBob(camera, scene) {
 
     // Call on respawn so the phase doesn't carry over.
     reset() {
-      phase        = 0;
-      prevGrounded = false;
-      lastAirVVel  = 0;
-      landDip      = 0;
-      damageKickX  = 0;
-      camera.rotation.z = 0;
+      phase           = 0;
+      prevGrounded    = false;
+      lastAirVVel     = 0;
+      landDip         = 0;
+      damageKickX     = 0;
+      prevDamageKickX = 0;
     },
   };
 }
